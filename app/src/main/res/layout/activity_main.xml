@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ŞAOMİ"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        android:layout_marginTop="48dp" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hazır"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:padding="16dp"
+        android:layout_marginTop="24dp" />
+
+    <Button
+        android:id="@+id/listenButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DİNLE"
+        android:textSize="20sp"
+        android:layout_marginTop="24dp" />
+
+    <Switch
+        android:id="@+id/continuousSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sürekli dinleme"
+        android:textSize="18sp"
+        android:layout_marginTop="18dp" />
+
+    <TextView
+        android:id="@+id/help"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Örnekler:\nŞaomi feneri aç\nŞaomi feneri kapat\nŞaomi WhatsApp aç\nŞaomi sesi aç\nŞaomi sesi kıs\nŞaomi ses 50\nŞaomi pil kaç"
+        android:textSize="17sp"
+        android:layout_marginTop="28dp" />
+
+</LinearLayout>
