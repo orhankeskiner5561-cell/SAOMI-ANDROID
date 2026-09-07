@@ -226,3 +226,74 @@ public class VoiceService extends Service {
         }
         return 50;
     }
+
+    private void openPackage(String pkg, String label) {
+        Intent i = getPackageManager().getLaunchIntentForPackage(pkg);
+
+        if (i != null) {
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            try {
+                startActivity(i);
+                reply(label + " açıldı.");
+            } catch (Exception e) {
+                reply(label + " açılamadı.");
+            }
+
+        } else {
+            reply(label + " bulunamadı.");
+        }
+    }
+
+    private void reply(String text) {
+        Toast.makeText(
+                this,
+                text,
+                Toast.LENGTH_SHORT
+        ).show();
+
+        if (tts != null) {
+            tts.speak(
+                    text,
+                    TextToSpeech.QUEUE_FLUSH,
+                    null,
+                    "c2_reply"
+            );
+        }
+    }
+
+    @Override
+    public int onStartCommand(
+            Intent intent,
+            int flags,
+            int startId) {
+
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        running = false;
+
+        if (recognizer != null) {
+            try {
+                recognizer.destroy();
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+
+        handler.removeCallbacksAndMessages(null);
+
+        super.onDestroy();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+}
