@@ -3,8 +3,8 @@ android {
     namespace = "com.orhan.shaomi"
     compileSdk = 35
     defaultConfig {
-        applicationId = "com.orhan.shaomi.clean9"
-        minSdk = 26; targetSdk = 35; versionCode = 913; versionName = "9.13-wake-command-service"
+        applicationId = "com.orhan.shaomi.c8"
+        minSdk = 26; targetSdk = 35; versionCode = 801; versionName = "C8-1.0"
     }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
