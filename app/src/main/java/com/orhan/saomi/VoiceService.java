@@ -15,7 +15,7 @@ import java.util.*;
 
 public class VoiceService extends Service {
 
-    private static final String CHANNEL = "saomi_c5";
+    private static final String CHANNEL = "saomi_c6";
     private SpeechRecognizer recognizer;
     private Intent speechIntent;
     private TextToSpeech tts;
@@ -31,14 +31,14 @@ public class VoiceService extends Service {
 
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel ch = new NotificationChannel(
-                    CHANNEL, "ŞAOMİ C5",
+                    CHANNEL, "ŞAOMİ C6",
                     NotificationManager.IMPORTANCE_LOW);
             getSystemService(NotificationManager.class)
                     .createNotificationChannel(ch);
         }
 
         Notification n = new Notification.Builder(this, CHANNEL)
-                .setContentTitle("ŞAOMİ C5")
+                .setContentTitle("ŞAOMİ C6")
                 .setContentText("Arka planda dinliyor")
                 .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                 .setOngoing(true)
@@ -141,36 +141,35 @@ public class VoiceService extends Service {
         boolean hasWakeWord =
                 c.matches(".*\\b(saomi|xiaomi)\\b.*");
 
+        // Bekleme modunda ŞAOMİ yoksa hiçbir şey yapma.
         if (!awake) {
-            if (!hasWakeWord) return;
+            if (!hasWakeWord) {
+                return;
+            }
 
             c = c.replaceFirst(
                     "^.*?\\b(saomi|xiaomi)\\b\\s*",
                     ""
             ).trim();
 
+            // Sadece "ŞAOMİ" denmişse ikinci komutu bekle.
             if (c.isEmpty()) {
                 awake = true;
-                awakeUntil =
-                        System.currentTimeMillis() + 8000L;
+                awakeUntil = System.currentTimeMillis() + 7000L;
 
                 reply("Efendim Orhan Bey.");
 
                 handler.postDelayed(() -> {
-                    if (awake && System.currentTimeMillis() <= awakeUntil) {
+                    if (awake &&
+                            System.currentTimeMillis() <= awakeUntil) {
                         listen();
                     }
-                }, 700);
+                }, 900);
 
                 return;
             }
-
-            awake = true;
-            awakeUntil =
-                    System.currentTimeMillis() + 8000L;
-
         } else {
-
+            // Komut süresi bittiyse tekrar uyku moduna dön.
             if (System.currentTimeMillis() > awakeUntil) {
                 awake = false;
                 return;
@@ -241,7 +240,6 @@ public class VoiceService extends Service {
             reply("Sesi kapattım.");
             return;
         }
-
     }
 
     private void torch(boolean on) {
@@ -308,7 +306,7 @@ public class VoiceService extends Service {
                     text,
                     TextToSpeech.QUEUE_FLUSH,
                     null,
-                    "c5_reply"
+                    "c6_reply"
             );
         }
     }

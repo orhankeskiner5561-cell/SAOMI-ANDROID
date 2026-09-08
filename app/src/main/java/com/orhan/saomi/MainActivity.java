@@ -94,14 +94,14 @@ public class MainActivity extends Activity {
                     startService(serviceIntent);
                 }
 
-                status.setText("C3 arka plan dinleme açık.");
+                status.setText("C6 uyandırma modu açık.");
 
             } else {
                 stopService(
                         new Intent(this, VoiceService.class));
 
                 stopListening();
-                status.setText("C3 arka plan dinleme kapalı.");
+                status.setText("C6 uyandırma modu kapalı.");
             }
         });
     }
