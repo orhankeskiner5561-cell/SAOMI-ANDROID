@@ -15,7 +15,7 @@ import java.util.*;
 
 public class VoiceService extends Service {
 
-    private static final String CHANNEL = "saomi_c2";
+    private static final String CHANNEL = "saomi_c3";
     private SpeechRecognizer recognizer;
     private Intent speechIntent;
     private TextToSpeech tts;
@@ -29,14 +29,14 @@ public class VoiceService extends Service {
 
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel ch = new NotificationChannel(
-                    CHANNEL, "ŞAOMİ C2",
+                    CHANNEL, "ŞAOMİ C3",
                     NotificationManager.IMPORTANCE_LOW);
             getSystemService(NotificationManager.class)
                     .createNotificationChannel(ch);
         }
 
         Notification n = new Notification.Builder(this, CHANNEL)
-                .setContentTitle("ŞAOMİ C2")
+                .setContentTitle("ŞAOMİ C3")
                 .setContentText("Arka planda dinliyor")
                 .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                 .setOngoing(true)

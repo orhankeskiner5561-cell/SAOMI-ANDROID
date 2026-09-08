@@ -13,6 +13,7 @@ import android.hardware.camera2.CameraManager;
 import android.media.AudioManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.speech.RecognitionListener;
@@ -72,8 +73,36 @@ public class MainActivity extends Activity {
         });
 
         continuousSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) startListening();
-            else stopListening();
+            if (isChecked) {
+                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    continuousSwitch.setChecked(false);
+                    requestPermissions(
+                            new String[]{Manifest.permission.RECORD_AUDIO},
+                            REQ_AUDIO);
+                    return;
+                }
+
+                stopListening();
+
+                Intent serviceIntent =
+                        new Intent(this, VoiceService.class);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent);
+                } else {
+                    startService(serviceIntent);
+                }
+
+                status.setText("C3 arka plan dinleme açık.");
+
+            } else {
+                stopService(
+                        new Intent(this, VoiceService.class));
+
+                stopListening();
+                status.setText("C3 arka plan dinleme kapalı.");
+            }
         });
     }
 
