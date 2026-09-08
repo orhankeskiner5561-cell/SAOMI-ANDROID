@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Shaomi" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#D9AD4A</item>
+        <item name="colorOnPrimary">#111318</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#090B10</item>
+        <item name="android:navigationBarColor">#090B10</item>
+    </style>
+</resources>
