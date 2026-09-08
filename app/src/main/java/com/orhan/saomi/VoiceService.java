@@ -15,13 +15,15 @@ import java.util.*;
 
 public class VoiceService extends Service {
 
-    private static final String CHANNEL = "saomi_c3";
+    private static final String CHANNEL = "saomi_c4";
     private SpeechRecognizer recognizer;
     private Intent speechIntent;
     private TextToSpeech tts;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean running = true;
     private boolean restarting = false;
+    private boolean awake = false;
+    private long awakeUntil = 0L;
 
     @Override
     public void onCreate() {
@@ -29,14 +31,14 @@ public class VoiceService extends Service {
 
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel ch = new NotificationChannel(
-                    CHANNEL, "ŞAOMİ C3",
+                    CHANNEL, "ŞAOMİ C4",
                     NotificationManager.IMPORTANCE_LOW);
             getSystemService(NotificationManager.class)
                     .createNotificationChannel(ch);
         }
 
         Notification n = new Notification.Builder(this, CHANNEL)
-                .setContentTitle("ŞAOMİ C3")
+                .setContentTitle("ŞAOMİ C4")
                 .setContentText("Arka planda dinliyor")
                 .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                 .setOngoing(true)
@@ -135,7 +137,45 @@ public class VoiceService extends Service {
 
     private void handle(String raw) {
         String c = norm(raw);
-        c = c.replaceFirst("^(saomi|xiaomi|şaomi)\\s*", "");
+
+        boolean hasWakeWord =
+                c.matches(".*\\b(saomi|xiaomi)\\b.*");
+
+        if (!awake) {
+            if (!hasWakeWord) return;
+
+            c = c.replaceFirst(
+                    "^.*?\\b(saomi|xiaomi)\\b\\s*",
+                    ""
+            ).trim();
+
+            if (c.isEmpty()) {
+                awake = true;
+                awakeUntil =
+                        System.currentTimeMillis() + 8000L;
+
+                reply("Efendim Orhan Bey.");
+                return;
+            }
+
+            awake = true;
+            awakeUntil =
+                    System.currentTimeMillis() + 8000L;
+
+        } else {
+
+            if (System.currentTimeMillis() > awakeUntil) {
+                awake = false;
+                return;
+            }
+
+            c = c.replaceFirst(
+                    "^.*?\\b(saomi|xiaomi)\\b\\s*",
+                    ""
+            ).trim();
+        }
+
+        awake = false;
 
         if (c.contains("fener") && c.contains("ac")) {
             torch(true);
@@ -257,7 +297,7 @@ public class VoiceService extends Service {
                     text,
                     TextToSpeech.QUEUE_FLUSH,
                     null,
-                    "c2_reply"
+                    "c4_reply"
             );
         }
     }
