@@ -15,7 +15,7 @@ import java.util.*;
 
 public class VoiceService extends Service {
 
-    private static final String CHANNEL = "saomi_c4";
+    private static final String CHANNEL = "saomi_c5";
     private SpeechRecognizer recognizer;
     private Intent speechIntent;
     private TextToSpeech tts;
@@ -31,14 +31,14 @@ public class VoiceService extends Service {
 
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel ch = new NotificationChannel(
-                    CHANNEL, "ŞAOMİ C4",
+                    CHANNEL, "ŞAOMİ C5",
                     NotificationManager.IMPORTANCE_LOW);
             getSystemService(NotificationManager.class)
                     .createNotificationChannel(ch);
         }
 
         Notification n = new Notification.Builder(this, CHANNEL)
-                .setContentTitle("ŞAOMİ C4")
+                .setContentTitle("ŞAOMİ C5")
                 .setContentText("Arka planda dinliyor")
                 .setSmallIcon(android.R.drawable.ic_btn_speak_now)
                 .setOngoing(true)
@@ -155,6 +155,13 @@ public class VoiceService extends Service {
                         System.currentTimeMillis() + 8000L;
 
                 reply("Efendim Orhan Bey.");
+
+                handler.postDelayed(() -> {
+                    if (awake && System.currentTimeMillis() <= awakeUntil) {
+                        listen();
+                    }
+                }, 700);
+
                 return;
             }
 
@@ -268,20 +275,24 @@ public class VoiceService extends Service {
     }
 
     private void openPackage(String pkg, String label) {
-        Intent i = getPackageManager().getLaunchIntentForPackage(pkg);
+        try {
+            PackageManager pm = getPackageManager();
+            Intent i = pm.getLaunchIntentForPackage(pkg);
 
-        if (i != null) {
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            try {
-                startActivity(i);
-                reply(label + " açıldı.");
-            } catch (Exception e) {
-                reply(label + " açılamadı.");
+            if (i == null) {
+                reply(label + " bulunamadı.");
+                return;
             }
 
-        } else {
-            reply(label + " bulunamadı.");
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+                    | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivity(i);
+            reply(label + " açıldı.");
+
+        } catch (Exception e) {
+            reply(label + " açılamadı.");
         }
     }
 
@@ -297,7 +308,7 @@ public class VoiceService extends Service {
                     text,
                     TextToSpeech.QUEUE_FLUSH,
                     null,
-                    "c4_reply"
+                    "c5_reply"
             );
         }
     }
