@@ -86,7 +86,7 @@ function stopHit(sig,c){
 function eventSetup(sig,event){
   return {
     symbol:sig.symbol,market:'futures',timeframe:sig.timeframe||'15m',
-    direction:sig.direction,confidence:sig.confidence??0,quality:'TAKİP',
+    direction:sig.direction,confidence:Number.isFinite(Number(sig.confidence))?Number(sig.confidence):null,quality:'TAKİP',
     price:event.price??sig.entry,entry:sig.entry,stop:sig.stop,
     tp1:sig.tp1,tp2:sig.tp2,tp3:sig.tp3,riskReward:sig.riskReward??3,
     signalId:`${sig.signalId}|${event.type}|${event.time}`
