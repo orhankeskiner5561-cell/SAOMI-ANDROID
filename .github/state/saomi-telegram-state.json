@@ -971,14 +971,47 @@
               "provider": "kural motoru (Gemini fallback)",
               "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
             }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T17:11:13.886Z",
+            "candleCloseTime": 1789750799999,
+            "price": 111.71,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 84,
+            "score": {
+              "long": 5.8,
+              "short": 1.8
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 87
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
           }
         ],
-        "lastCandleCloseTime": 1789749899999,
+        "lastCandleCloseTime": 1789750799999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     }
