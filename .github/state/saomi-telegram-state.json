@@ -1149,6 +1149,51 @@
         "tp3": false,
         "stop": false,
         "ambiguous": false
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-18T20:39:52.951Z",
+            "candleCloseTime": 1789763399999,
+            "price": 1.4027,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 88,
+            "score": {
+              "long": 6.85,
+              "short": 2.7
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 93
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "XRPUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          }
+        ],
+        "lastCandleCloseTime": 1789763399999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
       }
     }
   },
