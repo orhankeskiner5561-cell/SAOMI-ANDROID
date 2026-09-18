@@ -128,6 +128,81 @@
           ]
         }
       }
+    },
+    "BNBUSDT": {
+      "fingerprint": "BNBUSDT|futures|15m|LONG|BOS|UP|1789738200000|LOW|1789734600000|1789733700000|1789739100000",
+      "signalId": "BNBUSDT|futures|15m|LONG|1789738200000|1789734600000|1789733700000|1789739100000",
+      "symbol": "BNBUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "direction": "LONG",
+      "confidence": 95,
+      "riskReward": 3,
+      "sentAt": "2026-09-18T15:53:22.387Z",
+      "entry": 755.84,
+      "stop": 744.6814453440057,
+      "tp1": 770.9040487855923,
+      "tp2": 778.7150370447883,
+      "tp3": 789.3156639679829,
+      "messageId": 143,
+      "contextSnapshot": {
+        "previousDayHigh": 740.1,
+        "previousDayLow": 721.24,
+        "previousWeekHigh": 761.91,
+        "previousWeekLow": 703,
+        "dailyAtr": 23.41356559425153,
+        "dailyEma50": 678.4541316967036,
+        "extensionAtr": 3.3051722938900054,
+        "riseFrom20dLowPct": 11.976296296296308,
+        "fallFrom20dHighPct": -3.276003276003281,
+        "nearestResistance": {
+          "side": "RESISTANCE",
+          "price": 781.44,
+          "time": 1788566400000,
+          "timeframe": "1d"
+        },
+        "nearestSupport": {
+          "side": "SUPPORT",
+          "price": 703,
+          "time": 1788998400000,
+          "timeframe": "1d"
+        },
+        "nearestUntakenHigh": null,
+        "nearestUntakenLow": {
+          "side": "LOW",
+          "price": 601.45,
+          "from": 1786924800000,
+          "to": 1787112000000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "4h"
+        },
+        "brokenSupportRetest": null,
+        "brokenResistanceRetest": {
+          "type": "RESISTANCE_TO_SUPPORT",
+          "timeframe": "4h",
+          "level": 729.7866666666667,
+          "tests": 3,
+          "firstTouchTime": 1788480000000,
+          "lastTouchTime": 1789603200000,
+          "breakTime": 1789660800000,
+          "breakClose": 733.09,
+          "breakStrengthAtr": 0.57,
+          "retestTime": 1789675200000,
+          "retestClose": 738.89,
+          "reclaimed": false,
+          "nearNow": false,
+          "active": true
+        },
+        "decision": {
+          "blocked": false,
+          "reasons": [],
+          "warnings": [
+            "Fiyat günlük EMA50'den 3.3 ATR uzakta",
+            "Previous Week High yakın"
+          ]
+        }
+      }
     }
   },
   "activeSignals": {
@@ -462,6 +537,93 @@
           "opposite": 0,
           "total": 3
         }
+      }
+    },
+    "BNBUSDT|futures|15m|LONG|1789738200000|1789734600000|1789733700000|1789739100000": {
+      "fingerprint": "BNBUSDT|futures|15m|LONG|BOS|UP|1789738200000|LOW|1789734600000|1789733700000|1789739100000",
+      "signalId": "BNBUSDT|futures|15m|LONG|1789738200000|1789734600000|1789733700000|1789739100000",
+      "symbol": "BNBUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "direction": "LONG",
+      "confidence": 95,
+      "riskReward": 3,
+      "sentAt": "2026-09-18T15:53:22.387Z",
+      "entry": 755.84,
+      "stop": 744.6814453440057,
+      "tp1": 770.9040487855923,
+      "tp2": 778.7150370447883,
+      "tp3": 789.3156639679829,
+      "messageId": 143,
+      "contextSnapshot": {
+        "previousDayHigh": 740.1,
+        "previousDayLow": 721.24,
+        "previousWeekHigh": 761.91,
+        "previousWeekLow": 703,
+        "dailyAtr": 23.41356559425153,
+        "dailyEma50": 678.4541316967036,
+        "extensionAtr": 3.3051722938900054,
+        "riseFrom20dLowPct": 11.976296296296308,
+        "fallFrom20dHighPct": -3.276003276003281,
+        "nearestResistance": {
+          "side": "RESISTANCE",
+          "price": 781.44,
+          "time": 1788566400000,
+          "timeframe": "1d"
+        },
+        "nearestSupport": {
+          "side": "SUPPORT",
+          "price": 703,
+          "time": 1788998400000,
+          "timeframe": "1d"
+        },
+        "nearestUntakenHigh": null,
+        "nearestUntakenLow": {
+          "side": "LOW",
+          "price": 601.45,
+          "from": 1786924800000,
+          "to": 1787112000000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "4h"
+        },
+        "brokenSupportRetest": null,
+        "brokenResistanceRetest": {
+          "type": "RESISTANCE_TO_SUPPORT",
+          "timeframe": "4h",
+          "level": 729.7866666666667,
+          "tests": 3,
+          "firstTouchTime": 1788480000000,
+          "lastTouchTime": 1789603200000,
+          "breakTime": 1789660800000,
+          "breakClose": 733.09,
+          "breakStrengthAtr": 0.57,
+          "retestTime": 1789675200000,
+          "retestClose": 738.89,
+          "reclaimed": false,
+          "nearNow": false,
+          "active": true
+        },
+        "decision": {
+          "blocked": false,
+          "reasons": [],
+          "warnings": [
+            "Fiyat günlük EMA50'den 3.3 ATR uzakta",
+            "Previous Week High yakın"
+          ]
+        }
+      },
+      "status": "WAIT_ENTRY",
+      "stage": 0,
+      "enteredAt": null,
+      "lastCheckedAt": "2026-09-18T15:53:22.387Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
       }
     }
   },
