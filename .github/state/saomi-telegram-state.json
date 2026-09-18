@@ -624,6 +624,51 @@
         "tp3": false,
         "stop": false,
         "ambiguous": false
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-18T16:12:05.541Z",
+            "candleCloseTime": 1789747199999,
+            "price": 757.52,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 94,
+            "score": {
+              "long": 8.55,
+              "short": 0
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 86
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "BNBUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          }
+        ],
+        "lastCandleCloseTime": 1789747199999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
       }
     }
   },
