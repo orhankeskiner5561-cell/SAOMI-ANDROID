@@ -169,9 +169,9 @@
       "timeframe": "15m",
       "confidence": null,
       "riskReward": 3,
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-18T11:03:59.999Z",
       "notified": {
         "entry": true,
         "tp1": false,
@@ -180,7 +180,8 @@
         "stop": false,
         "ambiguous": false
       },
-      "migrated": true
+      "migrated": true,
+      "entryCandleOpenTime": 1789729380000
     },
     "DOGEUSDT|futures|15m|LONG|1789721100000|1789721100000|1789718400000|1789722900000": {
       "fingerprint": "DOGEUSDT|futures|15m|LONG|BOS|UP|1789721100000|HIGH|1789721100000|1789718400000|1789722900000",
@@ -198,9 +199,9 @@
       "timeframe": "15m",
       "confidence": null,
       "riskReward": 3,
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-18T11:01:59.999Z",
       "notified": {
         "entry": true,
         "tp1": false,
@@ -209,12 +210,13 @@
         "stop": false,
         "ambiguous": false
       },
-      "migrated": true
+      "migrated": true,
+      "entryCandleOpenTime": 1789729260000
     }
   },
   "history": [],
   "performance": {
-    "updatedAt": "2026-09-18T10:24:29.372Z",
+    "updatedAt": "2026-09-18T11:05:00.748Z",
     "scoredTrades": 0,
     "wins": 0,
     "losses": 0,
@@ -226,6 +228,8 @@
     "stopAfterTp2": 0,
     "ambiguous": 0,
     "expired": 0,
-    "active": 5
+    "active": 5,
+    "waitingEntry": 0,
+    "inTrade": 5
   }
 }
