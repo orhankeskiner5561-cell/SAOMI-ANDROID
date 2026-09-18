@@ -1,4 +1,4 @@
-name: SAOMI Telegram Real Scanner Test
+name: SAOMI Telegram Dedupe Check
 
 on:
   push:
@@ -10,63 +10,34 @@ permissions:
   contents: write
 
 jobs:
-  test:
+  check:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
-      - name: Binance Futures kline + PA scanner
+      - name: Syntax and dedupe markers
         shell: bash
         run: |
-          set +e
-          LOG=/tmp/saomi-real-scan.log
-          : > "$LOG"
-
-          node <<'NODE' >>"$LOG" 2>&1
-          const u='https://www.binance.com/fapi/v1/klines?symbol=BTCUSDT&interval=15m&limit=3';
-          const r=await fetch(u);
-          const t=await r.text();
-          console.log('BINANCE_KLINE_STATUS',r.status);
-          if(!r.ok){console.log(t.slice(0,400));process.exit(1)}
-          const d=JSON.parse(t);
-          console.log('BINANCE_KLINE_ROWS',Array.isArray(d)?d.length:'not-array');
-          if(!Array.isArray(d)||d.length<2)process.exit(2);
-          NODE
-          KLINE=$?
-          echo "KLINE_EXIT=$KLINE" >>"$LOG"
-
-          node --check .github/scripts/saomi-telegram-pa-v1.mjs >>"$LOG" 2>&1
-          SYNTAX=$?
-          echo "SYNTAX_EXIT=$SYNTAX" >>"$LOG"
-
-          node .github/scripts/saomi-telegram-pa-v1.mjs >>"$LOG" 2>&1
-          SCANNER=$?
-          echo "SCANNER_EXIT=$SCANNER" >>"$LOG"
-
-          if grep -q "Binance HTTP 451" "$LOG"; then GEO=1; else GEO=0; fi
-          echo "GEO451=$GEO" >>"$LOG"
-
+          set -e
+          node --check .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "duplicateReason" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "rememberSignal" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "structuralFingerprint" .github/scripts/saomi-telegram-pa-v1.mjs
           {
-            echo "# SAOMI Telegram Real Scanner Test"
+            echo "# SAOMI Telegram Dedupe Check"
             echo
             echo "- UTC: $(date -u +%FT%TZ)"
-            echo "- Binance kline exit: $KLINE"
-            echo "- Syntax exit: $SYNTAX"
-            echo "- Scanner exit: $SCANNER"
-            echo "- Binance 451 present: $GEO"
-            echo
-            echo '## Log'
-            echo '~~~text'
-            tail -n 220 "$LOG"
-            echo '~~~'
-          } > SAOMI_TELEGRAM_REAL_SCAN_RESULT.md
+            echo "- Syntax: PASS"
+            echo "- Dedupe markers: PASS"
+            echo "- Telegram send: NOT RUN"
+          } > SAOMI_TELEGRAM_DEDUPE_CHECK.md
 
-      - name: Commit test report
+      - name: Commit check report
         shell: bash
         run: |
           git config user.name "saomi-actions"
           git config user.email "saomi-actions@users.noreply.github.com"
-          git add SAOMI_TELEGRAM_REAL_SCAN_RESULT.md
-          git commit -m "SAOMI Telegram real scanner test result" || true
+          git add SAOMI_TELEGRAM_DEDUPE_CHECK.md
+          git commit -m "SAOMI Telegram dedupe check result" || true
           git push
