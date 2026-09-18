@@ -1,5 +1,5 @@
 const BASE = 'https://saomi-trade-ai.vercel.app';
-const FUTURES = 'https://fapi.binance.com';
+const FUTURES = 'https://www.binance.com';
 const SYMBOLS = ['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT'];
 const BASE_TF = '15m';
 const CONFIRM_TFS = ['1h','4h'];
