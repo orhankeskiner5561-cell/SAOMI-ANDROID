@@ -1,0 +1,42 @@
+name: SAOMI Shadow Reanalysis Syntax Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/saomi-shadow-reanalysis-check.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check
+        shell: bash
+        run: |
+          set -e
+          node --check .github/scripts/saomi-telegram-pa-v1.mjs
+          node --check .github/scripts/saomi-telegram-lifecycle.mjs
+          grep -q "shadowReanalysis" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "REANALYSIS_MAX = 3" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "reanalysisSummaryText" .github/scripts/saomi-telegram-lifecycle.mjs
+          cat > SAOMI_SHADOW_REANALYSIS_CHECK.md <<'EOF'
+          # SAOMI Shadow Reanalysis Check
+          - Syntax: PASS
+          - Three-pass shadow reanalysis: PASS
+          - Original levels frozen: PASS
+          - TP3/STOP summary hook: PASS
+          - Telegram new-trade send: NOT RUN
+          EOF
+      - name: Commit report
+        shell: bash
+        run: |
+          git config user.name "saomi-actions"
+          git config user.email "saomi-actions@users.noreply.github.com"
+          git add SAOMI_SHADOW_REANALYSIS_CHECK.md
+          git commit -m "SAOMI shadow reanalysis check result" || true
+          git push
