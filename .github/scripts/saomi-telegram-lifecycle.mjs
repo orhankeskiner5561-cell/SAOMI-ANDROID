@@ -83,6 +83,11 @@ function targetStage(sig,c){
 function stopHit(sig,c){
   return sig.direction==='LONG'?c.low<=sig.stop:c.high>=sig.stop
 }
+function reanalysisSummaryText(sig){
+  const s=sig?.reanalysis?.summary;
+  if(!s?.total)return 'Yeniden analiz testi: henüz kontrol oluşmadı.';
+  return `Yeniden analiz testi: ${s.total}/3 kontrol · aynı yön ${s.same||0} · BEKLE ${s.wait||0} · ters ${s.opposite||0}.`
+}
 function eventSetup(sig,event){
   return {
     symbol:sig.symbol,market:'futures',timeframe:sig.timeframe||'15m',
@@ -220,7 +225,7 @@ for(const [id,sig] of entries){
         const label=newStage===3?'TP3':newStage===2?'TP2':'TP1';
         const price=newStage===3?sig.tp3:newStage===2?sig.tp2:sig.tp1;
         const passed=newStage===3?'TP1 ve TP2 de geçildi.':newStage===2?'TP1 de geçildi.':'İlk hedefe ulaşıldı.';
-        const ev={type:label,time:c.closeTime,price,text:`✅ ${sig.symbol} ${label} GELDİ. ${passed} Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${sig.entry} · STOP ${sig.stop} · TP1 ${sig.tp1} · TP2 ${sig.tp2} · TP3 ${sig.tp3}.`};
+        const ev={type:label,time:c.closeTime,price,text:`✅ ${sig.symbol} ${label} GELDİ. ${passed} Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${sig.entry} · STOP ${sig.stop} · TP1 ${sig.tp1} · TP2 ${sig.tp2} · TP3 ${sig.tp3}. ${label==='TP3'?reanalysisSummaryText(sig):''}`};
         const key=label.toLowerCase();
         if(!sig.notified[key])await notify(sig,ev);
         sig.notified[key]=true;
@@ -236,7 +241,7 @@ for(const [id,sig] of entries){
         const stage=sig.stage||0;
         const result=stage>=2?'STOP_AFTER_TP2':stage>=1?'STOP_AFTER_TP1':'STOP';
         const note=stage>=2?'TP1 ve TP2 görüldükten sonra':stage>=1?'TP1 görüldükten sonra':'hedef görülmeden';
-        const ev={type:'STOP',time:c.closeTime,price:sig.stop,text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${sig.entry} · STOP ${sig.stop}.`};
+        const ev={type:'STOP',time:c.closeTime,price:sig.stop,text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${sig.entry} · STOP ${sig.stop}. ${reanalysisSummaryText(sig)}`};
         if(!sig.notified.stop)await notify(sig,ev);
         sig.notified.stop=true;
         closeSignal(state,id,sig,result,c.closeTime,{maxStage:stage,exitPrice:sig.stop});
