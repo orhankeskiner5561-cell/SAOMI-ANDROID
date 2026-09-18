@@ -32,6 +32,121 @@ function detectStructure(c){const p=pivots(c);const events=[];const hs=p.highs.s
  return{trend,pivots:p,events:events.slice(-20),equalHighs:equalHighs.slice(-5),equalLows:equalLows.slice(-5),fvgs:fvgs.slice(-12),orderBlocks:obs.slice(-8),sweeps:sweeps.slice(-8)}}
 const waitResult=(symbol,tf,price,confidence,reasons,invalidation='Yapısal üstünlük oluşmadı',extra={})=>({symbol,timeframe:tf,price,direction:'WAIT',confidence,entry:null,stop:null,tp1:null,tp2:null,tp3:null,riskReward:null,reasons,invalidation,quality:'WAIT',...extra});
 const lastRecent=(arr,c,n=80)=>{if(!arr?.length||!c?.length)return null;const min=c[Math.max(0,c.length-n)]?.time??-Infinity;return[...arr].reverse().find(x=>(x.time??x.b?.time??0)>=min)||null};
+
+function uniqueLevels(levels,tol){
+  const out=[];
+  for(const x of levels.sort((a,b)=>a.price-b.price)){
+    const prev=out.at(-1);
+    if(prev&&Math.abs(prev.price-x.price)<=tol){
+      prev.price=(prev.price+x.price)/2;
+      prev.from=Math.min(prev.from??x.from,x.from);
+      prev.to=Math.max(prev.to??x.to,x.to);
+      prev.count=(prev.count||1)+(x.count||1);
+    }else out.push({...x,count:x.count||1});
+  }
+  return out
+}
+function buildLiquidityMap(c,label='15m'){
+  if(!c?.length)return{timeframe:label,untakenHighs:[],untakenLows:[],takenHighs:[],takenLows:[]};
+  const p=pivots(c,3,3),last=c.at(-1),av=atr(c,14).at(-1)||Math.max((last?.close||1)*.004,1e-8);
+  const tol=Math.max((last?.close||1)*0.0009,av*0.12);
+  const raw=[];
+  const highs=p.highs.slice(-40),lows=p.lows.slice(-40);
+  for(let i=0;i<highs.length;i++)for(let j=i+1;j<highs.length;j++){
+    if(Math.abs(highs[i].price-highs[j].price)<=tol)raw.push({side:'HIGH',price:(highs[i].price+highs[j].price)/2,from:highs[i].time,to:highs[j].time,anchorIndex:highs[j].i});
+  }
+  for(let i=0;i<lows.length;i++)for(let j=i+1;j<lows.length;j++){
+    if(Math.abs(lows[i].price-lows[j].price)<=tol)raw.push({side:'LOW',price:(lows[i].price+lows[j].price)/2,from:lows[i].time,to:lows[j].time,anchorIndex:lows[j].i});
+  }
+  const merged=uniqueLevels(raw,tol*.6).map(x=>{
+    const after=c.slice((x.anchorIndex??0)+1);
+    const taken=x.side==='HIGH'
+      ? after.some(k=>k.high>x.price+tol*.15)
+      : after.some(k=>k.low<x.price-tol*.15);
+    const takenAt=taken?(x.side==='HIGH'
+      ? after.find(k=>k.high>x.price+tol*.15)?.time
+      : after.find(k=>k.low<x.price-tol*.15)?.time):null;
+    return{side:x.side,price:x.price,from:x.from,to:x.to,taken,takenAt,timeframe:label};
+  });
+  return{
+    timeframe:label,
+    untakenHighs:merged.filter(x=>x.side==='HIGH'&&!x.taken).slice(-8),
+    untakenLows:merged.filter(x=>x.side==='LOW'&&!x.taken).slice(-8),
+    takenHighs:merged.filter(x=>x.side==='HIGH'&&x.taken).slice(-8),
+    takenLows:merged.filter(x=>x.side==='LOW'&&x.taken).slice(-8)
+  }
+}
+function nearestAbove(levels,price){return (levels||[]).filter(x=>x.price>price).sort((a,b)=>a.price-b.price)[0]||null}
+function nearestBelow(levels,price){return (levels||[]).filter(x=>x.price<price).sort((a,b)=>b.price-a.price)[0]||null}
+function majorSwingLevels(c,label){
+  if(!c?.length)return[];
+  const p=pivots(c,label==='1w'?2:3,label==='1w'?2:3);
+  return[
+    ...p.highs.slice(-24).map(x=>({side:'RESISTANCE',price:x.price,time:x.time,timeframe:label})),
+    ...p.lows.slice(-24).map(x=>({side:'SUPPORT',price:x.price,time:x.time,timeframe:label}))
+  ];
+}
+async function buildHtfContext(symbol,price){
+  const [d,w,h4]=await Promise.all([candles(symbol,'1d'),candles(symbol,'1w'),candles(symbol,'4h')]);
+  const dLast=d.at(-1)||null,wLast=w.at(-1)||null;
+  const di=d.length?indicatorSnapshot(d):{},dAtr=di.atr||atr(d,14).at(-1)||Math.max(price*.01,1e-8);
+  const levels=[...majorSwingLevels(d,'1d'),...majorSwingLevels(w,'1w')];
+  const resistances=levels.filter(x=>x.side==='RESISTANCE');
+  const supports=levels.filter(x=>x.side==='SUPPORT');
+  const nearestResistance=nearestAbove(resistances,price);
+  const nearestSupport=nearestBelow(supports,price);
+  const liq4h=buildLiquidityMap(h4,'4h'),liq1d=buildLiquidityMap(d,'1d');
+  const allUntakenHighs=[...liq4h.untakenHighs,...liq1d.untakenHighs];
+  const allUntakenLows=[...liq4h.untakenLows,...liq1d.untakenLows];
+  const nearestUntakenHigh=nearestAbove(allUntakenHighs,price);
+  const nearestUntakenLow=nearestBelow(allUntakenLows,price);
+  const ema50=di.ema50;
+  const extensionAtr=Number.isFinite(ema50)&&dAtr>0?(price-ema50)/dAtr:null;
+  const recent20=d.slice(-20);
+  const low20=recent20.length?Math.min(...recent20.map(x=>x.low)):null;
+  const high20=recent20.length?Math.max(...recent20.map(x=>x.high)):null;
+  return{
+    previousDayHigh:dLast?.high??null,previousDayLow:dLast?.low??null,
+    previousWeekHigh:wLast?.high??null,previousWeekLow:wLast?.low??null,
+    dailyAtr:dAtr,dailyEma50:ema50??null,extensionAtr,
+    riseFrom20dLowPct:low20?((price/low20)-1)*100:null,
+    fallFrom20dHighPct:high20?((price/high20)-1)*100:null,
+    nearestResistance,nearestSupport,nearestUntakenHigh,nearestUntakenLow,
+    liquidity:{h4:liq4h,d1:liq1d}
+  }
+}
+function htfContextDecision(direction,ctx,price){
+  const reasons=[],warnings=[];let blocked=false;
+  const av=ctx.dailyAtr||Math.max(price*.01,1e-8);
+  if(direction==='LONG'){
+    const r=ctx.nearestResistance;
+    if(r){
+      const dist=r.price-price;
+      if(dist>0&&dist<=av*.45){blocked=true;reasons.push(`1D/1W direnç çok yakın (${r.timeframe})`)}
+      else if(dist>0&&dist<=av*1.0)warnings.push(`Yakında ${r.timeframe} direnç`);
+    }
+    if(Number.isFinite(ctx.extensionAtr)&&ctx.extensionAtr>=3.0){
+      warnings.push(`Fiyat günlük EMA50'den ${ctx.extensionAtr.toFixed(1)} ATR uzakta`);
+      if(r&&r.price-price<=av*1.0){blocked=true;reasons.push('Aşırı yükselmiş + HTF direnç kombinasyonu')}
+    }
+    if(ctx.nearestUntakenHigh)warnings.push('Yukarıda alınmamış likidite havuzu var');
+    if(ctx.previousWeekHigh&&price<ctx.previousWeekHigh&&ctx.previousWeekHigh-price<=av*.35)warnings.push('Previous Week High yakın');
+  }else if(direction==='SHORT'){
+    const s=ctx.nearestSupport;
+    if(s){
+      const dist=price-s.price;
+      if(dist>0&&dist<=av*.45){blocked=true;reasons.push(`1D/1W destek çok yakın (${s.timeframe})`)}
+      else if(dist>0&&dist<=av*1.0)warnings.push(`Yakında ${s.timeframe} destek`);
+    }
+    if(Number.isFinite(ctx.extensionAtr)&&ctx.extensionAtr<=-3.0){
+      warnings.push(`Fiyat günlük EMA50'nin ${Math.abs(ctx.extensionAtr).toFixed(1)} ATR altında`);
+      if(s&&price-s.price<=av*1.0){blocked=true;reasons.push('Aşırı düşmüş + HTF destek kombinasyonu')}
+    }
+    if(ctx.nearestUntakenLow)warnings.push('Aşağıda alınmamış likidite havuzu var');
+    if(ctx.previousWeekLow&&price>ctx.previousWeekLow&&price-ctx.previousWeekLow<=av*.35)warnings.push('Previous Week Low yakın');
+  }
+  return{blocked,reasons,warnings}
+}
 function paContext(s,c,i,av){const last=c.at(-1),event=lastRecent(s.events,c,90),sweep=lastRecent(s.sweeps,c,70),ob=(s.orderBlocks||[]).at(-1)||null,fvg=(s.fvgs||[]).at(-1)||null;return{trend:s.trend,lastEvent:event?{type:event.type,side:event.side,price:event.price,time:event.time}:null,lastSweep:sweep?{side:sweep.side,price:sweep.price,time:sweep.time}:null,lastOrderBlock:ob,lastFvg:fvg,lastCandle:{open:last.open,high:last.high,low:last.low,close:last.close,volume:last.volume},atr:av,ema9:i.ema9,ema50:i.ema50,ema200:i.ema200,rsi:i.rsi,macdHist:i.macdHist}}
 function analyzeSingle(symbol,tf,c){
  const minBars=tf==='1M'?72:tf==='1w'?100:tf==='3d'?140:180;if(c.length<minBars)return waitResult(symbol,tf,c.at(-1)?.close??null,0,['Yeterli mum yok'],`Bu zaman diliminde en az ${minBars} mum gerekli`);
@@ -163,16 +278,22 @@ async function shadowReanalysis(active){
 }
 
 function validAiText(text,a){if(typeof text!=='string'||text.trim().length<20)return false;const t=text.toLowerCase();if(/\bagreement\b|\bis\s+(long|short)\b|\*\s*agreement|```|json|use exact|standard formatting|without invent|system prompt|instruction|prompt:/i.test(t))return false;if((t.match(/\b(the|and|with|without|should|must|use|exact|numbers)\b/g)||[]).length>5)return false;if(a.direction==='LONG'&&/\bshort\b/.test(t)&&!/short\s+değil|short\s+değildir/.test(t))return false;if(a.direction==='SHORT'&&/\blong\b/.test(t)&&!/long\s+değil|long\s+değildir/.test(t))return false;return true}
-function aiPayload(a){return{analysisProfile:'PRICE_ACTION_CONFIRMATION',symbol:a.symbol,market:'futures',timeframe:a.timeframe,direction:a.direction,confidence:a.confidence,quality:a.quality,price:a.price,entry:a.entry,stop:a.stop,tp1:a.tp1,tp2:a.tp2,tp3:a.tp3,riskReward:a.riskReward,reasons:a.reasons,invalidation:a.invalidation,score:a.score,priceAction:a.priceAction,multiTimeframe:(a.multiTimeframe||[]).map(x=>({timeframe:x.timeframe,direction:x.direction,confidence:x.confidence,quality:x.quality,score:x.score,reasons:(x.reasons||[]).slice(0,4),priceAction:x.priceAction?{trend:x.priceAction.trend,lastEvent:x.priceAction.lastEvent,lastSweep:x.priceAction.lastSweep}:null})),mtf:a.mtf,agreement:a.agreement,request:'Türkçe price action değerlendirmesi: setup güçlü mü, hangi teyitler var, hangi risk/geçersizlik şartı kritik; sayı uydurma ve teknik seviyeleri değiştirme.'}}
+function aiPayload(a){return{analysisProfile:'PRICE_ACTION_CONFIRMATION',symbol:a.symbol,market:'futures',timeframe:a.timeframe,direction:a.direction,confidence:a.confidence,quality:a.quality,price:a.price,entry:a.entry,stop:a.stop,tp1:a.tp1,tp2:a.tp2,tp3:a.tp3,riskReward:a.riskReward,reasons:a.reasons,invalidation:a.invalidation,score:a.score,priceAction:a.priceAction,htfContext:a.htfContext,liquidityContext:a.liquidityContext,multiTimeframe:(a.multiTimeframe||[]).map(x=>({timeframe:x.timeframe,direction:x.direction,confidence:x.confidence,quality:x.quality,score:x.score,reasons:(x.reasons||[]).slice(0,4),priceAction:x.priceAction?{trend:x.priceAction.trend,lastEvent:x.priceAction.lastEvent,lastSweep:x.priceAction.lastSweep}:null})),mtf:a.mtf,agreement:a.agreement,request:'Türkçe price action değerlendirmesi: setup güçlü mü, hangi teyitler var, hangi risk/geçersizlik şartı kritik; sayı uydurma ve teknik seviyeleri değiştirme.'}}
 async function gemini(setup){const r=await fetch(`${BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(aiPayload(setup))});if(!r.ok)throw new Error(`Gemini HTTP ${r.status}`);const j=await r.json();const commentary=String(j.commentary||'').trim(),provider=String(j.provider||'');if(!/gemini/i.test(provider))throw new Error(`Gemini provider doğrulanmadı: ${provider||'boş'}`);if(!validAiText(commentary,setup))throw new Error('Gemini yorumu doğrulama filtresini geçmedi');return{provider,commentary}}
 async function telegram(setup,commentary,provider){const r=await fetch(`${BASE}/api/telegram`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setup,commentary,provider,riskReward:setup.riskReward,mode:'github-pa-v1',signalId:setup.signalId})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||`Telegram HTTP ${r.status}`);return j}
 
-async function buildSetup(symbol){const baseCandles=await candles(symbol,BASE_TF);if(baseCandles.length<200)return null;const last=baseCandles.at(-1);const age=Date.now()-last.closeTime;if(age>12*60*1000)return null;
+async function buildSetup(symbol){
+ const baseCandles=await candles(symbol,BASE_TF);if(baseCandles.length<200)return null;const last=baseCandles.at(-1);const age=Date.now()-last.closeTime;if(age>12*60*1000)return null;
  const current=analyzeSingle(symbol,BASE_TF,baseCandles),previous=analyzeSingle(symbol,BASE_TF,baseCandles.slice(0,-1));if(!isStableSetupPair(current,previous)||current.quality!=='GÜÇLÜ')return null;
  const frames=[current];for(const tf of CONFIRM_TFS){const c=await candles(symbol,tf);frames.push(analyzeSingle(symbol,tf,c))}
  const confirm=frames.slice(1),aligned=confirm.filter(x=>x.direction===current.direction).length,opposite=confirm.filter(x=>x.direction!=='WAIT'&&x.direction!==current.direction).length,available=confirm.filter(x=>x.direction!=='WAIT').length,agreement=available?aligned/available:0;if(opposite>0||aligned<1)return null;
- const confidence=clamp((current.confidence||60)+aligned*3,55,95);if(confidence<MIN_CONFIDENCE||(current.riskReward||0)<MIN_RR)return null;
- const ev=current.priceAction?.lastEvent?.time||0,sw=current.priceAction?.lastSweep?.time||0,ob=current.priceAction?.lastOrderBlock?.time||0,fvg=current.priceAction?.lastFvg?.time||0,signalId=`${symbol}|futures|${BASE_TF}|${current.direction}|${ev}|${sw}|${ob}|${fvg}`;return{...current,market:'futures',confidence,quality:'GÜÇLÜ',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,multiTimeframe:frames,agreement,mtf:{frames:[BASE_TF,...CONFIRM_TFS],aligned,opposite,available,status:'UYUMLU'},signalId,reasons:[...(current.reasons||[]),'İki kapanış teyidi','MTF uyumu'].slice(0,7)}
+ const htfContext=await buildHtfContext(symbol,current.price);
+ const htfDecision=htfContextDecision(current.direction,htfContext,current.price);
+ if(htfDecision.blocked){console.log(symbol,'HTF CONTEXT ENGELLEDİ',htfDecision.reasons);return null}
+ const baseLiquidity=buildLiquidityMap(baseCandles,BASE_TF);
+ const confidence=clamp((current.confidence||60)+aligned*3-(htfDecision.warnings.length?1:0),55,95);if(confidence<MIN_CONFIDENCE||(current.riskReward||0)<MIN_RR)return null;
+ const ev=current.priceAction?.lastEvent?.time||0,sw=current.priceAction?.lastSweep?.time||0,ob=current.priceAction?.lastOrderBlock?.time||0,fvg=current.priceAction?.lastFvg?.time||0,signalId=`${symbol}|futures|${BASE_TF}|${current.direction}|${ev}|${sw}|${ob}|${fvg}`;
+ return{...current,market:'futures',confidence,quality:'GÜÇLÜ',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,multiTimeframe:frames,agreement,mtf:{frames:[BASE_TF,...CONFIRM_TFS],aligned,opposite,available,status:'UYUMLU'},htfContext,liquidityContext:{base:baseLiquidity,decision:htfDecision},signalId,reasons:[...(current.reasons||[]),'İki kapanış teyidi','MTF uyumu',...htfDecision.warnings].slice(0,9)}
 }
 
 let sent=0;console.log(`ŞAOMİ Telegram PA+Gemini V1 taraması: ${new Date().toISOString()}`);
