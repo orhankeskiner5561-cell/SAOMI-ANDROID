@@ -633,7 +633,52 @@
         "stop": false,
         "ambiguous": false
       },
-      "entryCandleOpenTime": 1789739640000
+      "entryCandleOpenTime": 1789739640000,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-18T14:12:36.182Z",
+            "candleCloseTime": 1789739999999,
+            "price": 0.2172,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 93,
+            "score": {
+              "long": 7.4,
+              "short": 1.8
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 94
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "ADAUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          }
+        ],
+        "lastCandleCloseTime": 1789739999999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
+      }
     }
   },
   "history": [
