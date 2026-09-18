@@ -78,6 +78,95 @@ function buildLiquidityMap(c,label='15m'){
 }
 function nearestAbove(levels,price){return (levels||[]).filter(x=>x.price>price).sort((a,b)=>a.price-b.price)[0]||null}
 function nearestBelow(levels,price){return (levels||[]).filter(x=>x.price<price).sort((a,b)=>b.price-a.price)[0]||null}
+
+function clusterPivotLevels(points,tol,side){
+  const rows=(points||[]).map(x=>({price:x.price,time:x.time,i:x.i,side})).sort((a,b)=>a.price-b.price);
+  const groups=[];
+  for(const p of rows){
+    const g=groups.find(x=>Math.abs(x.price-p.price)<=tol);
+    if(g){
+      g.members.push(p);
+      g.price=g.members.reduce((s,m)=>s+m.price,0)/g.members.length;
+    }else groups.push({price:p.price,members:[p],side});
+  }
+  return groups.filter(g=>g.members.length>=3);
+}
+function detectRoleReversalZones(c,label='4h'){
+  if(!c?.length)return[];
+  const avSeries=atr(c,14),last=c.at(-1),lastAv=avSeries.at(-1)||Math.max((last?.close||1)*.006,1e-8);
+  const p=pivots(c,2,2);
+  const tol=Math.max((last?.close||1)*0.0015,lastAv*.16);
+  const breakPad=Math.max((last?.close||1)*0.0008,lastAv*.12);
+  const retestTol=Math.max((last?.close||1)*0.0022,lastAv*.28);
+  const zones=[
+    ...clusterPivotLevels(p.lows.slice(-80),tol,'SUPPORT'),
+    ...clusterPivotLevels(p.highs.slice(-80),tol,'RESISTANCE')
+  ];
+  const out=[];
+  for(const z of zones){
+    const lastTouchI=Math.max(...z.members.map(m=>m.i));
+    const search=c.slice(lastTouchI+1);
+    if(!search.length)continue;
+    let breakIndex=-1,breakCandle=null,breakStrength=0;
+    for(let j=0;j<search.length;j++){
+      const k=search[j],globalI=lastTouchI+1+j,av=avSeries[globalI]||lastAv;
+      const body=Math.abs(k.close-k.open);
+      if(z.side==='SUPPORT'){
+        const broke=k.close<z.price-breakPad;
+        const bearish=k.close<k.open;
+        if(broke&&bearish&&body>=av*.45){breakIndex=globalI;breakCandle=k;breakStrength=body/Math.max(av,1e-12);break}
+      }else{
+        const broke=k.close>z.price+breakPad;
+        const bullish=k.close>k.open;
+        if(broke&&bullish&&body>=av*.45){breakIndex=globalI;breakCandle=k;breakStrength=body/Math.max(av,1e-12);break}
+      }
+    }
+    if(breakIndex<0)continue;
+
+    const after=c.slice(breakIndex+1);
+    let retest=null,retestIndex=-1;
+    for(let j=0;j<after.length;j++){
+      const k=after[j],globalI=breakIndex+1+j;
+      if(z.side==='SUPPORT'){
+        const touches=k.high>=z.price-retestTol&&k.low<=z.price+retestTol;
+        const rejects=k.close<=z.price+tol*.35;
+        if(touches&&rejects){retest=k;retestIndex=globalI;break}
+      }else{
+        const touches=k.low<=z.price+retestTol&&k.high>=z.price-retestTol;
+        const rejects=k.close>=z.price-tol*.35;
+        if(touches&&rejects){retest=k;retestIndex=globalI;break}
+      }
+    }
+
+    const recentAfterBreak=c.slice(breakIndex+1);
+    const reclaimed=z.side==='SUPPORT'
+      ? recentAfterBreak.slice(-2).filter(k=>k.close>z.price+tol).length===2
+      : recentAfterBreak.slice(-2).filter(k=>k.close<z.price-tol).length===2;
+    const nearNow=z.side==='SUPPORT'
+      ? last.close<=z.price+retestTol&&last.close>=z.price-retestTol*1.8
+      : last.close>=z.price-retestTol&&last.close<=z.price+retestTol*1.8;
+    const recentBreak=(c.length-1-breakIndex)<=36;
+    const active=!reclaimed&&recentBreak&&(nearNow||retestIndex>=0&&(c.length-1-retestIndex)<=12);
+
+    out.push({
+      type:z.side==='SUPPORT'?'SUPPORT_TO_RESISTANCE':'RESISTANCE_TO_SUPPORT',
+      timeframe:label,
+      level:z.price,
+      tests:z.members.length,
+      firstTouchTime:Math.min(...z.members.map(m=>m.time)),
+      lastTouchTime:Math.max(...z.members.map(m=>m.time)),
+      breakTime:breakCandle.time,
+      breakClose:breakCandle.close,
+      breakStrengthAtr:Number(breakStrength.toFixed(2)),
+      retestTime:retest?.time??null,
+      retestClose:retest?.close??null,
+      reclaimed,
+      nearNow,
+      active
+    });
+  }
+  return out.filter(x=>x.active).sort((a,b)=>Math.abs(a.level-last.close)-Math.abs(b.level-last.close)).slice(0,8);
+}
 function majorSwingLevels(c,label){
   if(!c?.length)return[];
   const p=pivots(c,label==='1w'?2:3,label==='1w'?2:3);
@@ -96,6 +185,9 @@ async function buildHtfContext(symbol,price){
   const nearestResistance=nearestAbove(resistances,price);
   const nearestSupport=nearestBelow(supports,price);
   const liq4h=buildLiquidityMap(h4,'4h'),liq1d=buildLiquidityMap(d,'1d');
+  const roleReversals4h=detectRoleReversalZones(h4,'4h');
+  const brokenSupportRetest=roleReversals4h.find(x=>x.type==='SUPPORT_TO_RESISTANCE')||null;
+  const brokenResistanceRetest=roleReversals4h.find(x=>x.type==='RESISTANCE_TO_SUPPORT')||null;
   const allUntakenHighs=[...liq4h.untakenHighs,...liq1d.untakenHighs];
   const allUntakenLows=[...liq4h.untakenLows,...liq1d.untakenLows];
   const nearestUntakenHigh=nearestAbove(allUntakenHighs,price);
@@ -112,6 +204,7 @@ async function buildHtfContext(symbol,price){
     riseFrom20dLowPct:low20?((price/low20)-1)*100:null,
     fallFrom20dHighPct:high20?((price/high20)-1)*100:null,
     nearestResistance,nearestSupport,nearestUntakenHigh,nearestUntakenLow,
+    roleReversals4h,brokenSupportRetest,brokenResistanceRetest,
     liquidity:{h4:liq4h,d1:liq1d}
   }
 }
@@ -119,6 +212,10 @@ function htfContextDecision(direction,ctx,price){
   const reasons=[],warnings=[];let blocked=false;
   const av=ctx.dailyAtr||Math.max(price*.01,1e-8);
   if(direction==='LONG'){
+    if(ctx.brokenSupportRetest?.active){
+      blocked=true;
+      reasons.push(`4H S/R FLIP: ${ctx.brokenSupportRetest.tests} kez test edilen destek kırıldı, alttan direnç retesti`);
+    }
     const r=ctx.nearestResistance;
     if(r){
       const dist=r.price-price;
@@ -132,6 +229,10 @@ function htfContextDecision(direction,ctx,price){
     if(ctx.nearestUntakenHigh)warnings.push('Yukarıda alınmamış likidite havuzu var');
     if(ctx.previousWeekHigh&&price<ctx.previousWeekHigh&&ctx.previousWeekHigh-price<=av*.35)warnings.push('Previous Week High yakın');
   }else if(direction==='SHORT'){
+    if(ctx.brokenResistanceRetest?.active){
+      blocked=true;
+      reasons.push(`4H S/R FLIP: ${ctx.brokenResistanceRetest.tests} kez test edilen direnç kırıldı, üstten destek retesti`);
+    }
     const s=ctx.nearestSupport;
     if(s){
       const dist=price-s.price;
@@ -196,7 +297,7 @@ function duplicateReason(state,setup){
 function rememberSignal(state,setup,telegramResult){
   state.version=2;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
   const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup);
-  const base={fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null,contextSnapshot:setup.htfContext?{previousDayHigh:setup.htfContext.previousDayHigh,previousDayLow:setup.htfContext.previousDayLow,previousWeekHigh:setup.htfContext.previousWeekHigh,previousWeekLow:setup.htfContext.previousWeekLow,dailyAtr:setup.htfContext.dailyAtr,dailyEma50:setup.htfContext.dailyEma50,extensionAtr:setup.htfContext.extensionAtr,riseFrom20dLowPct:setup.htfContext.riseFrom20dLowPct,fallFrom20dHighPct:setup.htfContext.fallFrom20dHighPct,nearestResistance:setup.htfContext.nearestResistance,nearestSupport:setup.htfContext.nearestSupport,nearestUntakenHigh:setup.htfContext.nearestUntakenHigh,nearestUntakenLow:setup.htfContext.nearestUntakenLow,decision:setup.liquidityContext?.decision||null}:null};
+  const base={fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null,contextSnapshot:setup.htfContext?{previousDayHigh:setup.htfContext.previousDayHigh,previousDayLow:setup.htfContext.previousDayLow,previousWeekHigh:setup.htfContext.previousWeekHigh,previousWeekLow:setup.htfContext.previousWeekLow,dailyAtr:setup.htfContext.dailyAtr,dailyEma50:setup.htfContext.dailyEma50,extensionAtr:setup.htfContext.extensionAtr,riseFrom20dLowPct:setup.htfContext.riseFrom20dLowPct,fallFrom20dHighPct:setup.htfContext.fallFrom20dHighPct,nearestResistance:setup.htfContext.nearestResistance,nearestSupport:setup.htfContext.nearestSupport,nearestUntakenHigh:setup.htfContext.nearestUntakenHigh,nearestUntakenLow:setup.htfContext.nearestUntakenLow,brokenSupportRetest:setup.htfContext.brokenSupportRetest,brokenResistanceRetest:setup.htfContext.brokenResistanceRetest,decision:setup.liquidityContext?.decision||null}:null};
   state.signals[setup.symbol]=base;
   state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};
   for(const [k,v] of Object.entries(state.signals)){const t=Date.parse(v?.sentAt||0);if(!Number.isFinite(t)||Date.now()-t>7*24*60*60*1000)delete state.signals[k]}
