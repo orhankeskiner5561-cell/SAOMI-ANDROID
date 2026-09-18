@@ -420,14 +420,47 @@
               "provider": "kural motoru (Gemini fallback)",
               "commentary": "ADAUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
             }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T14:42:26.362Z",
+            "candleCloseTime": 1789741799999,
+            "price": 0.2187,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 94,
+            "score": {
+              "long": 7.55,
+              "short": 1.8
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 94
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "Gemini · gemini-3.6-flash",
+              "commentary": "ADAUSDT 15 dakikalık vadeli işlemler grafiğinde takip edilen Long"
+            }
           }
         ],
-        "lastCandleCloseTime": 1789740899999,
+        "lastCandleCloseTime": 1789741799999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     }
