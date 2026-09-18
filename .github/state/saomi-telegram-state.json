@@ -542,12 +542,12 @@
         }
       },
       "status": "ACTIVE",
-      "stage": 0,
+      "stage": 1,
       "enteredAt": "2026-09-18T13:54:59.999Z",
       "lastCheckedAt": "2026-09-18T13:53:08.384Z",
       "notified": {
         "entry": false,
-        "tp1": false,
+        "tp1": true,
         "tp2": false,
         "tp3": false,
         "stop": false,
@@ -1674,12 +1674,12 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-18T20:51:45.660Z",
+    "updatedAt": "2026-09-18T21:05:12.937Z",
     "scoredTrades": 4,
     "wins": 3,
     "losses": 1,
     "winRate": 75,
-    "tp1Reached": 4,
+    "tp1Reached": 5,
     "tp2Reached": 3,
     "tp3Reached": 3,
     "stopAfterTp1": 0,
