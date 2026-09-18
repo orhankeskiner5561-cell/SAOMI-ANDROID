@@ -1,0 +1,108 @@
+name: SAOMI Telegram One Shot Smoke Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/saomi-telegram-one-shot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: System endpoints + PA scanner test
+        shell: bash
+        run: |
+          set +e
+          LOG=/tmp/saomi-smoke.log
+          : > "$LOG"
+          echo "SAOMI TELEGRAM SMOKE TEST $(date -u +%FT%TZ)" | tee -a "$LOG"
+
+          node --check .github/scripts/saomi-telegram-pa-v1.mjs >>"$LOG" 2>&1
+          SYNTAX=$?
+          echo "SYNTAX_EXIT=$SYNTAX" | tee -a "$LOG"
+
+          node <<'NODE' >>"$LOG" 2>&1
+          const BASE='https://saomi-trade-ai.vercel.app';
+          async function main(){
+            const health=await fetch(BASE+'/api/telegram');
+            const htxt=await health.text();
+            console.log('TELEGRAM_GET',health.status,htxt.slice(0,500));
+
+            const setup={
+              analysisProfile:'PRICE_ACTION_CONFIRMATION',
+              symbol:'BTCUSDT',market:'futures',timeframe:'15m',
+              direction:'LONG',confidence:90,quality:'GÜÇLÜ',
+              price:100,entry:100,stop:99,tp1:101.35,tp2:102.05,tp3:103,
+              riskReward:3,reasons:['Sistem bağlantı testi'],invalidation:'TEST',
+              score:{long:9,short:1},
+              priceAction:{trend:'UP',lastEvent:{type:'BOS',side:'UP'},lastSweep:null},
+              request:'Bu yalnız bağlantı testidir. Türkçe tek cümle ile sistem testi yanıtı ver; işlem önerisi verme.'
+            };
+            const ai=await fetch(BASE+'/api/ai',{
+              method:'POST',
+              headers:{'content-type':'application/json'},
+              body:JSON.stringify(setup)
+            });
+            const aj=await ai.json().catch(()=>({}));
+            console.log('AI_POST',ai.status,JSON.stringify({provider:aj.provider,commentary:String(aj.commentary||'').slice(0,300)}));
+            if(!ai.ok || !/gemini/i.test(String(aj.provider||''))) throw new Error('Gemini endpoint doğrulanmadı');
+
+            const tg=await fetch(BASE+'/api/telegram',{
+              method:'POST',
+              headers:{'content-type':'application/json'},
+              body:JSON.stringify({
+                setup:{...setup,symbol:'SISTEM-TEST',direction:'WAIT',confidence:0,quality:'TEST',entry:null,stop:null,tp1:null,tp2:null,tp3:null,riskReward:0},
+                commentary:'SİSTEM TESTİ — işlem sinyali değildir. GitHub → Vercel → Telegram bağlantısı çalışıyor.',
+                provider:'SYSTEM',
+                riskReward:0,
+                mode:'github-smoke-test',
+                signalId:'SAOMI-SMOKE-TEST'
+              })
+            });
+            const tj=await tg.json().catch(()=>({}));
+            console.log('TELEGRAM_POST',tg.status,JSON.stringify(tj).slice(0,500));
+            if(!tg.ok || !tj.ok) throw new Error('Telegram POST başarısız');
+          }
+          main().catch(e=>{console.error('ENDPOINT_TEST_ERROR',e.message);process.exit(1)})
+          NODE
+          ENDPOINT=$?
+          echo "ENDPOINT_EXIT=$ENDPOINT" | tee -a "$LOG"
+
+          node .github/scripts/saomi-telegram-pa-v1.mjs >>"$LOG" 2>&1
+          SCANNER=$?
+          echo "SCANNER_EXIT=$SCANNER" | tee -a "$LOG"
+
+          {
+            echo "# SAOMI Telegram Smoke Test"
+            echo
+            echo "- UTC: $(date -u +%FT%TZ)"
+            echo "- Syntax exit: $SYNTAX"
+            echo "- Endpoint exit: $ENDPOINT"
+            echo "- Scanner exit: $SCANNER"
+            echo
+            echo '## Log'
+            echo '~~~text'
+            tail -n 160 "$LOG"
+            echo '~~~'
+          } > SAOMI_TELEGRAM_SMOKE_RESULT.md
+
+          if [ "$SYNTAX" -ne 0 ] || [ "$ENDPOINT" -ne 0 ] || [ "$SCANNER" -ne 0 ]; then
+            echo "Smoke test failed" >&2
+          fi
+
+      - name: Commit smoke report
+        shell: bash
+        run: |
+          git config user.name "saomi-actions"
+          git config user.email "saomi-actions@users.noreply.github.com"
+          git add SAOMI_TELEGRAM_SMOKE_RESULT.md
+          git commit -m "SAOMI Telegram smoke test result" || true
+          git push
