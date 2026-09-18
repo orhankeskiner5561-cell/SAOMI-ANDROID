@@ -131,147 +131,6 @@
     }
   },
   "activeSignals": {
-    "BTCUSDT|futures|15m|LONG|1789715700000|1789719300000|1789713000000|1789722000000": {
-      "fingerprint": "BTCUSDT|futures|15m|LONG|BOS|UP|1789715700000|HIGH|1789719300000|1789713000000|1789722000000",
-      "signalId": "BTCUSDT|futures|15m|LONG|1789715700000|1789719300000|1789713000000|1789722000000",
-      "direction": "LONG",
-      "sentAt": "2026-09-18T09:41:15.571Z",
-      "entry": 78123.6,
-      "stop": 77324.32369912873,
-      "tp1": 79202.62300617623,
-      "tp2": 79762.11641678613,
-      "tp3": 80521.42890261384,
-      "messageId": 120,
-      "symbol": "BTCUSDT",
-      "market": "futures",
-      "timeframe": "15m",
-      "confidence": null,
-      "riskReward": 3,
-      "status": "ACTIVE",
-      "stage": 2,
-      "enteredAt": "2026-09-18T09:47:59.999Z",
-      "notified": {
-        "entry": true,
-        "tp1": true,
-        "tp2": true,
-        "tp3": false,
-        "stop": false,
-        "ambiguous": false
-      },
-      "migrated": true,
-      "entryCandleOpenTime": 1789724820000,
-      "reanalysis": {
-        "max": 3,
-        "snapshots": [
-          {
-            "no": 1,
-            "checkedAt": "2026-09-18T12:35:03.385Z",
-            "candleCloseTime": 1789734599999,
-            "price": 77983,
-            "originalDirection": "LONG",
-            "currentDirection": "WAIT",
-            "currentConfidence": 47,
-            "score": {
-              "long": 4.45,
-              "short": 3.75
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 92
-              },
-              {
-                "timeframe": "4h",
-                "direction": "WAIT",
-                "confidence": 50
-              }
-            ],
-            "mtfAligned": 1,
-            "mtfOpposite": 0,
-            "verdict": "BEKLE",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "BTCUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          },
-          {
-            "no": 2,
-            "checkedAt": "2026-09-18T12:55:48.081Z",
-            "candleCloseTime": 1789735499999,
-            "price": 78074.6,
-            "originalDirection": "LONG",
-            "currentDirection": "WAIT",
-            "currentConfidence": 53,
-            "score": {
-              "long": 5.2,
-              "short": 3
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 92
-              },
-              {
-                "timeframe": "4h",
-                "direction": "WAIT",
-                "confidence": 50
-              }
-            ],
-            "mtfAligned": 1,
-            "mtfOpposite": 0,
-            "verdict": "BEKLE",
-            "gemini": {
-              "ok": true,
-              "provider": "Gemini · gemini-3.6-flash",
-              "commentary": ". Yeni giriş/stop/hedef üretme. Orijinal seviyeleri değiştirme"
-            }
-          },
-          {
-            "no": 3,
-            "checkedAt": "2026-09-18T13:12:13.649Z",
-            "candleCloseTime": 1789736399999,
-            "price": 78004.8,
-            "originalDirection": "LONG",
-            "currentDirection": "WAIT",
-            "currentConfidence": 45,
-            "score": {
-              "long": 4.45,
-              "short": 4.1
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 94
-              },
-              {
-                "timeframe": "4h",
-                "direction": "WAIT",
-                "confidence": 50
-              }
-            ],
-            "mtfAligned": 1,
-            "mtfOpposite": 0,
-            "verdict": "HTF_ENGEL",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "BTCUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          }
-        ],
-        "lastCandleCloseTime": 1789736399999,
-        "summary": {
-          "same": 0,
-          "wait": 3,
-          "opposite": 0,
-          "total": 3
-        }
-      }
-    },
     "ETHUSDT|futures|15m|LONG|1789719300000|1789722900000|1789718400000|1789722000000": {
       "fingerprint": "ETHUSDT|futures|15m|LONG|BOS|UP|1789719300000|HIGH|1789722900000|1789718400000|1789722000000",
       "signalId": "ETHUSDT|futures|15m|LONG|1789719300000|1789722900000|1789718400000|1789722000000",
@@ -812,23 +671,169 @@
       "finalStage": 0,
       "maxStage": 0,
       "exitPrice": 1.3210651164764091
+    },
+    {
+      "fingerprint": "BTCUSDT|futures|15m|LONG|BOS|UP|1789715700000|HIGH|1789719300000|1789713000000|1789722000000",
+      "signalId": "BTCUSDT|futures|15m|LONG|1789715700000|1789719300000|1789713000000|1789722000000",
+      "direction": "LONG",
+      "sentAt": "2026-09-18T09:41:15.571Z",
+      "entry": 78123.6,
+      "stop": 77324.32369912873,
+      "tp1": 79202.62300617623,
+      "tp2": 79762.11641678613,
+      "tp3": 80521.42890261384,
+      "messageId": 120,
+      "symbol": "BTCUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "confidence": null,
+      "riskReward": 3,
+      "status": "ACTIVE",
+      "stage": 3,
+      "enteredAt": "2026-09-18T09:47:59.999Z",
+      "notified": {
+        "entry": true,
+        "tp1": true,
+        "tp2": true,
+        "tp3": true,
+        "stop": false,
+        "ambiguous": false
+      },
+      "migrated": true,
+      "entryCandleOpenTime": 1789724820000,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-18T12:35:03.385Z",
+            "candleCloseTime": 1789734599999,
+            "price": 77983,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 47,
+            "score": {
+              "long": 4.45,
+              "short": 3.75
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 92
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 50
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "BEKLE",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "BTCUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-18T12:55:48.081Z",
+            "candleCloseTime": 1789735499999,
+            "price": 78074.6,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 53,
+            "score": {
+              "long": 5.2,
+              "short": 3
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 92
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 50
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "BEKLE",
+            "gemini": {
+              "ok": true,
+              "provider": "Gemini · gemini-3.6-flash",
+              "commentary": ". Yeni giriş/stop/hedef üretme. Orijinal seviyeleri değiştirme"
+            }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T13:12:13.649Z",
+            "candleCloseTime": 1789736399999,
+            "price": 78004.8,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 45,
+            "score": {
+              "long": 4.45,
+              "short": 4.1
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 50
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "HTF_ENGEL",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "BTCUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          }
+        ],
+        "lastCandleCloseTime": 1789736399999,
+        "summary": {
+          "same": 0,
+          "wait": 3,
+          "opposite": 0,
+          "total": 3
+        }
+      },
+      "result": "TP3",
+      "closedAt": "2026-09-18T14:05:59.999Z",
+      "finalStage": 3,
+      "maxStage": 3,
+      "exitPrice": 80521.42890261384
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-18T13:54:47.856Z",
-    "scoredTrades": 1,
-    "wins": 0,
+    "updatedAt": "2026-09-18T14:12:24.470Z",
+    "scoredTrades": 2,
+    "wins": 1,
     "losses": 1,
-    "winRate": 0,
+    "winRate": 50,
     "tp1Reached": 4,
     "tp2Reached": 3,
-    "tp3Reached": 0,
+    "tp3Reached": 1,
     "stopAfterTp1": 0,
     "stopAfterTp2": 0,
     "ambiguous": 0,
     "expired": 0,
-    "active": 5,
+    "active": 4,
     "waitingEntry": 0,
-    "inTrade": 5
+    "inTrade": 4
   }
 }
