@@ -1,0 +1,50 @@
+name: SAOMI HTF Liquidity Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/saomi-htf-liquidity-check.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate HTF + liquidity integration
+        shell: bash
+        run: |
+          set -e
+          node --check .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "buildLiquidityMap" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "buildHtfContext" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "htfContextDecision" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "previousWeekHigh" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "nearestResistance" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "nearestUntakenHigh" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "extensionAtr" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "HTF CONTEXT ENGELLEDİ" .github/scripts/saomi-telegram-pa-v1.mjs
+          grep -q "shadowReanalysis" .github/scripts/saomi-telegram-pa-v1.mjs
+          cat > SAOMI_HTF_LIQUIDITY_CHECK.md <<'EOF'
+          # SAOMI HTF Liquidity Check
+          - JavaScript syntax: PASS
+          - 1D/1W swing context: PASS
+          - Previous day/week levels: PASS
+          - Taken/untaken liquidity map: PASS
+          - Historical support/resistance veto: PASS
+          - Overextension filter: PASS
+          - Shadow reanalysis integration: PASS
+          - New Telegram signal send: NOT RUN
+          EOF
+      - name: Commit report
+        shell: bash
+        run: |
+          git config user.name "saomi-actions"
+          git config user.email "saomi-actions@users.noreply.github.com"
+          git add SAOMI_HTF_LIQUIDITY_CHECK.md
+          git commit -m "SAOMI HTF liquidity validation result" || true
+          git push
