@@ -10,6 +10,7 @@ const MAX_SIGNALS = 3;
 const STATE_PATH = '.github/state/saomi-telegram-state.json';
 const DUP_TTL_MS = 12*60*60*1000;
 const SYMBOL_COOLDOWN_MS = 30*60*1000;
+const REANALYSIS_MAX = 3;
 
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const finite=a=>a.filter(Number.isFinite);
@@ -89,6 +90,78 @@ function rememberSignal(state,setup,telegramResult){
 const signalState=loadSignalState();
 async function candles(symbol,tf){const key=`${symbol}|${tf}`;if(cache.has(key))return cache.get(key);const u=`${FUTURES}/fapi/v1/klines?symbol=${symbol}&interval=${tf}&limit=500`;const r=await fetch(u);if(!r.ok)throw new Error(`${symbol} ${tf} Binance HTTP ${r.status}`);const d=await r.json();const rows=d.map(k=>({time:Number(k[0]),openTime:Number(k[0]),open:Number(k[1]),high:Number(k[2]),low:Number(k[3]),close:Number(k[4]),volume:Number(k[5]),closeTime:Number(k[6])})).filter(x=>x.closeTime<Date.now()-500);cache.set(key,rows);return rows}
 
+function activeSignalForSymbol(state,symbol){
+  return Object.values(state.activeSignals||{}).find(x=>x?.symbol===symbol&&!['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status))||null
+}
+async function geminiRecheck(active,current,frames,verdict){
+  const payload={
+    analysisProfile:'PRICE_ACTION_RECHECK',
+    symbol:active.symbol,market:'futures',timeframe:active.timeframe||BASE_TF,
+    originalDirection:active.direction,originalEntry:active.entry,originalStop:active.stop,
+    originalTp1:active.tp1,originalTp2:active.tp2,originalTp3:active.tp3,
+    currentDirection:current.direction,currentConfidence:current.confidence,currentScore:current.score,
+    currentPrice:current.price,currentReasons:current.reasons,currentPriceAction:current.priceAction,
+    multiTimeframe:frames.map(x=>({timeframe:x.timeframe,direction:x.direction,confidence:x.confidence,score:x.score})),
+    verdict,
+    request:'Bu mevcut sinyalin yeniden kontrolüdür. Yeni giriş/stop/hedef üretme. Orijinal seviyeleri değiştirme. Yalnız setup aynı yönde güçlü mü, zayıfladı mı, ters mi dönüyor kısa Türkçe değerlendir.'
+  };
+  try{
+    const r=await fetch(`${BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)return{ok:false,error:`HTTP ${r.status}`};
+    return{ok:/gemini/i.test(String(j.provider||'')),provider:j.provider||'',commentary:String(j.commentary||'').trim().slice(0,600)}
+  }catch(e){return{ok:false,error:e?.message||String(e)}}
+}
+async function shadowReanalysis(active){
+  active.reanalysis=active.reanalysis||{max:REANALYSIS_MAX,snapshots:[],lastCandleCloseTime:0};
+  active.reanalysis.snapshots=Array.isArray(active.reanalysis.snapshots)?active.reanalysis.snapshots:[];
+  if(active.reanalysis.snapshots.length>=REANALYSIS_MAX)return false;
+
+  const base=await candles(active.symbol,BASE_TF);
+  if(base.length<180)return false;
+  const last=base.at(-1);
+  const sentAt=Date.parse(active.sentAt||0);
+  if(!last?.closeTime||last.closeTime<=sentAt||last.closeTime<=Number(active.reanalysis.lastCandleCloseTime||0))return false;
+
+  const current=analyzeSingle(active.symbol,BASE_TF,base);
+  const frames=[current];
+  for(const tf of CONFIRM_TFS){frames.push(analyzeSingle(active.symbol,tf,await candles(active.symbol,tf)))}
+  const mtf=frames.slice(1);
+  const mtfAligned=mtf.filter(x=>x.direction===active.direction).length;
+  const mtfOpposite=mtf.filter(x=>x.direction!=='WAIT'&&x.direction!==active.direction).length;
+  let verdict='BEKLE';
+  if(current.direction===active.direction&&mtfOpposite===0)verdict='AYNI_YON';
+  else if(current.direction===active.direction)verdict='AYNI_YON_MTF_ZAYIF';
+  else if(current.direction!=='WAIT'&&current.direction!==active.direction)verdict='TERS';
+
+  const ai=await geminiRecheck(active,current,frames,verdict);
+  const snap={
+    no:active.reanalysis.snapshots.length+1,
+    checkedAt:new Date().toISOString(),
+    candleCloseTime:last.closeTime,
+    price:current.price,
+    originalDirection:active.direction,
+    currentDirection:current.direction,
+    currentConfidence:current.confidence,
+    score:current.score,
+    mtf:mtf.map(x=>({timeframe:x.timeframe,direction:x.direction,confidence:x.confidence})),
+    mtfAligned,mtfOpposite,verdict,
+    gemini:ai
+  };
+  active.reanalysis.snapshots.push(snap);
+  active.reanalysis.lastCandleCloseTime=last.closeTime;
+  active.reanalysis.summary={
+    same:active.reanalysis.snapshots.filter(x=>x.verdict==='AYNI_YON'||x.verdict==='AYNI_YON_MTF_ZAYIF').length,
+    wait:active.reanalysis.snapshots.filter(x=>x.verdict==='BEKLE').length,
+    opposite:active.reanalysis.snapshots.filter(x=>x.verdict==='TERS').length,
+    total:active.reanalysis.snapshots.length
+  };
+  signalState.activeSignals[active.signalId]=active;
+  saveSignalState(signalState);
+  console.log(active.symbol,'GÖLGE YENİDEN ANALİZ',snap.no+'/'+REANALYSIS_MAX,verdict,{direction:current.direction,confidence:current.confidence,mtf:mtf.map(x=>x.direction)});
+  return true
+}
+
 function validAiText(text,a){if(typeof text!=='string'||text.trim().length<20)return false;const t=text.toLowerCase();if(/\bagreement\b|\bis\s+(long|short)\b|\*\s*agreement|```|json|use exact|standard formatting|without invent|system prompt|instruction|prompt:/i.test(t))return false;if((t.match(/\b(the|and|with|without|should|must|use|exact|numbers)\b/g)||[]).length>5)return false;if(a.direction==='LONG'&&/\bshort\b/.test(t)&&!/short\s+değil|short\s+değildir/.test(t))return false;if(a.direction==='SHORT'&&/\blong\b/.test(t)&&!/long\s+değil|long\s+değildir/.test(t))return false;return true}
 function aiPayload(a){return{analysisProfile:'PRICE_ACTION_CONFIRMATION',symbol:a.symbol,market:'futures',timeframe:a.timeframe,direction:a.direction,confidence:a.confidence,quality:a.quality,price:a.price,entry:a.entry,stop:a.stop,tp1:a.tp1,tp2:a.tp2,tp3:a.tp3,riskReward:a.riskReward,reasons:a.reasons,invalidation:a.invalidation,score:a.score,priceAction:a.priceAction,multiTimeframe:(a.multiTimeframe||[]).map(x=>({timeframe:x.timeframe,direction:x.direction,confidence:x.confidence,quality:x.quality,score:x.score,reasons:(x.reasons||[]).slice(0,4),priceAction:x.priceAction?{trend:x.priceAction.trend,lastEvent:x.priceAction.lastEvent,lastSweep:x.priceAction.lastSweep}:null})),mtf:a.mtf,agreement:a.agreement,request:'Türkçe price action değerlendirmesi: setup güçlü mü, hangi teyitler var, hangi risk/geçersizlik şartı kritik; sayı uydurma ve teknik seviyeleri değiştirme.'}}
 async function gemini(setup){const r=await fetch(`${BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(aiPayload(setup))});if(!r.ok)throw new Error(`Gemini HTTP ${r.status}`);const j=await r.json();const commentary=String(j.commentary||'').trim(),provider=String(j.provider||'');if(!/gemini/i.test(provider))throw new Error(`Gemini provider doğrulanmadı: ${provider||'boş'}`);if(!validAiText(commentary,setup))throw new Error('Gemini yorumu doğrulama filtresini geçmedi');return{provider,commentary}}
@@ -103,5 +176,23 @@ async function buildSetup(symbol){const baseCandles=await candles(symbol,BASE_TF
 }
 
 let sent=0;console.log(`ŞAOMİ Telegram PA+Gemini V1 taraması: ${new Date().toISOString()}`);
-for(const symbol of SYMBOLS){try{const setup=await buildSetup(symbol);if(!setup){console.log(symbol,'BEKLE / filtre dışı');continue}const dup=duplicateReason(signalState,setup);if(dup){console.log(symbol,`TEKRAR GÖNDERİLMEDİ (${dup})`,{signalId:setup.signalId});continue}console.log(symbol,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,mtf:setup.mtf});const g=await gemini(setup);const t=await telegram(setup,g.commentary,g.provider);rememberSignal(signalState,setup,t);sent++;console.log(`GÖNDERİLDİ ${symbol}`,t);if(sent>=MAX_SIGNALS){console.log('Bu tur maksimum güçlü sinyal sayısına ulaşıldı.');break}}catch(e){console.error(`HATA ${symbol}:`,e?.message||e)}}
+for(const symbol of SYMBOLS){try{
+  const active=activeSignalForSymbol(signalState,symbol);
+  if(active){
+    await shadowReanalysis(active);
+    console.log(symbol,'AKTİF SİNYAL VAR · yeni işlem üretilmedi');
+    continue;
+  }
+  const setup=await buildSetup(symbol);
+  if(!setup){console.log(symbol,'BEKLE / filtre dışı');continue}
+  const dup=duplicateReason(signalState,setup);
+  if(dup){console.log(symbol,`TEKRAR GÖNDERİLMEDİ (${dup})`,{signalId:setup.signalId});continue}
+  console.log(symbol,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,mtf:setup.mtf});
+  const g=await gemini(setup);
+  const t=await telegram(setup,g.commentary,g.provider);
+  rememberSignal(signalState,setup,t);
+  sent++;
+  console.log(`GÖNDERİLDİ ${symbol}`,t);
+  if(sent>=MAX_SIGNALS){console.log('Bu tur maksimum güçlü sinyal sayısına ulaşıldı.');break}
+}catch(e){console.error(`HATA ${symbol}:`,e?.message||e)}}
 console.log(`ŞAOMİ Telegram PA+Gemini V1 bitti. Gönderilen: ${sent}`);
