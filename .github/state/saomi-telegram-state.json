@@ -131,147 +131,6 @@
     }
   },
   "activeSignals": {
-    "ETHUSDT|futures|15m|LONG|1789719300000|1789722900000|1789718400000|1789722000000": {
-      "fingerprint": "ETHUSDT|futures|15m|LONG|BOS|UP|1789719300000|HIGH|1789722900000|1789718400000|1789722000000",
-      "signalId": "ETHUSDT|futures|15m|LONG|1789719300000|1789722900000|1789718400000|1789722000000",
-      "direction": "LONG",
-      "sentAt": "2026-09-18T09:41:19.479Z",
-      "entry": 2507.5,
-      "stop": 2482.3439135090143,
-      "tp1": 2541.4607167628305,
-      "tp2": 2559.0699773065207,
-      "tp3": 2582.968259472957,
-      "messageId": 121,
-      "symbol": "ETHUSDT",
-      "market": "futures",
-      "timeframe": "15m",
-      "confidence": null,
-      "riskReward": 3,
-      "status": "ACTIVE",
-      "stage": 2,
-      "enteredAt": "2026-09-18T09:47:59.999Z",
-      "notified": {
-        "entry": true,
-        "tp1": true,
-        "tp2": true,
-        "tp3": false,
-        "stop": false,
-        "ambiguous": false
-      },
-      "migrated": true,
-      "entryCandleOpenTime": 1789724820000,
-      "reanalysis": {
-        "max": 3,
-        "snapshots": [
-          {
-            "no": 1,
-            "checkedAt": "2026-09-18T12:35:04.384Z",
-            "candleCloseTime": 1789734599999,
-            "price": 2503.24,
-            "originalDirection": "LONG",
-            "currentDirection": "WAIT",
-            "currentConfidence": 51,
-            "score": {
-              "long": 5.45,
-              "short": 3.75
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 94
-              },
-              {
-                "timeframe": "4h",
-                "direction": "WAIT",
-                "confidence": 53
-              }
-            ],
-            "mtfAligned": 1,
-            "mtfOpposite": 0,
-            "verdict": "BEKLE",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "ETHUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          },
-          {
-            "no": 2,
-            "checkedAt": "2026-09-18T12:55:48.939Z",
-            "candleCloseTime": 1789735499999,
-            "price": 2503.47,
-            "originalDirection": "LONG",
-            "currentDirection": "WAIT",
-            "currentConfidence": 51,
-            "score": {
-              "long": 5.45,
-              "short": 3.75
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 94
-              },
-              {
-                "timeframe": "4h",
-                "direction": "WAIT",
-                "confidence": 53
-              }
-            ],
-            "mtfAligned": 1,
-            "mtfOpposite": 0,
-            "verdict": "BEKLE",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "ETHUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          },
-          {
-            "no": 3,
-            "checkedAt": "2026-09-18T13:12:19.166Z",
-            "candleCloseTime": 1789736399999,
-            "price": 2501.47,
-            "originalDirection": "LONG",
-            "currentDirection": "WAIT",
-            "currentConfidence": 49,
-            "score": {
-              "long": 5.45,
-              "short": 4.1
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 94
-              },
-              {
-                "timeframe": "4h",
-                "direction": "WAIT",
-                "confidence": 53
-              }
-            ],
-            "mtfAligned": 1,
-            "mtfOpposite": 0,
-            "verdict": "BEKLE",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "ETHUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          }
-        ],
-        "lastCandleCloseTime": 1789736399999,
-        "summary": {
-          "same": 0,
-          "wait": 3,
-          "opposite": 0,
-          "total": 3
-        }
-      }
-    },
     "DOGEUSDT|futures|15m|LONG|1789721100000|1789721100000|1789718400000|1789722900000": {
       "fingerprint": "DOGEUSDT|futures|15m|LONG|BOS|UP|1789721100000|HIGH|1789721100000|1789718400000|1789722900000",
       "signalId": "DOGEUSDT|futures|15m|LONG|1789721100000|1789721100000|1789718400000|1789722900000",
@@ -900,23 +759,169 @@
       "finalStage": 3,
       "maxStage": 3,
       "exitPrice": 109.62861200187763
+    },
+    {
+      "fingerprint": "ETHUSDT|futures|15m|LONG|BOS|UP|1789719300000|HIGH|1789722900000|1789718400000|1789722000000",
+      "signalId": "ETHUSDT|futures|15m|LONG|1789719300000|1789722900000|1789718400000|1789722000000",
+      "direction": "LONG",
+      "sentAt": "2026-09-18T09:41:19.479Z",
+      "entry": 2507.5,
+      "stop": 2482.3439135090143,
+      "tp1": 2541.4607167628305,
+      "tp2": 2559.0699773065207,
+      "tp3": 2582.968259472957,
+      "messageId": 121,
+      "symbol": "ETHUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "confidence": null,
+      "riskReward": 3,
+      "status": "ACTIVE",
+      "stage": 3,
+      "enteredAt": "2026-09-18T09:47:59.999Z",
+      "notified": {
+        "entry": true,
+        "tp1": true,
+        "tp2": true,
+        "tp3": true,
+        "stop": false,
+        "ambiguous": false
+      },
+      "migrated": true,
+      "entryCandleOpenTime": 1789724820000,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-18T12:35:04.384Z",
+            "candleCloseTime": 1789734599999,
+            "price": 2503.24,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 51,
+            "score": {
+              "long": 5.45,
+              "short": 3.75
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 53
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "BEKLE",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "ETHUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-18T12:55:48.939Z",
+            "candleCloseTime": 1789735499999,
+            "price": 2503.47,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 51,
+            "score": {
+              "long": 5.45,
+              "short": 3.75
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 53
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "BEKLE",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "ETHUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T13:12:19.166Z",
+            "candleCloseTime": 1789736399999,
+            "price": 2501.47,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 49,
+            "score": {
+              "long": 5.45,
+              "short": 4.1
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 53
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "BEKLE",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "ETHUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          }
+        ],
+        "lastCandleCloseTime": 1789736399999,
+        "summary": {
+          "same": 0,
+          "wait": 3,
+          "opposite": 0,
+          "total": 3
+        }
+      },
+      "result": "TP3",
+      "closedAt": "2026-09-18T14:24:59.999Z",
+      "finalStage": 3,
+      "maxStage": 3,
+      "exitPrice": 2582.968259472957
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-18T14:24:24.408Z",
-    "scoredTrades": 3,
-    "wins": 2,
+    "updatedAt": "2026-09-18T14:34:09.344Z",
+    "scoredTrades": 4,
+    "wins": 3,
     "losses": 1,
-    "winRate": 66.67,
+    "winRate": 75,
     "tp1Reached": 4,
     "tp2Reached": 3,
-    "tp3Reached": 2,
+    "tp3Reached": 3,
     "stopAfterTp1": 0,
     "stopAfterTp2": 0,
     "ambiguous": 0,
     "expired": 0,
-    "active": 3,
+    "active": 2,
     "waitingEntry": 0,
-    "inTrade": 3
+    "inTrade": 2
   }
 }
