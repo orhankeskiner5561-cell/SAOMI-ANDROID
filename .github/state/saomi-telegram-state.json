@@ -289,12 +289,12 @@
       "confidence": null,
       "riskReward": 3,
       "status": "ACTIVE",
-      "stage": 1,
+      "stage": 2,
       "enteredAt": "2026-09-18T09:47:59.999Z",
       "notified": {
         "entry": true,
         "tp1": true,
-        "tp2": false,
+        "tp2": true,
         "tp3": false,
         "stop": false,
         "ambiguous": false
@@ -430,12 +430,12 @@
       "confidence": null,
       "riskReward": 3,
       "status": "ACTIVE",
-      "stage": 1,
+      "stage": 2,
       "enteredAt": "2026-09-18T11:03:59.999Z",
       "notified": {
         "entry": true,
         "tp1": true,
-        "tp2": false,
+        "tp2": true,
         "tp3": false,
         "stop": false,
         "ambiguous": false
@@ -571,11 +571,11 @@
       "confidence": null,
       "riskReward": 3,
       "status": "ACTIVE",
-      "stage": 0,
+      "stage": 1,
       "enteredAt": "2026-09-18T11:01:59.999Z",
       "notified": {
         "entry": true,
-        "tp1": false,
+        "tp1": true,
         "tp2": false,
         "tp3": false,
         "stop": false,
@@ -762,9 +762,9 @@
           ]
         }
       },
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-18T13:54:59.999Z",
       "lastCheckedAt": "2026-09-18T13:53:08.384Z",
       "notified": {
         "entry": false,
@@ -773,7 +773,8 @@
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789739640000
     }
   },
   "history": [
@@ -814,20 +815,20 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-18T13:47:59.504Z",
+    "updatedAt": "2026-09-18T13:54:47.856Z",
     "scoredTrades": 1,
     "wins": 0,
     "losses": 1,
     "winRate": 0,
-    "tp1Reached": 3,
-    "tp2Reached": 1,
+    "tp1Reached": 4,
+    "tp2Reached": 3,
     "tp3Reached": 0,
     "stopAfterTp1": 0,
     "stopAfterTp2": 0,
     "ambiguous": 0,
     "expired": 0,
-    "active": 4,
+    "active": 5,
     "waitingEntry": 0,
-    "inTrade": 4
+    "inTrade": 5
   }
 }
