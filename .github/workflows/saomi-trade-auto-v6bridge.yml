@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: saomi-trade-ai-telegram-pa-v1
+  group: saomi-trade-ai-telegram-state
   cancel-in-progress: false
 
 jobs:
