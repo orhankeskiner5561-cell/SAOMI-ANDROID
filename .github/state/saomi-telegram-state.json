@@ -123,36 +123,6 @@
       "migrated": true,
       "entryCandleOpenTime": 1789724820000
     },
-    "XRPUSDT|futures|15m|LONG|1789719300000|1789722000000|1789718400000|1789707600000": {
-      "fingerprint": "XRPUSDT|futures|15m|LONG|BOS|UP|1789719300000|HIGH|1789722000000|1789718400000|1789707600000",
-      "signalId": "XRPUSDT|futures|15m|LONG|1789719300000|1789722000000|1789718400000|1789707600000",
-      "direction": "LONG",
-      "sentAt": "2026-09-18T09:41:21.964Z",
-      "entry": 1.3316,
-      "stop": 1.3210651164764091,
-      "tp1": 1.3458220927568474,
-      "tp2": 1.353196511223361,
-      "tp3": 1.3632046505707722,
-      "messageId": 122,
-      "symbol": "XRPUSDT",
-      "market": "futures",
-      "timeframe": "15m",
-      "confidence": null,
-      "riskReward": 3,
-      "status": "ACTIVE",
-      "stage": 0,
-      "enteredAt": "2026-09-18T09:44:59.999Z",
-      "notified": {
-        "entry": true,
-        "tp1": false,
-        "tp2": false,
-        "tp3": false,
-        "stop": false,
-        "ambiguous": false
-      },
-      "migrated": true,
-      "entryCandleOpenTime": 1789724640000
-    },
     "SOLUSDT|futures|15m|LONG|1789723800000|1789722000000|1789722900000|1789715700000": {
       "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789723800000|HIGH|1789722000000|1789722900000|1789715700000",
       "signalId": "SOLUSDT|futures|15m|LONG|1789723800000|1789722000000|1789722900000|1789715700000",
@@ -214,13 +184,49 @@
       "entryCandleOpenTime": 1789729260000
     }
   },
-  "history": [],
+  "history": [
+    {
+      "fingerprint": "XRPUSDT|futures|15m|LONG|BOS|UP|1789719300000|HIGH|1789722000000|1789718400000|1789707600000",
+      "signalId": "XRPUSDT|futures|15m|LONG|1789719300000|1789722000000|1789718400000|1789707600000",
+      "direction": "LONG",
+      "sentAt": "2026-09-18T09:41:21.964Z",
+      "entry": 1.3316,
+      "stop": 1.3210651164764091,
+      "tp1": 1.3458220927568474,
+      "tp2": 1.353196511223361,
+      "tp3": 1.3632046505707722,
+      "messageId": 122,
+      "symbol": "XRPUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "confidence": null,
+      "riskReward": 3,
+      "status": "ACTIVE",
+      "stage": 0,
+      "enteredAt": "2026-09-18T09:44:59.999Z",
+      "notified": {
+        "entry": true,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": true,
+        "ambiguous": false
+      },
+      "migrated": true,
+      "entryCandleOpenTime": 1789724640000,
+      "result": "STOP",
+      "closedAt": "2026-09-18T11:05:59.999Z",
+      "finalStage": 0,
+      "maxStage": 0,
+      "exitPrice": 1.3210651164764091
+    }
+  ],
   "performance": {
-    "updatedAt": "2026-09-18T11:05:00.748Z",
-    "scoredTrades": 0,
+    "updatedAt": "2026-09-18T11:17:45.468Z",
+    "scoredTrades": 1,
     "wins": 0,
-    "losses": 0,
-    "winRate": null,
+    "losses": 1,
+    "winRate": 0,
     "tp1Reached": 0,
     "tp2Reached": 0,
     "tp3Reached": 0,
@@ -228,8 +234,8 @@
     "stopAfterTp2": 0,
     "ambiguous": 0,
     "expired": 0,
-    "active": 5,
+    "active": 4,
     "waitingEntry": 0,
-    "inTrade": 5
+    "inTrade": 4
   }
 }
