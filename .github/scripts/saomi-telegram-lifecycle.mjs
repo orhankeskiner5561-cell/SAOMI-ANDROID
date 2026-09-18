@@ -123,11 +123,13 @@ function closeSignal(state,id,sig,result,closedAt,extra={}){
 }
 function performance(state){
   const h=state.history||[];
+  const active=Object.values(state.activeSignals||{});
   const scored=h.filter(x=>x.result==='TP3'||String(x.result).startsWith('STOP'));
   const wins=scored.filter(x=>x.result==='TP3').length;
   const losses=scored.length-wins;
-  const tp1=h.filter(x=>(x.maxStage??x.finalStage??0)>=1).length;
-  const tp2=h.filter(x=>(x.maxStage??x.finalStage??0)>=2).length;
+  const milestoneRows=[...h,...active];
+  const tp1=milestoneRows.filter(x=>(x.maxStage??x.finalStage??x.stage??0)>=1).length;
+  const tp2=milestoneRows.filter(x=>(x.maxStage??x.finalStage??x.stage??0)>=2).length;
   const tp3=h.filter(x=>x.result==='TP3').length;
   const stopAfterTp1=h.filter(x=>x.result==='STOP_AFTER_TP1').length;
   const stopAfterTp2=h.filter(x=>x.result==='STOP_AFTER_TP2').length;
@@ -139,7 +141,9 @@ function performance(state){
     winRate:scored.length?Number((wins/scored.length*100).toFixed(2)):null,
     tp1Reached:tp1,tp2Reached:tp2,tp3Reached:tp3,
     stopAfterTp1,stopAfterTp2,ambiguous,expired,
-    active:Object.keys(state.activeSignals||{}).length
+    active:active.length,
+    waitingEntry:active.filter(x=>x.status==='WAIT_ENTRY').length,
+    inTrade:active.filter(x=>x.status==='ACTIVE').length
   }
 }
 
