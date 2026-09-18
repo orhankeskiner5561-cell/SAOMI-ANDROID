@@ -196,7 +196,7 @@ function duplicateReason(state,setup){
 function rememberSignal(state,setup,telegramResult){
   state.version=2;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
   const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup);
-  const base={fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null};
+  const base={fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null,contextSnapshot:setup.htfContext?{previousDayHigh:setup.htfContext.previousDayHigh,previousDayLow:setup.htfContext.previousDayLow,previousWeekHigh:setup.htfContext.previousWeekHigh,previousWeekLow:setup.htfContext.previousWeekLow,dailyAtr:setup.htfContext.dailyAtr,dailyEma50:setup.htfContext.dailyEma50,extensionAtr:setup.htfContext.extensionAtr,riseFrom20dLowPct:setup.htfContext.riseFrom20dLowPct,fallFrom20dHighPct:setup.htfContext.fallFrom20dHighPct,nearestResistance:setup.htfContext.nearestResistance,nearestSupport:setup.htfContext.nearestSupport,nearestUntakenHigh:setup.htfContext.nearestUntakenHigh,nearestUntakenLow:setup.htfContext.nearestUntakenLow,decision:setup.liquidityContext?.decision||null}:null};
   state.signals[setup.symbol]=base;
   state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};
   for(const [k,v] of Object.entries(state.signals)){const t=Date.parse(v?.sentAt||0);if(!Number.isFinite(t)||Date.now()-t>7*24*60*60*1000)delete state.signals[k]}
@@ -215,7 +215,7 @@ async function geminiRecheck(active,current,frames,verdict){
     originalDirection:active.direction,originalEntry:active.entry,originalStop:active.stop,
     originalTp1:active.tp1,originalTp2:active.tp2,originalTp3:active.tp3,
     currentDirection:current.direction,currentConfidence:current.confidence,currentScore:current.score,
-    currentPrice:current.price,currentReasons:current.reasons,currentPriceAction:current.priceAction,
+    currentPrice:current.price,currentReasons:current.reasons,currentPriceAction:current.priceAction,htfContext:current.htfContext,htfDecision:current.htfDecision,
     multiTimeframe:frames.map(x=>({timeframe:x.timeframe,direction:x.direction,confidence:x.confidence,score:x.score})),
     verdict,
     request:'Bu mevcut sinyalin yeniden kontrolüdür. Yeni giriş/stop/hedef üretme. Orijinal seviyeleri değiştirme. Yalnız setup aynı yönde güçlü mü, zayıfladı mı, ters mi dönüyor kısa Türkçe değerlendir.'
@@ -244,12 +244,15 @@ async function shadowReanalysis(active){
   const mtf=frames.slice(1);
   const mtfAligned=mtf.filter(x=>x.direction===active.direction).length;
   const mtfOpposite=mtf.filter(x=>x.direction!=='WAIT'&&x.direction!==active.direction).length;
+  const htfContext=await buildHtfContext(active.symbol,current.price);
+  const htfDecision=htfContextDecision(active.direction,htfContext,current.price);
   let verdict='BEKLE';
-  if(current.direction===active.direction&&mtfOpposite===0)verdict='AYNI_YON';
+  if(htfDecision.blocked)verdict='HTF_ENGEL';
+  else if(current.direction===active.direction&&mtfOpposite===0)verdict='AYNI_YON';
   else if(current.direction===active.direction)verdict='AYNI_YON_MTF_ZAYIF';
   else if(current.direction!=='WAIT'&&current.direction!==active.direction)verdict='TERS';
 
-  const ai=await geminiRecheck(active,current,frames,verdict);
+  const ai=await geminiRecheck(active,{...current,htfContext,htfDecision},frames,verdict);
   const snap={
     no:active.reanalysis.snapshots.length+1,
     checkedAt:new Date().toISOString(),
@@ -267,7 +270,7 @@ async function shadowReanalysis(active){
   active.reanalysis.lastCandleCloseTime=last.closeTime;
   active.reanalysis.summary={
     same:active.reanalysis.snapshots.filter(x=>x.verdict==='AYNI_YON'||x.verdict==='AYNI_YON_MTF_ZAYIF').length,
-    wait:active.reanalysis.snapshots.filter(x=>x.verdict==='BEKLE').length,
+    wait:active.reanalysis.snapshots.filter(x=>x.verdict==='BEKLE'||x.verdict==='HTF_ENGEL').length,
     opposite:active.reanalysis.snapshots.filter(x=>x.verdict==='TERS').length,
     total:active.reanalysis.snapshots.length
   };
