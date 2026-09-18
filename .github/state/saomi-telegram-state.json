@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "signals": {
+    "BTCUSDT": {
+      "fingerprint": "seed-test-113",
+      "signalId": "seed-test-113",
+      "direction": "LONG",
+      "sentAt": "2026-09-18T08:52:25Z",
+      "entry": null,
+      "stop": null,
+      "tp1": null,
+      "tp2": null,
+      "tp3": null,
+      "messageId": 113
+    },
+    "ETHUSDT": {
+      "fingerprint": "seed-test-114",
+      "signalId": "seed-test-114",
+      "direction": "LONG",
+      "sentAt": "2026-09-18T08:52:32Z",
+      "entry": null,
+      "stop": null,
+      "tp1": null,
+      "tp2": null,
+      "tp3": null,
+      "messageId": 114
+    },
+    "XRPUSDT": {
+      "fingerprint": "seed-test-115",
+      "signalId": "seed-test-115",
+      "direction": "LONG",
+      "sentAt": "2026-09-18T08:52:37Z",
+      "entry": null,
+      "stop": null,
+      "tp1": null,
+      "tp2": null,
+      "tp3": null,
+      "messageId": 115
+    }
+  }
+}
