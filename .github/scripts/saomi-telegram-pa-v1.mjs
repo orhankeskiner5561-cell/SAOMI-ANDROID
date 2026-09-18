@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 const BASE = 'https://saomi-trade-ai.vercel.app';
 const FUTURES = 'https://www.binance.com';
 const SYMBOLS = ['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT'];
@@ -6,6 +7,9 @@ const CONFIRM_TFS = ['1h','4h'];
 const MIN_CONFIDENCE = 84;
 const MIN_RR = 2.5;
 const MAX_SIGNALS = 3;
+const STATE_PATH = '.github/state/saomi-telegram-state.json';
+const DUP_TTL_MS = 12*60*60*1000;
+const SYMBOL_COOLDOWN_MS = 30*60*1000;
 
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const finite=a=>a.filter(Number.isFinite);
@@ -51,6 +55,12 @@ function analyzeSingle(symbol,tf,c){
 function isStableSetupPair(current,previous){if(!current||!previous||current.direction==='WAIT'||previous.direction!==current.direction)return false;const edge=Math.abs((current.score?.long||0)-(current.score?.short||0)),prevEdge=Math.abs((previous.score?.long||0)-(previous.score?.short||0));return(current.confidence||0)>=80&&(previous.confidence||0)>=76&&edge>=4.0&&prevEdge>=3.2&&(current.riskReward||0)>=2.5}
 
 const cache=new Map();
+function loadSignalState(){try{return JSON.parse(fs.readFileSync(STATE_PATH,'utf8'))}catch{return{version:1,signals:{}}}}
+function saveSignalState(state){fs.mkdirSync('.github/state',{recursive:true});fs.writeFileSync(STATE_PATH,JSON.stringify(state,null,2)+'\n')}
+function structuralFingerprint(setup){const pa=setup?.priceAction||{};return [setup.symbol,'futures',setup.timeframe,setup.direction,pa.lastEvent?.type||'',pa.lastEvent?.side||'',pa.lastEvent?.time||0,pa.lastSweep?.side||'',pa.lastSweep?.time||0,pa.lastOrderBlock?.time||0,pa.lastFvg?.time||0].join('|')}
+function duplicateReason(state,setup){const prev=state.signals?.[setup.symbol];if(!prev)return null;const sentAt=Date.parse(prev.sentAt||0);const age=Number.isFinite(sentAt)?Date.now()-sentAt:Infinity;if(age<SYMBOL_COOLDOWN_MS)return 'sembol cooldown';const fp=structuralFingerprint(setup);if(prev.fingerprint===fp&&age<DUP_TTL_MS)return 'aynı yapısal setup';return null}
+function rememberSignal(state,setup,telegramResult){state.version=1;state.signals=state.signals||{};state.signals[setup.symbol]={fingerprint:structuralFingerprint(setup),signalId:setup.signalId,direction:setup.direction,sentAt:new Date().toISOString(),entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null};for(const [k,v] of Object.entries(state.signals)){const t=Date.parse(v?.sentAt||0);if(!Number.isFinite(t)||Date.now()-t>7*24*60*60*1000)delete state.signals[k]}saveSignalState(state)}
+const signalState=loadSignalState();
 async function candles(symbol,tf){const key=`${symbol}|${tf}`;if(cache.has(key))return cache.get(key);const u=`${FUTURES}/fapi/v1/klines?symbol=${symbol}&interval=${tf}&limit=500`;const r=await fetch(u);if(!r.ok)throw new Error(`${symbol} ${tf} Binance HTTP ${r.status}`);const d=await r.json();const rows=d.map(k=>({time:Number(k[0]),openTime:Number(k[0]),open:Number(k[1]),high:Number(k[2]),low:Number(k[3]),close:Number(k[4]),volume:Number(k[5]),closeTime:Number(k[6])})).filter(x=>x.closeTime<Date.now()-500);cache.set(key,rows);return rows}
 
 function validAiText(text,a){if(typeof text!=='string'||text.trim().length<20)return false;const t=text.toLowerCase();if(/\bagreement\b|\bis\s+(long|short)\b|\*\s*agreement|```|json|use exact|standard formatting|without invent|system prompt|instruction|prompt:/i.test(t))return false;if((t.match(/\b(the|and|with|without|should|must|use|exact|numbers)\b/g)||[]).length>5)return false;if(a.direction==='LONG'&&/\bshort\b/.test(t)&&!/short\s+değil|short\s+değildir/.test(t))return false;if(a.direction==='SHORT'&&/\blong\b/.test(t)&&!/long\s+değil|long\s+değildir/.test(t))return false;return true}
@@ -63,9 +73,9 @@ async function buildSetup(symbol){const baseCandles=await candles(symbol,BASE_TF
  const frames=[current];for(const tf of CONFIRM_TFS){const c=await candles(symbol,tf);frames.push(analyzeSingle(symbol,tf,c))}
  const confirm=frames.slice(1),aligned=confirm.filter(x=>x.direction===current.direction).length,opposite=confirm.filter(x=>x.direction!=='WAIT'&&x.direction!==current.direction).length,available=confirm.filter(x=>x.direction!=='WAIT').length,agreement=available?aligned/available:0;if(opposite>0||aligned<1)return null;
  const confidence=clamp((current.confidence||60)+aligned*3,55,95);if(confidence<MIN_CONFIDENCE||(current.riskReward||0)<MIN_RR)return null;
- const ev=current.priceAction?.lastEvent?.time||0,sw=current.priceAction?.lastSweep?.time||0;return{...current,market:'futures',confidence,quality:'GÜÇLÜ',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,multiTimeframe:frames,agreement,mtf:{frames:[BASE_TF,...CONFIRM_TFS],aligned,opposite,available,status:'UYUMLU'},signalId:`${symbol}|futures|${BASE_TF}|${current.direction}|${last.closeTime}|${ev}|${sw}`,reasons:[...(current.reasons||[]),'İki kapanış teyidi','MTF uyumu'].slice(0,7)}
+ const ev=current.priceAction?.lastEvent?.time||0,sw=current.priceAction?.lastSweep?.time||0,ob=current.priceAction?.lastOrderBlock?.time||0,fvg=current.priceAction?.lastFvg?.time||0,signalId=`${symbol}|futures|${BASE_TF}|${current.direction}|${ev}|${sw}|${ob}|${fvg}`;return{...current,market:'futures',confidence,quality:'GÜÇLÜ',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,multiTimeframe:frames,agreement,mtf:{frames:[BASE_TF,...CONFIRM_TFS],aligned,opposite,available,status:'UYUMLU'},signalId,reasons:[...(current.reasons||[]),'İki kapanış teyidi','MTF uyumu'].slice(0,7)}
 }
 
 let sent=0;console.log(`ŞAOMİ Telegram PA+Gemini V1 taraması: ${new Date().toISOString()}`);
-for(const symbol of SYMBOLS){try{const setup=await buildSetup(symbol);if(!setup){console.log(symbol,'BEKLE / filtre dışı');continue}console.log(symbol,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,mtf:setup.mtf});const g=await gemini(setup);const t=await telegram(setup,g.commentary,g.provider);sent++;console.log(`GÖNDERİLDİ ${symbol}`,t);if(sent>=MAX_SIGNALS){console.log('Bu tur maksimum güçlü sinyal sayısına ulaşıldı.');break}}catch(e){console.error(`HATA ${symbol}:`,e?.message||e)}}
+for(const symbol of SYMBOLS){try{const setup=await buildSetup(symbol);if(!setup){console.log(symbol,'BEKLE / filtre dışı');continue}const dup=duplicateReason(signalState,setup);if(dup){console.log(symbol,`TEKRAR GÖNDERİLMEDİ (${dup})`,{signalId:setup.signalId});continue}console.log(symbol,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,mtf:setup.mtf});const g=await gemini(setup);const t=await telegram(setup,g.commentary,g.provider);rememberSignal(signalState,setup,t);sent++;console.log(`GÖNDERİLDİ ${symbol}`,t);if(sent>=MAX_SIGNALS){console.log('Bu tur maksimum güçlü sinyal sayısına ulaşıldı.');break}}catch(e){console.error(`HATA ${symbol}:`,e?.message||e)}}
 console.log(`ŞAOMİ Telegram PA+Gemini V1 bitti. Gönderilen: ${sent}`);
