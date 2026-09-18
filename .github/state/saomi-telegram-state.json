@@ -160,14 +160,47 @@
               "provider": "Gemini · gemini-3.6-flash",
               "commentary": ". Yeni giriş/stop/hedef üretme. Orijinal seviyeleri değiştirme"
             }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T13:12:13.649Z",
+            "candleCloseTime": 1789736399999,
+            "price": 78004.8,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 45,
+            "score": {
+              "long": 4.45,
+              "short": 4.1
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 50
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "HTF_ENGEL",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "BTCUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
           }
         ],
-        "lastCandleCloseTime": 1789735499999,
+        "lastCandleCloseTime": 1789736399999,
         "summary": {
           "same": 0,
-          "wait": 2,
+          "wait": 3,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -268,14 +301,47 @@
               "provider": "kural motoru (Gemini fallback)",
               "commentary": "ETHUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
             }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T13:12:19.166Z",
+            "candleCloseTime": 1789736399999,
+            "price": 2501.47,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 49,
+            "score": {
+              "long": 5.45,
+              "short": 4.1
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 53
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "BEKLE",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "ETHUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
           }
         ],
-        "lastCandleCloseTime": 1789735499999,
+        "lastCandleCloseTime": 1789736399999,
         "summary": {
           "same": 0,
-          "wait": 2,
+          "wait": 3,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -376,14 +442,47 @@
               "provider": "kural motoru (Gemini fallback)",
               "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
             }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T13:12:20.237Z",
+            "candleCloseTime": 1789736399999,
+            "price": 105.75,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 49,
+            "score": {
+              "long": 5.45,
+              "short": 4.1
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 92
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 88
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "HTF_ENGEL",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
           }
         ],
-        "lastCandleCloseTime": 1789735499999,
+        "lastCandleCloseTime": 1789736399999,
         "summary": {
           "same": 1,
-          "wait": 1,
+          "wait": 2,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -484,14 +583,47 @@
               "provider": "kural motoru (Gemini fallback)",
               "commentary": "DOGEUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
             }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T13:12:21.224Z",
+            "candleCloseTime": 1789736399999,
+            "price": 0.08544,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 90,
+            "score": {
+              "long": 7.45,
+              "short": 3.35
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 92
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 46
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "DOGEUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
           }
         ],
-        "lastCandleCloseTime": 1789735499999,
+        "lastCandleCloseTime": 1789736399999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     }
