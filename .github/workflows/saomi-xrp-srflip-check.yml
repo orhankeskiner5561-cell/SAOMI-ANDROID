@@ -1,0 +1,103 @@
+name: SAOMI XRP SR Flip Diagnostic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/saomi-xrp-srflip-check.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: XRP 4H S/R flip diagnostic
+        shell: bash
+        run: |
+          set -e
+          node --check .github/scripts/saomi-telegram-pa-v1.mjs
+          node <<'NODE' > SAOMI_XRP_SRFLIP_CHECK.md
+          const FUTURES='https://www.binance.com';
+          function ema(a,n){const out=Array(a.length).fill(null);if(!a.length)return out;const k=2/(n+1);let x=a[0];for(let i=0;i<a.length;i++){x=i===0?a[i]:a[i]*k+x*(1-k);if(i>=n-1)out[i]=x}return out}
+          function trueRange(c){return c.map((x,i)=>i===0?x.high-x.low:Math.max(x.high-x.low,Math.abs(x.high-c[i-1].close),Math.abs(x.low-c[i-1].close)))}
+          function atr(c,n=14){return ema(trueRange(c),n)}
+          function pivots(c,left=2,right=2){const highs=[],lows=[];for(let i=left;i<c.length-right;i++){let hi=true,lo=true;for(let j=i-left;j<=i+right;j++){if(j===i)continue;if(c[j].high>=c[i].high)hi=false;if(c[j].low<=c[i].low)lo=false}if(hi)highs.push({i,time:c[i].time,price:c[i].high});if(lo)lows.push({i,time:c[i].time,price:c[i].low})}return{highs,lows}}
+          function clusterPivotLevels(points,tol,side){
+            const rows=(points||[]).map(x=>({price:x.price,time:x.time,i:x.i,side})).sort((a,b)=>a.price-b.price);
+            const groups=[];
+            for(const p of rows){
+              const g=groups.find(x=>Math.abs(x.price-p.price)<=tol);
+              if(g){g.members.push(p);g.price=g.members.reduce((s,m)=>s+m.price,0)/g.members.length}
+              else groups.push({price:p.price,members:[p],side});
+            }
+            return groups.filter(g=>g.members.length>=3)
+          }
+          function detectRoleReversalZones(c,label='4h'){
+            if(!c?.length)return[];
+            const avSeries=atr(c,14),last=c.at(-1),lastAv=avSeries.at(-1)||Math.max((last?.close||1)*.006,1e-8);
+            const p=pivots(c,2,2);
+            const tol=Math.max((last?.close||1)*0.0015,lastAv*.16);
+            const breakPad=Math.max((last?.close||1)*0.0008,lastAv*.12);
+            const retestTol=Math.max((last?.close||1)*0.0022,lastAv*.28);
+            const zones=[...clusterPivotLevels(p.lows.slice(-80),tol,'SUPPORT'),...clusterPivotLevels(p.highs.slice(-80),tol,'RESISTANCE')];
+            const out=[];
+            for(const z of zones){
+              const lastTouchI=Math.max(...z.members.map(m=>m.i));
+              const search=c.slice(lastTouchI+1);if(!search.length)continue;
+              let breakIndex=-1,breakCandle=null,breakStrength=0;
+              for(let j=0;j<search.length;j++){
+                const k=search[j],globalI=lastTouchI+1+j,av=avSeries[globalI]||lastAv,body=Math.abs(k.close-k.open);
+                if(z.side==='SUPPORT'){
+                  if(k.close<z.price-breakPad&&k.close<k.open&&body>=av*.45){breakIndex=globalI;breakCandle=k;breakStrength=body/Math.max(av,1e-12);break}
+                }else{
+                  if(k.close>z.price+breakPad&&k.close>k.open&&body>=av*.45){breakIndex=globalI;breakCandle=k;breakStrength=body/Math.max(av,1e-12);break}
+                }
+              }
+              if(breakIndex<0)continue;
+              const after=c.slice(breakIndex+1);let retest=null,retestIndex=-1;
+              for(let j=0;j<after.length;j++){
+                const k=after[j],globalI=breakIndex+1+j;
+                if(z.side==='SUPPORT'){
+                  const touches=k.high>=z.price-retestTol&&k.low<=z.price+retestTol,rejects=k.close<=z.price+tol*.35;
+                  if(touches&&rejects){retest=k;retestIndex=globalI;break}
+                }else{
+                  const touches=k.low<=z.price+retestTol&&k.high>=z.price-retestTol,rejects=k.close>=z.price-tol*.35;
+                  if(touches&&rejects){retest=k;retestIndex=globalI;break}
+                }
+              }
+              const recentAfterBreak=c.slice(breakIndex+1);
+              const reclaimed=z.side==='SUPPORT'?recentAfterBreak.slice(-2).filter(k=>k.close>z.price+tol).length===2:recentAfterBreak.slice(-2).filter(k=>k.close<z.price-tol).length===2;
+              const nearNow=z.side==='SUPPORT'?last.close<=z.price+retestTol&&last.close>=z.price-retestTol*1.8:last.close>=z.price-retestTol&&last.close<=z.price+retestTol*1.8;
+              const recentBreak=(c.length-1-breakIndex)<=36;
+              const active=!reclaimed&&recentBreak&&(nearNow||retestIndex>=0&&(c.length-1-retestIndex)<=12);
+              out.push({type:z.side==='SUPPORT'?'SUPPORT_TO_RESISTANCE':'RESISTANCE_TO_SUPPORT',timeframe:label,level:z.price,tests:z.members.length,breakTime:breakCandle.time,breakClose:breakCandle.close,breakStrengthAtr:Number(breakStrength.toFixed(2)),retestTime:retest?.time??null,retestClose:retest?.close??null,reclaimed,nearNow,active});
+            }
+            return out.filter(x=>x.active).sort((a,b)=>Math.abs(a.level-last.close)-Math.abs(b.level-last.close)).slice(0,8)
+          }
+          const r=await fetch(FUTURES+'/fapi/v1/klines?symbol=XRPUSDT&interval=4h&limit=500');
+          if(!r.ok)throw new Error('Binance '+r.status);
+          const d=await r.json();
+          const c=d.map(k=>({time:Number(k[0]),open:Number(k[1]),high:Number(k[2]),low:Number(k[3]),close:Number(k[4]),closeTime:Number(k[6])})).filter(x=>x.closeTime<Date.now()-500);
+          const zones=detectRoleReversalZones(c,'4h');
+          console.log('# XRPUSDT 4H S/R Flip Diagnostic');
+          console.log('');
+          console.log('- Last close: '+c.at(-1).close);
+          console.log('- Active zones: '+zones.length);
+          console.log('');
+          console.log('~~~json');
+          console.log(JSON.stringify(zones,null,2));
+          console.log('~~~');
+          NODE
+
+      - name: Commit diagnostic
+        shell: bash
+        run: |
+          git config user.name "saomi-actions"
+          git config user.email "saomi-actions@users.noreply.github.com"
+          git add SAOMI_XRP_SRFLIP_CHECK.md
+          git commit -m "XRP 4H S/R flip diagnostic result" || true
+          git push
