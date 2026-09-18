@@ -2,40 +2,40 @@
   "version": 1,
   "signals": {
     "BTCUSDT": {
-      "fingerprint": "seed-test-113",
-      "signalId": "seed-test-113",
+      "fingerprint": "BTCUSDT|futures|15m|LONG|BOS|UP|1789715700000|HIGH|1789719300000|1789713000000|1789722000000",
+      "signalId": "BTCUSDT|futures|15m|LONG|1789715700000|1789719300000|1789713000000|1789722000000",
       "direction": "LONG",
-      "sentAt": "2026-09-18T08:52:25Z",
-      "entry": null,
-      "stop": null,
-      "tp1": null,
-      "tp2": null,
-      "tp3": null,
-      "messageId": 113
+      "sentAt": "2026-09-18T09:41:15.571Z",
+      "entry": 78123.6,
+      "stop": 77324.32369912873,
+      "tp1": 79202.62300617623,
+      "tp2": 79762.11641678613,
+      "tp3": 80521.42890261384,
+      "messageId": 120
     },
     "ETHUSDT": {
-      "fingerprint": "seed-test-114",
-      "signalId": "seed-test-114",
+      "fingerprint": "ETHUSDT|futures|15m|LONG|BOS|UP|1789719300000|HIGH|1789722900000|1789718400000|1789722000000",
+      "signalId": "ETHUSDT|futures|15m|LONG|1789719300000|1789722900000|1789718400000|1789722000000",
       "direction": "LONG",
-      "sentAt": "2026-09-18T08:52:32Z",
-      "entry": null,
-      "stop": null,
-      "tp1": null,
-      "tp2": null,
-      "tp3": null,
-      "messageId": 114
+      "sentAt": "2026-09-18T09:41:19.479Z",
+      "entry": 2507.5,
+      "stop": 2482.3439135090143,
+      "tp1": 2541.4607167628305,
+      "tp2": 2559.0699773065207,
+      "tp3": 2582.968259472957,
+      "messageId": 121
     },
     "XRPUSDT": {
-      "fingerprint": "seed-test-115",
-      "signalId": "seed-test-115",
+      "fingerprint": "XRPUSDT|futures|15m|LONG|BOS|UP|1789719300000|HIGH|1789722000000|1789718400000|1789707600000",
+      "signalId": "XRPUSDT|futures|15m|LONG|1789719300000|1789722000000|1789718400000|1789707600000",
       "direction": "LONG",
-      "sentAt": "2026-09-18T08:52:37Z",
-      "entry": null,
-      "stop": null,
-      "tp1": null,
-      "tp2": null,
-      "tp3": null,
-      "messageId": 115
+      "sentAt": "2026-09-18T09:41:21.964Z",
+      "entry": 1.3316,
+      "stop": 1.3210651164764091,
+      "tp1": 1.3458220927568474,
+      "tp2": 1.353196511223361,
+      "tp3": 1.3632046505707722,
+      "messageId": 122
     }
   }
 }
