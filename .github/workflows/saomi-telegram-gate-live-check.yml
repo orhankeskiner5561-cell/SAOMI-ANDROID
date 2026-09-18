@@ -1,0 +1,45 @@
+name: SAOMI Telegram Gate Live Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/saomi-telegram-gate-live-check.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify legacy auto and non-whitelist symbol are blocked
+        shell: bash
+        run: |
+          set -e
+          URL="https://saomi-trade-ai.vercel.app/api/telegram"
+          AUTO_CODE=$(curl -sS -o /tmp/auto.json -w "%{http_code}" -X POST "$URL"             -H 'content-type: application/json'             --data '{"mode":"auto","setup":{"symbol":"BTCUSDT","direction":"LONG","timeframe":"15m","market":"futures","confidence":99,"entry":1,"stop":0.9,"tp1":1.1,"tp2":1.2,"tp3":1.3},"riskReward":3}')
+          SYMBOL_CODE=$(curl -sS -o /tmp/symbol.json -w "%{http_code}" -X POST "$URL"             -H 'content-type: application/json'             --data '{"mode":"github-pa-v1","setup":{"symbol":"SUIUSDT","direction":"LONG","timeframe":"15m","market":"futures","confidence":99,"entry":1,"stop":0.9,"tp1":1.1,"tp2":1.2,"tp3":1.3},"riskReward":3}')
+          echo "auto_status=$AUTO_CODE"
+          cat /tmp/auto.json
+          echo
+          echo "symbol_status=$SYMBOL_CODE"
+          cat /tmp/symbol.json
+          test "$AUTO_CODE" = "403"
+          test "$SYMBOL_CODE" = "403"
+          cat > SAOMI_TELEGRAM_GATE_LIVE_CHECK.md <<EOF
+          # SAOMI Telegram Gate Live Check
+          - Legacy mode auto: HTTP $AUTO_CODE (expected 403)
+          - Non-whitelist SUIUSDT with github-pa-v1: HTTP $SYMBOL_CODE (expected 403)
+          - Result: PASS
+          EOF
+      - name: Commit report
+        shell: bash
+        run: |
+          git config user.name "saomi-actions"
+          git config user.email "saomi-actions@users.noreply.github.com"
+          git add SAOMI_TELEGRAM_GATE_LIVE_CHECK.md
+          git commit -m "Verify Telegram gate blocks legacy sources [skip ci]" || true
+          git push
