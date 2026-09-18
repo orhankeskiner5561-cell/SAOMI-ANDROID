@@ -26,16 +26,72 @@
       "messageId": 121
     },
     "XRPUSDT": {
-      "fingerprint": "XRPUSDT|futures|15m|LONG|BOS|UP|1789719300000|HIGH|1789722000000|1789718400000|1789707600000",
-      "signalId": "XRPUSDT|futures|15m|LONG|1789719300000|1789722000000|1789718400000|1789707600000",
+      "fingerprint": "XRPUSDT|futures|15m|LONG|BOS|UP|1789758000000|HIGH|1789761600000|1789757100000|1789759800000",
+      "signalId": "XRPUSDT|futures|15m|LONG|1789758000000|1789761600000|1789757100000|1789759800000",
+      "symbol": "XRPUSDT",
+      "market": "futures",
+      "timeframe": "15m",
       "direction": "LONG",
-      "sentAt": "2026-09-18T09:41:21.964Z",
-      "entry": 1.3316,
-      "stop": 1.3210651164764091,
-      "tp1": 1.3458220927568474,
-      "tp2": 1.353196511223361,
-      "tp3": 1.3632046505707722,
-      "messageId": 122
+      "confidence": 93,
+      "riskReward": 3,
+      "sentAt": "2026-09-18T20:26:56.696Z",
+      "entry": 1.4073,
+      "stop": 1.3829560818873283,
+      "tp1": 1.4401642894521067,
+      "tp2": 1.4572050321309769,
+      "tp3": 1.480331754338015,
+      "messageId": 145,
+      "contextSnapshot": {
+        "previousDayHigh": 1.3201,
+        "previousDayLow": 1.2867,
+        "previousWeekHigh": 1.4502,
+        "previousWeekLow": 1.3153,
+        "dailyAtr": 0.08328826753610875,
+        "dailyEma50": 1.2833948632977548,
+        "extensionAtr": 1.4876661547621635,
+        "riseFrom20dLowPct": 12.972625832865049,
+        "fallFrom20dHighPct": -5.651649235720035,
+        "nearestResistance": {
+          "side": "RESISTANCE",
+          "price": 1.4502,
+          "time": 1788825600000,
+          "timeframe": "1d"
+        },
+        "nearestSupport": {
+          "side": "SUPPORT",
+          "price": 1.3769,
+          "time": 1778198400000,
+          "timeframe": "1d"
+        },
+        "nearestUntakenHigh": {
+          "side": "HIGH",
+          "price": 1.4903250000000001,
+          "from": 1771977600000,
+          "to": 1789344000000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "1d"
+        },
+        "nearestUntakenLow": {
+          "side": "LOW",
+          "price": 0.9879171875,
+          "from": 1786449600000,
+          "to": 1787011200000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "4h"
+        },
+        "brokenSupportRetest": null,
+        "brokenResistanceRetest": null,
+        "decision": {
+          "blocked": false,
+          "reasons": [],
+          "warnings": [
+            "Yakında 1d direnç",
+            "Yukarıda alınmamış likidite havuzu var"
+          ]
+        }
+      }
     },
     "SOLUSDT": {
       "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789738200000|HIGH|1789747200000|1789736400000|1789742700000",
@@ -1013,6 +1069,86 @@
           "opposite": 0,
           "total": 3
         }
+      }
+    },
+    "XRPUSDT|futures|15m|LONG|1789758000000|1789761600000|1789757100000|1789759800000": {
+      "fingerprint": "XRPUSDT|futures|15m|LONG|BOS|UP|1789758000000|HIGH|1789761600000|1789757100000|1789759800000",
+      "signalId": "XRPUSDT|futures|15m|LONG|1789758000000|1789761600000|1789757100000|1789759800000",
+      "symbol": "XRPUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "direction": "LONG",
+      "confidence": 93,
+      "riskReward": 3,
+      "sentAt": "2026-09-18T20:26:56.696Z",
+      "entry": 1.4073,
+      "stop": 1.3829560818873283,
+      "tp1": 1.4401642894521067,
+      "tp2": 1.4572050321309769,
+      "tp3": 1.480331754338015,
+      "messageId": 145,
+      "contextSnapshot": {
+        "previousDayHigh": 1.3201,
+        "previousDayLow": 1.2867,
+        "previousWeekHigh": 1.4502,
+        "previousWeekLow": 1.3153,
+        "dailyAtr": 0.08328826753610875,
+        "dailyEma50": 1.2833948632977548,
+        "extensionAtr": 1.4876661547621635,
+        "riseFrom20dLowPct": 12.972625832865049,
+        "fallFrom20dHighPct": -5.651649235720035,
+        "nearestResistance": {
+          "side": "RESISTANCE",
+          "price": 1.4502,
+          "time": 1788825600000,
+          "timeframe": "1d"
+        },
+        "nearestSupport": {
+          "side": "SUPPORT",
+          "price": 1.3769,
+          "time": 1778198400000,
+          "timeframe": "1d"
+        },
+        "nearestUntakenHigh": {
+          "side": "HIGH",
+          "price": 1.4903250000000001,
+          "from": 1771977600000,
+          "to": 1789344000000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "1d"
+        },
+        "nearestUntakenLow": {
+          "side": "LOW",
+          "price": 0.9879171875,
+          "from": 1786449600000,
+          "to": 1787011200000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "4h"
+        },
+        "brokenSupportRetest": null,
+        "brokenResistanceRetest": null,
+        "decision": {
+          "blocked": false,
+          "reasons": [],
+          "warnings": [
+            "Yakında 1d direnç",
+            "Yukarıda alınmamış likidite havuzu var"
+          ]
+        }
+      },
+      "status": "WAIT_ENTRY",
+      "stage": 0,
+      "enteredAt": null,
+      "lastCheckedAt": "2026-09-18T20:26:56.696Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
       }
     }
   },
