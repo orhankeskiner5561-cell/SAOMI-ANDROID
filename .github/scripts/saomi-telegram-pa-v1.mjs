@@ -55,11 +55,37 @@ function analyzeSingle(symbol,tf,c){
 function isStableSetupPair(current,previous){if(!current||!previous||current.direction==='WAIT'||previous.direction!==current.direction)return false;const edge=Math.abs((current.score?.long||0)-(current.score?.short||0)),prevEdge=Math.abs((previous.score?.long||0)-(previous.score?.short||0));return(current.confidence||0)>=80&&(previous.confidence||0)>=76&&edge>=4.0&&prevEdge>=3.2&&(current.riskReward||0)>=2.5}
 
 const cache=new Map();
-function loadSignalState(){try{return JSON.parse(fs.readFileSync(STATE_PATH,'utf8'))}catch{return{version:1,signals:{}}}}
+function loadSignalState(){
+  let state;
+  try{state=JSON.parse(fs.readFileSync(STATE_PATH,'utf8'))}catch{state={}}
+  state.version=2;
+  state.signals=state.signals||{};
+  state.activeSignals=state.activeSignals||{};
+  state.history=Array.isArray(state.history)?state.history:[];
+  return state
+}
 function saveSignalState(state){fs.mkdirSync('.github/state',{recursive:true});fs.writeFileSync(STATE_PATH,JSON.stringify(state,null,2)+'\n')}
 function structuralFingerprint(setup){const pa=setup?.priceAction||{};return [setup.symbol,'futures',setup.timeframe,setup.direction,pa.lastEvent?.type||'',pa.lastEvent?.side||'',pa.lastEvent?.time||0,pa.lastSweep?.side||'',pa.lastSweep?.time||0,pa.lastOrderBlock?.time||0,pa.lastFvg?.time||0].join('|')}
-function duplicateReason(state,setup){const prev=state.signals?.[setup.symbol];if(!prev)return null;const sentAt=Date.parse(prev.sentAt||0);const age=Number.isFinite(sentAt)?Date.now()-sentAt:Infinity;if(age<SYMBOL_COOLDOWN_MS)return 'sembol cooldown';const fp=structuralFingerprint(setup);if(prev.fingerprint===fp&&age<DUP_TTL_MS)return 'aynı yapısal setup';return null}
-function rememberSignal(state,setup,telegramResult){state.version=1;state.signals=state.signals||{};state.signals[setup.symbol]={fingerprint:structuralFingerprint(setup),signalId:setup.signalId,direction:setup.direction,sentAt:new Date().toISOString(),entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null};for(const [k,v] of Object.entries(state.signals)){const t=Date.parse(v?.sentAt||0);if(!Number.isFinite(t)||Date.now()-t>7*24*60*60*1000)delete state.signals[k]}saveSignalState(state)}
+function duplicateReason(state,setup){
+  const active=Object.values(state.activeSignals||{}).find(x=>x?.symbol===setup.symbol&&!['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status));
+  if(active)return 'aktif sinyal var';
+  const prev=state.signals?.[setup.symbol];
+  if(!prev)return null;
+  const sentAt=Date.parse(prev.sentAt||0),age=Number.isFinite(sentAt)?Date.now()-sentAt:Infinity;
+  if(age<SYMBOL_COOLDOWN_MS)return 'sembol cooldown';
+  const fp=structuralFingerprint(setup);
+  if(prev.fingerprint===fp&&age<DUP_TTL_MS)return 'aynı yapısal setup';
+  return null
+}
+function rememberSignal(state,setup,telegramResult){
+  state.version=2;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
+  const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup);
+  const base={fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null};
+  state.signals[setup.symbol]=base;
+  state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};
+  for(const [k,v] of Object.entries(state.signals)){const t=Date.parse(v?.sentAt||0);if(!Number.isFinite(t)||Date.now()-t>7*24*60*60*1000)delete state.signals[k]}
+  saveSignalState(state)
+}
 const signalState=loadSignalState();
 async function candles(symbol,tf){const key=`${symbol}|${tf}`;if(cache.has(key))return cache.get(key);const u=`${FUTURES}/fapi/v1/klines?symbol=${symbol}&interval=${tf}&limit=500`;const r=await fetch(u);if(!r.ok)throw new Error(`${symbol} ${tf} Binance HTTP ${r.status}`);const d=await r.json();const rows=d.map(k=>({time:Number(k[0]),openTime:Number(k[0]),open:Number(k[1]),high:Number(k[2]),low:Number(k[3]),close:Number(k[4]),volume:Number(k[5]),closeTime:Number(k[6])})).filter(x=>x.closeTime<Date.now()-500);cache.set(key,rows);return rows}
 
