@@ -1218,14 +1218,47 @@
               "provider": "kural motoru (Gemini fallback)",
               "commentary": "XRPUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
             }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T21:25:51.298Z",
+            "candleCloseTime": 1789766099999,
+            "price": 1.4072,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 94,
+            "score": {
+              "long": 8.45,
+              "short": 2.35
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 93
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "XRPUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
           }
         ],
-        "lastCandleCloseTime": 1789765199999,
+        "lastCandleCloseTime": 1789766099999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       },
       "entryCandleOpenTime": 1789764360000
