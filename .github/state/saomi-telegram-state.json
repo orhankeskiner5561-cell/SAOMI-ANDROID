@@ -272,147 +272,6 @@
         }
       }
     },
-    "SOLUSDT|futures|15m|LONG|1789723800000|1789722000000|1789722900000|1789715700000": {
-      "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789723800000|HIGH|1789722000000|1789722900000|1789715700000",
-      "signalId": "SOLUSDT|futures|15m|LONG|1789723800000|1789722000000|1789722900000|1789715700000",
-      "direction": "LONG",
-      "sentAt": "2026-09-18T09:53:03.135Z",
-      "entry": 106.15,
-      "stop": 104.9904626660408,
-      "tp1": 107.71537540084493,
-      "tp2": 108.52705153461638,
-      "tp3": 109.62861200187763,
-      "messageId": 124,
-      "symbol": "SOLUSDT",
-      "market": "futures",
-      "timeframe": "15m",
-      "confidence": null,
-      "riskReward": 3,
-      "status": "ACTIVE",
-      "stage": 2,
-      "enteredAt": "2026-09-18T11:03:59.999Z",
-      "notified": {
-        "entry": true,
-        "tp1": true,
-        "tp2": true,
-        "tp3": false,
-        "stop": false,
-        "ambiguous": false
-      },
-      "migrated": true,
-      "entryCandleOpenTime": 1789729380000,
-      "reanalysis": {
-        "max": 3,
-        "snapshots": [
-          {
-            "no": 1,
-            "checkedAt": "2026-09-18T12:35:06.010Z",
-            "candleCloseTime": 1789734599999,
-            "price": 105.65,
-            "originalDirection": "LONG",
-            "currentDirection": "WAIT",
-            "currentConfidence": 50,
-            "score": {
-              "long": 5.2,
-              "short": 3.75
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 94
-              },
-              {
-                "timeframe": "4h",
-                "direction": "LONG",
-                "confidence": 88
-              }
-            ],
-            "mtfAligned": 2,
-            "mtfOpposite": 0,
-            "verdict": "BEKLE",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          },
-          {
-            "no": 2,
-            "checkedAt": "2026-09-18T12:55:49.906Z",
-            "candleCloseTime": 1789735499999,
-            "price": 105.91,
-            "originalDirection": "LONG",
-            "currentDirection": "LONG",
-            "currentConfidence": 88,
-            "score": {
-              "long": 7,
-              "short": 3
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 94
-              },
-              {
-                "timeframe": "4h",
-                "direction": "LONG",
-                "confidence": 88
-              }
-            ],
-            "mtfAligned": 2,
-            "mtfOpposite": 0,
-            "verdict": "AYNI_YON",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          },
-          {
-            "no": 3,
-            "checkedAt": "2026-09-18T13:12:20.237Z",
-            "candleCloseTime": 1789736399999,
-            "price": 105.75,
-            "originalDirection": "LONG",
-            "currentDirection": "WAIT",
-            "currentConfidence": 49,
-            "score": {
-              "long": 5.45,
-              "short": 4.1
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 92
-              },
-              {
-                "timeframe": "4h",
-                "direction": "LONG",
-                "confidence": 88
-              }
-            ],
-            "mtfAligned": 2,
-            "mtfOpposite": 0,
-            "verdict": "HTF_ENGEL",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          }
-        ],
-        "lastCandleCloseTime": 1789736399999,
-        "summary": {
-          "same": 1,
-          "wait": 2,
-          "opposite": 0,
-          "total": 3
-        }
-      }
-    },
     "DOGEUSDT|futures|15m|LONG|1789721100000|1789721100000|1789718400000|1789722900000": {
       "fingerprint": "DOGEUSDT|futures|15m|LONG|BOS|UP|1789721100000|HIGH|1789721100000|1789718400000|1789722900000",
       "signalId": "DOGEUSDT|futures|15m|LONG|1789721100000|1789721100000|1789718400000|1789722900000",
@@ -862,23 +721,169 @@
       "finalStage": 3,
       "maxStage": 3,
       "exitPrice": 80521.42890261384
+    },
+    {
+      "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789723800000|HIGH|1789722000000|1789722900000|1789715700000",
+      "signalId": "SOLUSDT|futures|15m|LONG|1789723800000|1789722000000|1789722900000|1789715700000",
+      "direction": "LONG",
+      "sentAt": "2026-09-18T09:53:03.135Z",
+      "entry": 106.15,
+      "stop": 104.9904626660408,
+      "tp1": 107.71537540084493,
+      "tp2": 108.52705153461638,
+      "tp3": 109.62861200187763,
+      "messageId": 124,
+      "symbol": "SOLUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "confidence": null,
+      "riskReward": 3,
+      "status": "ACTIVE",
+      "stage": 3,
+      "enteredAt": "2026-09-18T11:03:59.999Z",
+      "notified": {
+        "entry": true,
+        "tp1": true,
+        "tp2": true,
+        "tp3": true,
+        "stop": false,
+        "ambiguous": false
+      },
+      "migrated": true,
+      "entryCandleOpenTime": 1789729380000,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-18T12:35:06.010Z",
+            "candleCloseTime": 1789734599999,
+            "price": 105.65,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 50,
+            "score": {
+              "long": 5.2,
+              "short": 3.75
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 88
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "BEKLE",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-18T12:55:49.906Z",
+            "candleCloseTime": 1789735499999,
+            "price": 105.91,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 88,
+            "score": {
+              "long": 7,
+              "short": 3
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 88
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T13:12:20.237Z",
+            "candleCloseTime": 1789736399999,
+            "price": 105.75,
+            "originalDirection": "LONG",
+            "currentDirection": "WAIT",
+            "currentConfidence": 49,
+            "score": {
+              "long": 5.45,
+              "short": 4.1
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 92
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 88
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "HTF_ENGEL",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          }
+        ],
+        "lastCandleCloseTime": 1789736399999,
+        "summary": {
+          "same": 1,
+          "wait": 2,
+          "opposite": 0,
+          "total": 3
+        }
+      },
+      "result": "TP3",
+      "closedAt": "2026-09-18T14:21:59.999Z",
+      "finalStage": 3,
+      "maxStage": 3,
+      "exitPrice": 109.62861200187763
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-18T14:12:24.470Z",
-    "scoredTrades": 2,
-    "wins": 1,
+    "updatedAt": "2026-09-18T14:24:24.408Z",
+    "scoredTrades": 3,
+    "wins": 2,
     "losses": 1,
-    "winRate": 50,
+    "winRate": 66.67,
     "tp1Reached": 4,
     "tp2Reached": 3,
-    "tp3Reached": 1,
+    "tp3Reached": 2,
     "stopAfterTp1": 0,
     "stopAfterTp2": 0,
     "ambiguous": 0,
     "expired": 0,
-    "active": 4,
+    "active": 3,
     "waitingEntry": 0,
-    "inTrade": 4
+    "inTrade": 3
   }
 }
