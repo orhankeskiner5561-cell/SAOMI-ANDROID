@@ -38,16 +38,87 @@
       "messageId": 122
     },
     "SOLUSDT": {
-      "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789723800000|HIGH|1789722000000|1789722900000|1789715700000",
-      "signalId": "SOLUSDT|futures|15m|LONG|1789723800000|1789722000000|1789722900000|1789715700000",
+      "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789738200000|HIGH|1789747200000|1789736400000|1789742700000",
+      "signalId": "SOLUSDT|futures|15m|LONG|1789738200000|1789747200000|1789736400000|1789742700000",
+      "symbol": "SOLUSDT",
+      "market": "futures",
+      "timeframe": "15m",
       "direction": "LONG",
-      "sentAt": "2026-09-18T09:53:03.135Z",
-      "entry": 106.15,
-      "stop": 104.9904626660408,
-      "tp1": 107.71537540084493,
-      "tp2": 108.52705153461638,
-      "tp3": 109.62861200187763,
-      "messageId": 124
+      "confidence": 91,
+      "riskReward": 3,
+      "sentAt": "2026-09-18T16:26:33.136Z",
+      "entry": 111.5,
+      "stop": 105.18740559663132,
+      "tp1": 120.02200244454772,
+      "tp2": 124.44081852690579,
+      "tp3": 130.43778321010603,
+      "messageId": 144,
+      "contextSnapshot": {
+        "previousDayHigh": 102.03,
+        "previousDayLow": 98.41,
+        "previousWeekHigh": 107.03,
+        "previousWeekLow": 97.36,
+        "dailyAtr": 4.577351027374949,
+        "dailyEma50": 93.09459593789441,
+        "extensionAtr": 4.020972818565075,
+        "riseFrom20dLowPct": 16.485582950271628,
+        "fallFrom20dHighPct": 3.778853313477293,
+        "nearestResistance": {
+          "side": "RESISTANCE",
+          "price": 126.938,
+          "time": 1703462400000,
+          "timeframe": "1w"
+        },
+        "nearestSupport": {
+          "side": "SUPPORT",
+          "price": 109.162,
+          "time": 1722816000000,
+          "timeframe": "1w"
+        },
+        "nearestUntakenHigh": {
+          "side": "HIGH",
+          "price": 128.52,
+          "from": 1766361600000,
+          "to": 1769558400000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "1d"
+        },
+        "nearestUntakenLow": {
+          "side": "LOW",
+          "price": 75.24953124999999,
+          "from": 1784476800000,
+          "to": 1787011200000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "4h"
+        },
+        "brokenSupportRetest": null,
+        "brokenResistanceRetest": {
+          "type": "RESISTANCE_TO_SUPPORT",
+          "timeframe": "4h",
+          "level": 104.68833333333335,
+          "tests": 6,
+          "firstTouchTime": 1788192000000,
+          "lastTouchTime": 1789416000000,
+          "breakTime": 1789704000000,
+          "breakClose": 105.75,
+          "breakStrengthAtr": 0.6,
+          "retestTime": 1789718400000,
+          "retestClose": 105.71,
+          "reclaimed": false,
+          "nearNow": false,
+          "active": true
+        },
+        "decision": {
+          "blocked": false,
+          "reasons": [],
+          "warnings": [
+            "Fiyat günlük EMA50'den 4.0 ATR uzakta",
+            "Yukarıda alınmamış likidite havuzu var"
+          ]
+        }
+      }
     },
     "DOGEUSDT": {
       "fingerprint": "DOGEUSDT|futures|15m|LONG|BOS|UP|1789721100000|HIGH|1789721100000|1789718400000|1789722900000",
@@ -660,15 +731,143 @@
               "provider": "kural motoru (Gemini fallback)",
               "commentary": "BNBUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
             }
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-18T16:26:33.982Z",
+            "candleCloseTime": 1789748099999,
+            "price": 760.64,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 94,
+            "score": {
+              "long": 9.35,
+              "short": 0
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 86
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "HTF_ENGEL",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "BNBUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
           }
         ],
-        "lastCandleCloseTime": 1789747199999,
+        "lastCandleCloseTime": 1789748099999,
         "summary": {
           "same": 1,
-          "wait": 0,
+          "wait": 1,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
+      }
+    },
+    "SOLUSDT|futures|15m|LONG|1789738200000|1789747200000|1789736400000|1789742700000": {
+      "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789738200000|HIGH|1789747200000|1789736400000|1789742700000",
+      "signalId": "SOLUSDT|futures|15m|LONG|1789738200000|1789747200000|1789736400000|1789742700000",
+      "symbol": "SOLUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "direction": "LONG",
+      "confidence": 91,
+      "riskReward": 3,
+      "sentAt": "2026-09-18T16:26:33.136Z",
+      "entry": 111.5,
+      "stop": 105.18740559663132,
+      "tp1": 120.02200244454772,
+      "tp2": 124.44081852690579,
+      "tp3": 130.43778321010603,
+      "messageId": 144,
+      "contextSnapshot": {
+        "previousDayHigh": 102.03,
+        "previousDayLow": 98.41,
+        "previousWeekHigh": 107.03,
+        "previousWeekLow": 97.36,
+        "dailyAtr": 4.577351027374949,
+        "dailyEma50": 93.09459593789441,
+        "extensionAtr": 4.020972818565075,
+        "riseFrom20dLowPct": 16.485582950271628,
+        "fallFrom20dHighPct": 3.778853313477293,
+        "nearestResistance": {
+          "side": "RESISTANCE",
+          "price": 126.938,
+          "time": 1703462400000,
+          "timeframe": "1w"
+        },
+        "nearestSupport": {
+          "side": "SUPPORT",
+          "price": 109.162,
+          "time": 1722816000000,
+          "timeframe": "1w"
+        },
+        "nearestUntakenHigh": {
+          "side": "HIGH",
+          "price": 128.52,
+          "from": 1766361600000,
+          "to": 1769558400000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "1d"
+        },
+        "nearestUntakenLow": {
+          "side": "LOW",
+          "price": 75.24953124999999,
+          "from": 1784476800000,
+          "to": 1787011200000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "4h"
+        },
+        "brokenSupportRetest": null,
+        "brokenResistanceRetest": {
+          "type": "RESISTANCE_TO_SUPPORT",
+          "timeframe": "4h",
+          "level": 104.68833333333335,
+          "tests": 6,
+          "firstTouchTime": 1788192000000,
+          "lastTouchTime": 1789416000000,
+          "breakTime": 1789704000000,
+          "breakClose": 105.75,
+          "breakStrengthAtr": 0.6,
+          "retestTime": 1789718400000,
+          "retestClose": 105.71,
+          "reclaimed": false,
+          "nearNow": false,
+          "active": true
+        },
+        "decision": {
+          "blocked": false,
+          "reasons": [],
+          "warnings": [
+            "Fiyat günlük EMA50'den 4.0 ATR uzakta",
+            "Yukarıda alınmamış likidite havuzu var"
+          ]
+        }
+      },
+      "status": "WAIT_ENTRY",
+      "stage": 0,
+      "enteredAt": null,
+      "lastCheckedAt": "2026-09-18T16:26:33.136Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
       }
     }
   },
