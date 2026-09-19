@@ -5,7 +5,7 @@ const SYMBOLS = ['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','A
 const BASE_TFS = ['1m','5m','15m','30m'];
 const HTF_ORDER = ['1w','1d','4h','1h'];
 const HTF_WEIGHT = {'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.27.1_LIQUIDITY_SEQUENCE_SAFE';
+const ANALYSIS_VERSION='RC5.29_WICK_TREND_SEQUENCE';
 const CONFIRM_MAP = {
   '1m':['5m','15m'],
   '5m':['15m','30m'],
@@ -66,6 +66,27 @@ function detectStructure(c){const p=pivots(c);const events=[];const hs=p.highs.s
  const obs=[];for(const e of events.slice(-8)){const idx=Number.isFinite(e.index)?e.index:c.findIndex(x=>x.time===e.time);for(let j=idx-1;j>=Math.max(0,idx-8);j--){const bull=c[j].close>c[j].open;if((e.side==='UP'&&!bull)||(e.side==='DOWN'&&bull)){obs.push({side:e.side==='UP'?'BULL':'BEAR',time:c[j].time,low:c[j].low,high:c[j].high,index:j,eventTime:e.time});break}}}
  const sweeps=[];for(let i=Math.max(1,c.length-80);i<c.length;i++){const prior=c.slice(Math.max(0,i-20),i),priorH=Math.max(...prior.map(x=>x.high)),priorL=Math.min(...prior.map(x=>x.low));if(c[i].high>priorH&&c[i].close<priorH)sweeps.push({side:'HIGH',time:c[i].time,price:priorH,extreme:c[i].high,index:i,close:c[i].close});if(c[i].low<priorL&&c[i].close>priorL)sweeps.push({side:'LOW',time:c[i].time,price:priorL,extreme:c[i].low,index:i,close:c[i].close})}
  return{trend,pivots:p,events:events.slice(-20),equalHighs:equalHighs.slice(-5),equalLows:equalLows.slice(-5),fvgs:fvgs.slice(-12),orderBlocks:obs.slice(-8),sweeps:sweeps.slice(-8)}}
+
+function wickTrendLines(c,structure=null){
+ c=(c||[]).filter(Boolean);if(c.length<12)return{support:null,resistance:null,bias:'NEUTRAL',summary:'Trend çizgisi için veri yetersiz'};
+ const st=structure||detectStructure(c),lastI=c.length-1,last=c.at(-1),ranges=c.slice(-30).map(x=>Math.max(0,(x.high||0)-(x.low||0))).filter(Number.isFinite),avgRange=ranges.length?ranges.reduce((a,b)=>a+b,0)/ranges.length:Math.max(Math.abs(last.close||1)*.004,1e-8),tol=Math.max(avgRange*.16,Math.abs(last.close||1)*.00045);
+ const build=(points,kind)=>{const pts=(points||[]).slice(-12);let best=null;
+  for(let a=0;a<pts.length-1;a++)for(let b=a+1;b<pts.length;b++){const A=pts[a],B=pts[b],bars=B.i-A.i;if(bars<4)continue;const slope=(B.price-A.price)/bars,project=i=>A.price+slope*(i-A.i);let touches=0,breaches=0;
+   for(const q of pts){if(q.i<A.i)continue;if(Math.abs(q.price-project(q.i))<=tol*1.55)touches++}
+   for(let i=A.i;i<c.length;i++){const line=project(i),k=c[i];if(kind==='support'&&k.low<line-tol*1.25)breaches++;if(kind==='resistance'&&k.high>line+tol*1.25)breaches++}
+   const current=project(lastI),distance=last.close-current,distanceAtr=distance/Math.max(avgRange,1e-12),recency=Math.max(0,10-(lastI-B.i))*.18,score=touches*3.2-breaches*4+recency+(b===pts.length-1?1:0);
+   const row={kind,a:{i:A.i,time:A.time,price:A.price},b:{i:B.i,time:B.time,price:B.price},slopePerBar:slope,current,absoluteDistance:Math.abs(distance),distanceAtr:Number(Math.abs(distanceAtr).toFixed(2)),touches,breaches,score:Number(score.toFixed(2)),direction:Math.abs(slope)<=tol*.035?'FLAT':slope>0?'UP':'DOWN'};
+   if(!best||row.score>best.score)best=row
+  }
+  if(!best)return null;const broken=kind==='support'?last.close<best.current-tol:last.close>best.current+tol;return{...best,broken,breakSide:broken?(kind==='support'?'DOWN':'UP'):null,tolerance:tol}
+ };
+ const support=build(st.pivots?.lows,'support'),resistance=build(st.pivots?.highs,'resistance');let bull=0,bear=0;
+ if(support?.direction==='UP'&&!support.broken)bull+=2;if(resistance?.direction==='UP')bull+=.7;if(resistance?.broken&&resistance.breakSide==='UP')bull+=2.3;
+ if(resistance?.direction==='DOWN'&&!resistance.broken)bear+=2;if(support?.direction==='DOWN')bear+=.7;if(support?.broken&&support.breakSide==='DOWN')bear+=2.3;
+ const bias=Math.abs(bull-bear)<.8?'NEUTRAL':bull>bear?'LONG':'SHORT';
+ return{support,resistance,bias,bullScore:Number(bull.toFixed(2)),bearScore:Number(bear.toFixed(2)),summary:[support?`dip trend ${support.direction}${support.broken?' kırıldı':''}`:'',resistance?`tepe trend ${resistance.direction}${resistance.broken?' kırıldı':''}`:''].filter(Boolean).join(' · ')}
+}
+
 const waitResult=(symbol,tf,price,confidence,reasons,invalidation='Yapısal üstünlük oluşmadı',extra={})=>({symbol,timeframe:tf,price,direction:'WAIT',confidence,entry:null,stop:null,tp1:null,tp2:null,tp3:null,riskReward:null,reasons,invalidation,quality:'WAIT',...extra});
 const lastRecent=(arr,c,n=80)=>{if(!arr?.length||!c?.length)return null;const min=c[Math.max(0,c.length-n)]?.time??-Infinity;return[...arr].reverse().find(x=>(x.time??x.b?.time??0)>=min)||null};
 
@@ -307,12 +328,16 @@ function frameContext(tf,c){
  if(Number.isFinite(i.ema200)){if(close>i.ema200){long+=2;reasons.push('EMA200 üstü')}else{short+=2;reasons.push('EMA200 altı')}}
  if(Number.isFinite(i.ema50)&&Number.isFinite(i.ema200)){if(i.ema50>i.ema200)long+=1;else if(i.ema50<i.ema200)short+=1}
  const sw=lastRecent(s.sweeps,c,80);if(sw?.side==='LOW')long+=1;else if(sw?.side==='HIGH')short+=1;
+ const wickTrend=wickTrendLines(c,s);
+ if(wickTrend.bias==='LONG'){long+=1.25;reasons.push('Fitil trend çizgileri LONG')}else if(wickTrend.bias==='SHORT'){short+=1.25;reasons.push('Fitil trend çizgileri SHORT')}
+ if(wickTrend.resistance?.broken&&wickTrend.resistance.breakSide==='UP'){long+=1.15;reasons.push('Tepe trend çizgisi yukarı kırıldı')}
+ if(wickTrend.support?.broken&&wickTrend.support.breakSide==='DOWN'){short+=1.15;reasons.push('Dip trend çizgisi aşağı kırıldı')}
  const edge=Math.abs(long-short),bias=edge<2?'NEUTRAL':long>short?'LONG':'SHORT',strength=clamp(Math.round(50+edge*7),50,95);
  const lows=(s.pivots?.lows||[]).filter(x=>x.price<close).sort((a,b)=>b.price-a.price),highs=(s.pivots?.highs||[]).filter(x=>x.price>close).sort((a,b)=>a.price-b.price);
  const liq=buildLiquidityMap(c,tf),uHigh=nearestAbove(liq.untakenHighs,close),uLow=nearestBelow(liq.untakenLows,close);
  const closeSeries=c.map(x=>x.close),e200=ema(closeSeries,200),ema200=ema200BreakContext(c,e200);
  const flips=tf==='4h'?detectRoleReversalZones(c,'4h'):[];
- return{timeframe:tf,bias,strength,trend:s.trend,close,atr:av,reasons:reasons.slice(0,6),marketBreak:ev?{type:ev.type,side:ev.side,time:ev.time,price:ev.price}:null,recentSweep:sw?{side:sw.side,time:sw.time,price:sw.price}:null,ema200,support:levelInfo(lows[0],close,av),resistance:levelInfo(highs[0],close,av),liquidity:{nearestUntakenHigh:levelInfo(uHigh,close,av),nearestUntakenLow:levelInfo(uLow,close,av),untakenHighPools:liq.untakenHighs.length,untakenLowPools:liq.untakenLows.length,takenHighPools:liq.takenHighs.length,takenLowPools:liq.takenLows.length},roleReversal:flips[0]||null}
+ return{timeframe:tf,bias,strength,trend:s.trend,close,atr:av,reasons:reasons.slice(0,6),marketBreak:ev?{type:ev.type,side:ev.side,time:ev.time,price:ev.price}:null,recentSweep:sw?{side:sw.side,time:sw.time,price:sw.price}:null,ema200,support:levelInfo(lows[0],close,av),resistance:levelInfo(highs[0],close,av),liquidity:{nearestUntakenHigh:levelInfo(uHigh,close,av),nearestUntakenLow:levelInfo(uLow,close,av),untakenHighPools:liq.untakenHighs.length,untakenLowPools:liq.untakenLows.length,takenHighPools:liq.takenHighs.length,takenLowPools:liq.takenLows.length},wickTrend,roleReversal:flips[0]||null}
 }
 async function buildTopDownContext(symbol){
  const frames=[];
@@ -452,7 +477,7 @@ function buildMinorSetup(symbol,tf,c,major){
  const sequence=findEntrySequence(c,s,dir,av);
  if(!sequence)return null;
 
- const {sweep,event,retest}=sequence;
+ const {sweep,event,retest}=sequence,wickTrend=wickTrendLines(c,s);
  const trendAligned=up?s.trend==='UP':s.trend==='DOWN';
  const ema50Aligned=up?entry>i.ema50:entry<i.ema50;
  const ema200Aligned=up?entry>i.ema200:entry<i.ema200;
@@ -481,7 +506,7 @@ function buildMinorSetup(symbol,tf,c,major){
  if(trendAligned)score+=1;
  if(ema50Aligned)score+=1;
  if(ema200Aligned)score+=1;
- if(event.type==='CHoCH')score+=.5;
+ if(event.type==='CHoCH')score+=.5;if(wickTrend.bias===dir)score+=1;if(up&&wickTrend.resistance?.broken)score+=.5;if(!up&&wickTrend.support?.broken)score+=.5;
 
  const liq=buildLiquidityMap(c,tf),sgn=up?1:-1;
  let tp1=entry+sgn*risk*1.25,tp2=entry+sgn*risk*2.0,tp3=entry+sgn*risk*3.0;
@@ -532,7 +557,7 @@ function buildMinorSetup(symbol,tf,c,major){
      ema200Aligned?'EMA200 yönle uyumlu':'EMA200 karşı tarafta'
    ],
    invalidation:up?'Sweep dibinin altı yapısal geçersizlik':'Sweep tepesinin üstü yapısal geçersizlik',
-   liquidityTaken:true,liquidityEvidence,entrySequence,majorObstacle,localTarget,riskAtr:Number(riskAtr.toFixed(2)),retestDistanceAtr:Number(retestDistanceAtr.toFixed(2))
+   liquidityTaken:true,liquidityEvidence,wickTrend,entrySequence,majorObstacle,localTarget,riskAtr:Number(riskAtr.toFixed(2)),retestDistanceAtr:Number(retestDistanceAtr.toFixed(2))
  }
 }
 function wantedSweepLabel(dir){return dir==='LONG'?'Aşağı/Sell-side':'Yukarı/Buy-side'}
@@ -547,12 +572,14 @@ function topDownCommentary(setup){
  const td=setup?.topDownContext,d=td?.decision,lower=setup?.lowerFrameContext,le=setup?.liquidityEvidence||{},seq=setup?.entrySequence||{};
  if(!d||!le.sweep||!le.postSweepBreak||!le.retest)return `${setup.symbol} ${setup.timeframe}: sıralı majör/minör giriş kanıtı eksik; sinyal üretilmemeliydi.`;
  const major=`Majör yön ${d.majorDirection||setup.direction} · ${d.summary} · güç %${d.conviction??'—'}`;
+ const htfTrend=(td.frames||[]).map(f=>f.wickTrend?`${f.timeframe.toUpperCase()} fitil-trend ${f.wickTrend.bias} (${f.wickTrend.summary})`:'').filter(Boolean).join(' · ');
+ const ltfTrend=setup.wickTrend?`${String(setup.timeframe||'').toUpperCase()} fitil-trend ${setup.wickTrend.bias} (${setup.wickTrend.summary})`:'';
  const flow=`${wantedSweepLabel(setup.direction)} sweep: seviye ${fmtNum(le.sweep.level)}, wick ${fmtNum(le.sweep.extreme)} → ${le.postSweepBreak.type} ${le.postSweepBreak.side} @ ${fmtNum(le.postSweepBreak.price)} → ${le.retest.type} @ ${fmtNum(le.retest.level)} → ${setup.direction} giriş ${fmtNum(setup.entry)}`;
  const stop=`STOP sweep wick dışı: ${fmtNum(setup.stop)} · tampon ${fmtNum(seq.stopBasis?.buffer)} · risk ${seq.stopBasis?.riskAtr??setup.riskAtr??'—'} ATR`;
  const target=seq.nearestForward?`Öndeki hedef/bölge: ${String(seq.nearestForward.timeframe||'').toUpperCase()} ${seq.nearestForward.source} @ ${fmtNum(seq.nearestForward.price)}`:'Öndeki hedef alanı açık';
  const ema=(td.frames||[]).map(f=>`${String(f.timeframe||'').toUpperCase()} EMA200 ${f.ema200?.position==='ABOVE'?'üstü':f.ema200?.position==='BELOW'?'altı':'nötr'}`).join(' · ');
  const warn=(d.warnings||[]).slice(0,2).join('; ');
- return `${major}. ${flow}. ${stop}. ${target}. ${ema}.${warn?` Risk: ${warn}.`:''}`.replace(/\s+/g,' ').trim()
+ return `${major}. ${htfTrend}. ${ltfTrend}. ${flow}. ${stop}. ${target}. ${ema}.${warn?` Risk: ${warn}.`:''}`.replace(/\s+/g,' ').trim()
 }
 
 function paContext(s,c,i,av){const last=c.at(-1),event=lastRecent(s.events,c,90),sweep=lastRecent(s.sweeps,c,70),ob=(s.orderBlocks||[]).at(-1)||null,fvg=(s.fvgs||[]).at(-1)||null;return{trend:s.trend,lastEvent:event?{type:event.type,side:event.side,price:event.price,time:event.time}:null,lastSweep:sweep?{side:sweep.side,price:sweep.price,time:sweep.time}:null,lastOrderBlock:ob,lastFvg:fvg,lastCandle:{open:last.open,high:last.high,low:last.low,close:last.close,volume:last.volume},atr:av,ema9:i.ema9,ema50:i.ema50,ema200:i.ema200,rsi:i.rsi,macdHist:i.macdHist}}
@@ -594,7 +621,7 @@ function structuralFingerprint(setup){
   setup.symbol,'futures',setup.timeframe,setup.direction,d.majorDirection||setup.direction,
   le.sweep?.side||'',le.sweep?.time||0,
   le.postSweepBreak?.type||'',le.postSweepBreak?.side||'',le.postSweepBreak?.time||0,
-  le.retest?.type||'',le.retest?.time||0
+  le.retest?.type||'',le.retest?.time||0,setup?.wickTrend?.bias||'',setup?.wickTrend?.support?.broken?'SB':'',setup?.wickTrend?.resistance?.broken?'RB':''
  ].join('|')
 }
 function duplicateReason(state,setup){
@@ -632,7 +659,7 @@ function duplicateReason(state,setup){
 function rememberSignal(state,setup,telegramResult,analysisMeta={}){
   state.version=6;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
   const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup);
-  const base={fingerprint,structureKey:fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null,analysisVersion:ANALYSIS_VERSION,topDownContext:setup.topDownContext||null,lowerFrameContext:setup.lowerFrameContext||null,liquidityEvidence:setup.liquidityEvidence||null,entrySequence:setup.entrySequence||null,majorObstacle:setup.majorObstacle||null,localTarget:setup.localTarget||null,riskAtr:setup.riskAtr??null,retestDistanceAtr:setup.retestDistanceAtr??null,commentary:String(analysisMeta.commentary||''),commentaryProvider:String(analysisMeta.provider||''),contextSnapshot:setup.htfContext?{previousDayHigh:setup.htfContext.previousDayHigh,previousDayLow:setup.htfContext.previousDayLow,previousWeekHigh:setup.htfContext.previousWeekHigh,previousWeekLow:setup.htfContext.previousWeekLow,dailyAtr:setup.htfContext.dailyAtr,dailyEma50:setup.htfContext.dailyEma50,extensionAtr:setup.htfContext.extensionAtr,riseFrom20dLowPct:setup.htfContext.riseFrom20dLowPct,fallFrom20dHighPct:setup.htfContext.fallFrom20dHighPct,nearestResistance:setup.htfContext.nearestResistance,nearestSupport:setup.htfContext.nearestSupport,nearestUntakenHigh:setup.htfContext.nearestUntakenHigh,nearestUntakenLow:setup.htfContext.nearestUntakenLow,brokenSupportRetest:setup.htfContext.brokenSupportRetest,brokenResistanceRetest:setup.htfContext.brokenResistanceRetest,decision:setup.liquidityContext?.decision||null}:null};
+  const base={fingerprint,structureKey:fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null,analysisVersion:ANALYSIS_VERSION,topDownContext:setup.topDownContext||null,lowerFrameContext:setup.lowerFrameContext||null,liquidityEvidence:setup.liquidityEvidence||null,wickTrend:setup.wickTrend||null,entrySequence:setup.entrySequence||null,majorObstacle:setup.majorObstacle||null,localTarget:setup.localTarget||null,riskAtr:setup.riskAtr??null,retestDistanceAtr:setup.retestDistanceAtr??null,commentary:String(analysisMeta.commentary||''),commentaryProvider:String(analysisMeta.provider||''),contextSnapshot:setup.htfContext?{previousDayHigh:setup.htfContext.previousDayHigh,previousDayLow:setup.htfContext.previousDayLow,previousWeekHigh:setup.htfContext.previousWeekHigh,previousWeekLow:setup.htfContext.previousWeekLow,dailyAtr:setup.htfContext.dailyAtr,dailyEma50:setup.htfContext.dailyEma50,extensionAtr:setup.htfContext.extensionAtr,riseFrom20dLowPct:setup.htfContext.riseFrom20dLowPct,fallFrom20dHighPct:setup.htfContext.fallFrom20dHighPct,nearestResistance:setup.htfContext.nearestResistance,nearestSupport:setup.htfContext.nearestSupport,nearestUntakenHigh:setup.htfContext.nearestUntakenHigh,nearestUntakenLow:setup.htfContext.nearestUntakenLow,brokenSupportRetest:setup.htfContext.brokenSupportRetest,brokenResistanceRetest:setup.htfContext.brokenResistanceRetest,decision:setup.liquidityContext?.decision||null}:null};
   state.signals[signalStateKey(setup.symbol,setup.timeframe)]=base;
   state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};
   for(const [k,v] of Object.entries(state.signals)){const t=Date.parse(v?.sentAt||0);if(!Number.isFinite(t)||Date.now()-t>7*24*60*60*1000)delete state.signals[k]}
