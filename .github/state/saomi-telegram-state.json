@@ -4939,14 +4939,39 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "BNBUSDT 5m yeniden kontrol: majör LONG · minör LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑."
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-19T13:26:23.118Z",
+            "candleCloseTime": 1789824299999,
+            "price": 770.87,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 95,
+            "currentDirection": "LONG",
+            "currentConfidence": 95,
+            "lowerTrend": "UP",
+            "lowerMarketBreak": {
+              "type": "BOS",
+              "side": "UP",
+              "time": 1789820700000,
+              "price": 768.96
+            },
+            "lowerSweep": {
+              "side": "HIGH",
+              "time": 1789821600000,
+              "price": 770.1
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "BNBUSDT 5m yeniden kontrol: majör LONG · minör LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑."
           }
         ],
-        "lastCandleCloseTime": 1789823999999,
+        "lastCandleCloseTime": 1789824299999,
         "summary": {
-          "same": 1,
+          "same": 2,
           "wait": 0,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
       },
       "entryCandleOpenTime": 1789823520000
