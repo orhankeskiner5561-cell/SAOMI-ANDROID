@@ -1,9 +1,9 @@
-name: SAOMI Trade AI Indicator Fusion Telegram
+name: SAOMI Trade AI All Futures Scanner
 
 on:
   schedule:
     # GitHub Actions minimum guvenli siklik: her 5 dakikada bir.
-    # 1W, 1D, 4H, 1H Indicator Fusion ile majör yönü belirler; 1m, 5m, 15m, 30m içinde likidite sweep -> BOS/CHoCH -> retest girişi arar.
+    # Binance USD-M TRADING/PERPETUAL evrenini döner gruplarla tarar; 1W, 1D, 4H, 1H majör yön + 1m, 5m, 15m, 30m giriş arar.
     - cron: '*/5 * * * *'
   workflow_dispatch:
   push:
@@ -30,10 +30,10 @@ jobs:
       - name: Node surumunu goster
         run: node --version
 
-      - name: Indicator Fusion tarayici syntax kontrolu
+      - name: All Futures Indicator Fusion syntax kontrolu
         run: node --check .github/scripts/saomi-telegram-pa-v1.mjs
 
-      - name: Indicator Fusion majör yön + küçük TF likidite girişi tara ve Telegram'a gonder
+      - name: All Futures döner batch tara ve Telegram'a gonder
         run: node .github/scripts/saomi-telegram-pa-v1.mjs
 
       - name: Dedupe state kaydet
