@@ -30,7 +30,7 @@ jobs:
       - name: Node surumunu goster
         run: node --version
 
-      - name: Multi-TF PA+Gemini tarayici syntax kontrolu
+      - name: Liquidity-sequence tarayici syntax kontrolu
         run: node --check .github/scripts/saomi-telegram-pa-v1.mjs
 
       - name: Majör yön + liquidity sweep-break-retest girişi tara ve Telegram'a gonder
@@ -45,5 +45,6 @@ jobs:
           git add .github/state/saomi-telegram-state.json
           if ! git diff --cached --quiet; then
             git commit -m "Update Telegram signal state [skip ci]"
-            git push
+            git pull --rebase origin main
+            git push origin main
           fi
