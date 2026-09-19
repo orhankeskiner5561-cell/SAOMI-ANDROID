@@ -14681,7 +14681,7 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-19T19:40:48.399Z",
+    "updatedAt": "2026-09-19T19:46:33.293Z",
     "scoredTrades": 12,
     "wins": 6,
     "losses": 6,
@@ -14695,9 +14695,9 @@
     "expired": 4,
     "expiredBeforeEntry": 2,
     "expiredAfterEntry": 2,
-    "active": 2,
+    "active": 0,
     "waitingEntry": 0,
-    "inTrade": 2,
+    "inTrade": 0,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 3,
@@ -14749,9 +14749,9 @@
         "expired": 3,
         "expiredBeforeEntry": 1,
         "expiredAfterEntry": 2,
-        "active": 2,
+        "active": 0,
         "waitingEntry": 0,
-        "inTrade": 2
+        "inTrade": 0
       },
       "30m": {
         "scoredTrades": 0,
