@@ -602,7 +602,7 @@ function duplicateReason(state,setup){
   const active=Object.values(state.activeSignals||{}).find(x=>
     x?.symbol===setup.symbol &&
     String(x.timeframe||'15m').toLowerCase()===tf &&
-    !['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status)
+    !['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status)
   );
   if(active)return 'aynı timeframe aktif sinyal var';
 
@@ -646,7 +646,7 @@ function activeSignalForSymbol(state,symbol,timeframe){
   return Object.values(state.activeSignals||{}).find(x=>
     x?.symbol===symbol &&
     String(x.timeframe||'15m').toLowerCase()===tf &&
-    !['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status)
+    !['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status)
   )||null
 }
 async function shadowReanalysis(active){
