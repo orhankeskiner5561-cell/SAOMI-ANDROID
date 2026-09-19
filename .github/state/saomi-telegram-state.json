@@ -5669,6 +5669,43 @@
         "tp3": false,
         "stop": false,
         "ambiguous": false
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-19T14:52:02.113Z",
+            "candleCloseTime": 1789829519999,
+            "price": 771.1,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 95,
+            "currentDirection": "SHORT",
+            "currentConfidence": 57,
+            "lowerTrend": "DOWN",
+            "lowerMarketBreak": {
+              "type": "BOS",
+              "side": "DOWN",
+              "time": 1789828980000,
+              "price": 770.46
+            },
+            "lowerSweep": {
+              "side": "LOW",
+              "time": 1789828740000,
+              "price": 770.09
+            },
+            "verdict": "TERS_MINOR",
+            "commentary": "BNBUSDT 1m yeniden kontrol: majör LONG · minör SHORT · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑."
+          }
+        ],
+        "lastCandleCloseTime": 1789829519999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
       }
     }
   },
