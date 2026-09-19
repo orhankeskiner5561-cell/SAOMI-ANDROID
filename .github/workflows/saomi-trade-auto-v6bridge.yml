@@ -1,10 +1,16 @@
-name: SAOMI Trade AI PA+Gemini Telegram V1
+name: SAOMI Trade AI Multi-TF Telegram
 
 on:
   schedule:
-    # 15m mum kapanisindan yaklasik 2 dk sonra: 15m setup + 1h/4h teyit
-    - cron: '2,17,32,47 * * * *'
+    # GitHub Actions minimum guvenli siklik: her 5 dakikada bir.
+    # Scanner 1m, 5m, 15m, 30m, 1h ve 4h kapanmis mumlari birlikte kontrol eder.
+    - cron: '*/5 * * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/scripts/saomi-telegram-pa-v1.mjs'
+      - '.github/workflows/saomi-trade-auto-v6bridge.yml'
 
 concurrency:
   group: saomi-trade-ai-telegram-state
@@ -13,7 +19,7 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
     permissions:
       contents: write
 
@@ -24,10 +30,10 @@ jobs:
       - name: Node surumunu goster
         run: node --version
 
-      - name: PA+Gemini tarayici syntax kontrolu
+      - name: Multi-TF PA+Gemini tarayici syntax kontrolu
         run: node --check .github/scripts/saomi-telegram-pa-v1.mjs
 
-      - name: Binance Futures Price Action tara ve Telegram'a gonder
+      - name: 1m-5m-15m-30m-1h-4h Futures Price Action tara ve Telegram'a gonder
         run: node .github/scripts/saomi-telegram-pa-v1.mjs
 
       - name: Dedupe state kaydet
