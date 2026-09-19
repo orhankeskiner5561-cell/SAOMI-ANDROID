@@ -5,7 +5,7 @@ const SYMBOLS = ['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','A
 const BASE_TFS = ['1m','5m','15m','30m'];
 const HTF_ORDER = ['1w','1d','4h','1h'];
 const HTF_WEIGHT = {'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.23_HTF_FIRST';
+const ANALYSIS_VERSION='RC5.24_HTF_FIRST';
 const CONFIRM_MAP = {
   '1m':['5m','15m'],
   '5m':['15m','30m'],
@@ -386,7 +386,7 @@ const cache=new Map();
 function loadSignalState(){
   let state;
   try{state=JSON.parse(fs.readFileSync(STATE_PATH,'utf8'))}catch{state={}}
-  state.version=2;
+  state.version=3;
   state.signals=state.signals||{};
   state.activeSignals=state.activeSignals||{};
   state.history=Array.isArray(state.history)?state.history:[];
@@ -415,7 +415,7 @@ function duplicateReason(state,setup){
   return null
 }
 function rememberSignal(state,setup,telegramResult,analysisMeta={}){
-  state.version=2;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
+  state.version=3;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
   const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup);
   const base={fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null,analysisVersion:ANALYSIS_VERSION,topDownContext:setup.topDownContext||null,lowerFrameContext:setup.lowerFrameContext||null,commentary:String(analysisMeta.commentary||''),commentaryProvider:String(analysisMeta.provider||''),contextSnapshot:setup.htfContext?{previousDayHigh:setup.htfContext.previousDayHigh,previousDayLow:setup.htfContext.previousDayLow,previousWeekHigh:setup.htfContext.previousWeekHigh,previousWeekLow:setup.htfContext.previousWeekLow,dailyAtr:setup.htfContext.dailyAtr,dailyEma50:setup.htfContext.dailyEma50,extensionAtr:setup.htfContext.extensionAtr,riseFrom20dLowPct:setup.htfContext.riseFrom20dLowPct,fallFrom20dHighPct:setup.htfContext.fallFrom20dHighPct,nearestResistance:setup.htfContext.nearestResistance,nearestSupport:setup.htfContext.nearestSupport,nearestUntakenHigh:setup.htfContext.nearestUntakenHigh,nearestUntakenLow:setup.htfContext.nearestUntakenLow,brokenSupportRetest:setup.htfContext.brokenSupportRetest,brokenResistanceRetest:setup.htfContext.brokenResistanceRetest,decision:setup.liquidityContext?.decision||null}:null};
   state.signals[signalStateKey(setup.symbol,setup.timeframe)]=base;
@@ -434,7 +434,14 @@ function activeSignalForSymbol(state,symbol,timeframe){
     !['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status)
   )||null
 }
+function recheckBaseCommentary(active,current,frames,verdict){
+  const conf=Number.isFinite(Number(current?.confidence))?` · güven %${Math.round(Number(current.confidence))}`:'';
+  const mtf=(frames||[]).slice(1).map(x=>`${String(x.timeframe||'').toUpperCase()} ${x.direction||'WAIT'}`).join(' · ');
+  const verdictText=verdict==='TERS'?'güncel yapı ilk sinyal yönüne ters dönüyor':verdict==='HTF_ENGEL'?'üst zaman bağlamı artık engel oluşturuyor':verdict==='BEKLE'?'güncel yapı teyit vermiyor':'ilk sinyal yönü korunuyor';
+  return `${active.symbol} ${active.timeframe||'15m'} yeniden kontrol: ${verdictText}${conf}.${mtf?' '+mtf+'.':''} Orijinal giriş, stop ve TP seviyeleri değiştirilmedi.`;
+}
 async function geminiRecheck(active,current,frames,verdict){
+  const base=recheckBaseCommentary(active,current,frames,verdict);
   const payload={
     analysisProfile:'PRICE_ACTION_RECHECK',
     symbol:active.symbol,market:'futures',timeframe:active.timeframe||'15m',
@@ -449,9 +456,10 @@ async function geminiRecheck(active,current,frames,verdict){
   try{
     const r=await fetch(`${BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
     const j=await r.json().catch(()=>({}));
-    if(!r.ok)return{ok:false,error:`HTTP ${r.status}`};
-    return{ok:/gemini/i.test(String(j.provider||'')),provider:j.provider||'',commentary:String(j.commentary||'').trim().slice(0,600)}
-  }catch(e){return{ok:false,error:e?.message||String(e)}}
+    const ai=String(j.commentary||'').trim(),provider=String(j.provider||'');
+    const valid=r.ok&&ai.length>=20&&!/undefined|null|system prompt|instruction|prompt:/i.test(ai);
+    return{ok:valid&&/gemini/i.test(provider),provider:valid?(provider||'ŞAOMİ yeniden analiz'):'ŞAOMİ yeniden analiz',commentary:valid?`${base} ${ai}`:base}
+  }catch(e){return{ok:false,provider:'ŞAOMİ yeniden analiz',commentary:base,error:e?.message||String(e)}}
 }
 async function shadowReanalysis(active){
   active.reanalysis=active.reanalysis||{max:REANALYSIS_MAX,snapshots:[],lastCandleCloseTime:0};
