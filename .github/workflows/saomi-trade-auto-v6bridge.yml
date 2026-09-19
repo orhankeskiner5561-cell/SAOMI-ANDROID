@@ -1,9 +1,9 @@
-name: SAOMI Trade AI Multi-TF Telegram
+name: SAOMI Trade AI Major-Minor Telegram
 
 on:
   schedule:
     # GitHub Actions minimum guvenli siklik: her 5 dakikada bir.
-    # Scanner önce 1W, 1D, 4H, 1H bağlamını; sonra 1m, 5m, 15m, 30m sinyal setup'larını kontrol eder.
+    # Önce 1W, 1D, 4H, 1H majör yönü belirler; sonra 1m, 5m, 15m, 30m içinde aynı yöndeki minör girişleri arar.
     - cron: '*/5 * * * *'
   workflow_dispatch:
   push:
@@ -33,7 +33,7 @@ jobs:
       - name: Multi-TF PA+Gemini tarayici syntax kontrolu
         run: node --check .github/scripts/saomi-telegram-pa-v1.mjs
 
-      - name: 1m-5m-15m-30m HTF-first Futures Price Action tara ve Telegram'a gonder
+      - name: Majör yön + 1m-5m-15m-30m minör giriş tara ve Telegram'a gonder
         run: node .github/scripts/saomi-telegram-pa-v1.mjs
 
       - name: Dedupe state kaydet
