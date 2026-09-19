@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "signals": {
     "BTCUSDT": {
       "fingerprint": "BTCUSDT|futures|15m|LONG|BOS|UP|1789715700000|HIGH|1789719300000|1789713000000|1789722000000",
@@ -1978,7 +1978,7 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-19T11:12:31.935Z",
+    "updatedAt": "2026-09-19T11:41:40.068Z",
     "scoredTrades": 6,
     "wins": 4,
     "losses": 2,
@@ -1990,6 +1990,8 @@
     "stopAfterTp2": 0,
     "ambiguous": 0,
     "expired": 2,
+    "expiredBeforeEntry": 1,
+    "expiredAfterEntry": 1,
     "active": 2,
     "waitingEntry": 0,
     "inTrade": 2,
@@ -2006,6 +2008,8 @@
         "stopAfterTp2": 0,
         "ambiguous": 0,
         "expired": 0,
+        "expiredBeforeEntry": 0,
+        "expiredAfterEntry": 0,
         "active": 0,
         "waitingEntry": 0,
         "inTrade": 0
@@ -2022,6 +2026,8 @@
         "stopAfterTp2": 0,
         "ambiguous": 0,
         "expired": 0,
+        "expiredBeforeEntry": 0,
+        "expiredAfterEntry": 0,
         "active": 0,
         "waitingEntry": 0,
         "inTrade": 0
@@ -2038,6 +2044,8 @@
         "stopAfterTp2": 0,
         "ambiguous": 0,
         "expired": 2,
+        "expiredBeforeEntry": 1,
+        "expiredAfterEntry": 1,
         "active": 2,
         "waitingEntry": 0,
         "inTrade": 2
@@ -2054,6 +2062,8 @@
         "stopAfterTp2": 0,
         "ambiguous": 0,
         "expired": 0,
+        "expiredBeforeEntry": 0,
+        "expiredAfterEntry": 0,
         "active": 0,
         "waitingEntry": 0,
         "inTrade": 0
@@ -2070,6 +2080,8 @@
         "stopAfterTp2": 0,
         "ambiguous": 0,
         "expired": 0,
+        "expiredBeforeEntry": 0,
+        "expiredAfterEntry": 0,
         "active": 0,
         "waitingEntry": 0,
         "inTrade": 0
@@ -2086,6 +2098,8 @@
         "stopAfterTp2": 0,
         "ambiguous": 0,
         "expired": 0,
+        "expiredBeforeEntry": 0,
+        "expiredAfterEntry": 0,
         "active": 0,
         "waitingEntry": 0,
         "inTrade": 0
