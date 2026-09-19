@@ -5,15 +5,15 @@ const SYMBOLS = ['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','A
 const BASE_TFS = ['1m','5m','15m','30m'];
 const HTF_ORDER = ['1w','1d','4h','1h'];
 const HTF_WEIGHT = {'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.24_HTF_FIRST';
+const ANALYSIS_VERSION='RC5.25_MAJOR_MINOR';
 const CONFIRM_MAP = {
   '1m':['5m','15m'],
   '5m':['15m','30m'],
   '15m':['30m'],
   '30m':[]
 };
-const MIN_CONFIDENCE = 84;
-const MIN_RR = 2.5;
+const MIN_CONFIDENCE = 76;
+const MIN_RR = 2.0;
 const MAX_SIGNALS = 8;
 const STATE_PATH = '.github/state/saomi-telegram-state.json';
 const DEFAULT_DUP_TTL_MS = 12*60*60*1000;
@@ -324,32 +324,100 @@ async function buildTopDownContext(symbol){
  for(const tf of HTF_ORDER){frames.push(frameContext(tf,await candles(symbol,tf)))}
  return{version:ANALYSIS_VERSION,order:[...HTF_ORDER],builtAt:new Date().toISOString(),frames}
 }
-function topDownDecision(direction,ctx,price){
- const frames=ctx?.frames||[],map=Object.fromEntries(frames.map(x=>[x.timeframe,x])),blockers=[],warnings=[],supports=[];let alignedScore=0,oppositeScore=0;
- for(const f of frames){const w=HTF_WEIGHT[f.timeframe]||1;if(f.bias===direction)alignedScore+=w;else if(f.bias!=='NEUTRAL')oppositeScore+=w}
- const opposite=direction==='LONG'?'SHORT':'LONG',w=map['1w'],d=map['1d'],h4=map['4h'],h1=map['1h'];
- if(w?.bias===opposite&&d?.bias===opposite)blockers.push('1W ve 1D ana trend işlem yönünün tersinde');
- if(d?.bias===opposite&&h4?.bias===opposite)blockers.push('1D ve 4H yapı işlem yönünün tersinde');
- if(direction==='LONG'&&d?.ema200?.position==='BELOW'&&h4?.ema200?.position==='BELOW'&&d?.trend==='DOWN'&&h4?.trend==='DOWN')blockers.push('1D + 4H EMA200 altında ve düşüş yapısı korunuyor');
- if(direction==='SHORT'&&d?.ema200?.position==='ABOVE'&&h4?.ema200?.position==='ABOVE'&&d?.trend==='UP'&&h4?.trend==='UP')blockers.push('1D + 4H EMA200 üstünde ve yükseliş yapısı korunuyor');
- if(h4?.roleReversal?.active){
-  const bad=direction==='LONG'&&h4.roleReversal.type==='SUPPORT_TO_RESISTANCE'||direction==='SHORT'&&h4.roleReversal.type==='RESISTANCE_TO_SUPPORT';
-  if(bad)blockers.push('4H kırılmış S/R bölgesi işlem yönüne karşı retest halinde');
+function majorTrendDecision(ctx){
+ const frames=ctx?.frames||[],map=Object.fromEntries(frames.map(x=>[x.timeframe,x]));
+ let longScore=0,shortScore=0;
+ for(const f of frames){
+  const w=HTF_WEIGHT[f.timeframe]||1;
+  if(f.bias==='LONG')longScore+=w;
+  else if(f.bias==='SHORT')shortScore+=w;
+  else{
+   if(f.trend==='UP')longScore+=w*.35;
+   else if(f.trend==='DOWN')shortScore+=w*.35;
+   if(f.ema200?.position==='ABOVE')longScore+=w*.20;
+   else if(f.ema200?.position==='BELOW')shortScore+=w*.20;
+  }
  }
- for(const f of [d,h4,h1].filter(Boolean)){
-  const obstacle=direction==='LONG'?f.resistance:f.support;
-  if(obstacle?.distanceAtr<=.35&&(f.timeframe==='1d'||f.timeframe==='4h'))blockers.push(`${f.timeframe.toUpperCase()} ${direction==='LONG'?'direnç':'destek'} çok yakın · ${obstacle.distanceAtr} ATR`);
-  else if(obstacle?.distanceAtr<=.8)warnings.push(`${f.timeframe.toUpperCase()} ${direction==='LONG'?'direnç':'destek'} yakın · ${obstacle.distanceAtr} ATR`);
+ const fallback=[map['4h'],map['1h'],map['1d'],map['1w']].find(f=>f?.bias&&f.bias!=='NEUTRAL');
+ const direction=longScore===shortScore?(fallback?.bias||'LONG'):(longScore>shortScore?'LONG':'SHORT');
+ const total=Math.max(longScore+shortScore,1),edge=Math.abs(longScore-shortScore);
+ const conviction=clamp(Math.round(55+(edge/total)*40),55,95);
+ const warnings=[],supports=[];
+ const side=direction==='LONG'?'UP':'DOWN';
+ for(const f of frames){
+  const favorableSweep=direction==='LONG'?'LOW':'HIGH';
+  if(f.recentSweep?.side===favorableSweep)supports.push(`${f.timeframe.toUpperCase()} likidite sweep ${favorableSweep}`);
+  if(f.marketBreak?.side===side)supports.push(`${f.timeframe.toUpperCase()} ${f.marketBreak.type||'BOS'} ${side}`);
   const target=direction==='LONG'?f.liquidity?.nearestUntakenHigh:f.liquidity?.nearestUntakenLow;
-  const adverse=direction==='LONG'?f.liquidity?.nearestUntakenLow:f.liquidity?.nearestUntakenHigh;
   if(target)supports.push(`${f.timeframe.toUpperCase()} trend yönünde alınmamış likidite · ${target.distanceAtr} ATR`);
-  if(adverse?.distanceAtr<=.4)warnings.push(`${f.timeframe.toUpperCase()} stop tarafında alınmamış likidite çok yakın · ${adverse.distanceAtr} ATR`);
+  const obstacle=direction==='LONG'?f.resistance:f.support;
+  if(obstacle?.distanceAtr<=.35)warnings.push(`${f.timeframe.toUpperCase()} ${direction==='LONG'?'direnç':'destek'} çok yakın · ${obstacle.distanceAtr} ATR`);
+  else if(obstacle?.distanceAtr<=.8)warnings.push(`${f.timeframe.toUpperCase()} ${direction==='LONG'?'direnç':'destek'} yakın · ${obstacle.distanceAtr} ATR`);
  }
- if(alignedScore<4||alignedScore<oppositeScore+1.5)blockers.push(`HTF hizası yetersiz · uyum ${alignedScore.toFixed(1)} / karşı ${oppositeScore.toFixed(1)}`);
  const arrow=f=>!f?'—':f.bias==='LONG'?'↑':f.bias==='SHORT'?'↓':'↔';
- const summary=`1W ${arrow(w)} · 1D ${arrow(d)} · 4H ${arrow(h4)} · 1H ${arrow(h1)}`;
- return{allowed:blockers.length===0,direction,alignedScore:Number(alignedScore.toFixed(1)),oppositeScore:Number(oppositeScore.toFixed(1)),summary,blockers:[...new Set(blockers)],warnings:[...new Set(warnings)],supports:[...new Set(supports)]}
+ const summary=`1W ${arrow(map['1w'])} · 1D ${arrow(map['1d'])} · 4H ${arrow(map['4h'])} · 1H ${arrow(map['1h'])}`;
+ return{direction,longScore:Number(longScore.toFixed(2)),shortScore:Number(shortScore.toFixed(2)),conviction,summary,warnings:[...new Set(warnings)],supports:[...new Set(supports)]}
 }
+function topDownDecision(direction,ctx,price){
+ const major=majorTrendDecision(ctx);
+ const allowed=direction===major.direction;
+ return{
+  allowed,direction,majorDirection:major.direction,
+  alignedScore:direction==='LONG'?major.longScore:major.shortScore,
+  oppositeScore:direction==='LONG'?major.shortScore:major.longScore,
+  summary:major.summary,
+  blockers:allowed?[]:[`Minör yön ${direction}, majör yön ${major.direction} ile ters`],
+  warnings:major.warnings,
+  supports:major.supports,
+  conviction:major.conviction
+ }
+}
+function nearestMajorObstacle(ctx,direction,entry){
+ const frames=ctx?.frames||[];
+ const levels=[];
+ for(const f of frames){
+  const x=direction==='LONG'?f.resistance:f.support;
+  if(!x||!Number.isFinite(Number(x.price)))continue;
+  const p=Number(x.price);
+  if(direction==='LONG'&&p>entry)levels.push({price:p,timeframe:f.timeframe,type:'RESISTANCE'});
+  if(direction==='SHORT'&&p<entry)levels.push({price:p,timeframe:f.timeframe,type:'SUPPORT'});
+ }
+ if(!levels.length)return null;
+ return levels.sort((a,b)=>Math.abs(a.price-entry)-Math.abs(b.price-entry))[0]
+}
+function buildMinorSetup(symbol,tf,c,major){
+ const i=indicatorSnapshot(c),s=detectStructure(c),last=c.at(-1),entry=last.close,av=i.atr||atr(c,14).at(-1)||Math.max(entry*.004,1e-8);
+ const dir=major.direction,up=dir==='LONG',ev=lastRecent(s.events,c,90),sw=lastRecent(s.sweeps,c,70);
+ const score=up?(s.trend==='UP'?2:0)+(ev?.side==='UP'?2:0)+(sw?.side==='LOW'?2:0)+(entry>i.ema50?1:0)+(entry>i.ema200?1:0)
+               :(s.trend==='DOWN'?2:0)+(ev?.side==='DOWN'?2:0)+(sw?.side==='HIGH'?2:0)+(entry<i.ema50?1:0)+(entry<i.ema200?1:0);
+ const liquidityTaken=up?sw?.side==='LOW':sw?.side==='HIGH';
+ const structureAligned=up?(s.trend==='UP'||ev?.side==='UP'):(s.trend==='DOWN'||ev?.side==='DOWN');
+ if(!structureAligned||score<3)return null;
+ const lows=s.pivots?.lows?.slice(-6)||[],highs=s.pivots?.highs?.slice(-6)||[];
+ let stop;
+ if(up){const swing=lows.filter(x=>x.price<entry).at(-1)?.price;stop=Math.min(entry-av*.9,Number.isFinite(swing)?swing-av*.12:Infinity)}
+ else{const swing=highs.filter(x=>x.price>entry).at(-1)?.price;stop=Math.max(entry+av*.9,Number.isFinite(swing)?swing+av*.12:-Infinity)}
+ if(!Number.isFinite(stop)||stop===entry)stop=up?entry-av*1.1:entry+av*1.1;
+ const risk=Math.max(Math.abs(entry-stop),av*.55),sgn=up?1:-1;
+ let tp1=entry+sgn*risk*1.25,tp2=entry+sgn*risk*2.0,tp3=entry+sgn*risk*3.0;
+ const obstacle=nearestMajorObstacle({frames:major.frames},dir,entry);
+ if(obstacle){
+  const room=Math.abs(obstacle.price-entry)/risk;
+  if(room<.75)return null;
+  if(room<3){
+   const safe=entry+sgn*Math.abs(obstacle.price-entry)*.92;
+   tp3=safe;
+   tp2=entry+sgn*Math.min(risk*2.0,Math.abs(safe-entry)*.72);
+   tp1=entry+sgn*Math.min(risk*1.25,Math.abs(safe-entry)*.45);
+  }
+ }
+ const rr=Math.abs(tp3-entry)/risk;
+ if(rr<MIN_RR)return null;
+ const confidence=clamp(Math.round(62+score*3+major.conviction*.12+(liquidityTaken?5:0)),65,95);
+ const context=paContext(s,c,i,av);
+ return{symbol,timeframe:tf,price:entry,direction:dir,confidence,entry,stop,tp1,tp2,tp3,riskReward:Number(rr.toFixed(2)),indicators:i,structure:s,priceAction:context,score:{minor:score},quality:confidence>=82?'GÜÇLÜ':'SEÇİCİ',reasons:[`Majör yön ${dir}`,structureAligned?'Minör yapı majör yönle uyumlu':'',liquidityTaken?'Minör likidite sweep alındı':'Minör yapı kırılımıyla teyit',ev?.side?(ev.type+' '+ev.side):'',entry>i.ema200?'EMA200 üstü':'EMA200 altı'].filter(Boolean).slice(0,7),invalidation:up?'Stop altında minör yapının bozulması':'Stop üzerinde minör yapının bozulması',liquidityTaken,majorObstacle:obstacle}
+}
+
 function topDownCommentary(setup){
  const td=setup?.topDownContext,d=td?.decision,lower=setup?.lowerFrameContext;
  if(!d)return `${setup.symbol} ${setup.timeframe} setupı üst zaman filtresi olmadan gönderilmedi.`;
@@ -521,20 +589,26 @@ async function gemini(setup){const base=topDownCommentary(setup);try{const r=awa
 async function telegram(setup,commentary,provider){const r=await fetch(`${BASE}/api/telegram`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setup,commentary,provider,riskReward:setup.riskReward,mode:'github-pa-v1',signalId:setup.signalId})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||`Telegram HTTP ${r.status}`);return j}
 
 async function buildSetup(symbol,baseTf,topDown){
- const baseCandles=await candles(symbol,baseTf);if(baseCandles.length<200)return null;const last=baseCandles.at(-1);const age=Date.now()-last.closeTime;if(age>12*60*1000)return null;
- const current=analyzeSingle(symbol,baseTf,baseCandles),previous=analyzeSingle(symbol,baseTf,baseCandles.slice(0,-1));if(!isStableSetupPair(current,previous)||current.quality!=='GÜÇLÜ')return null;
+ const baseCandles=await candles(symbol,baseTf);if(baseCandles.length<200)return null;const last=baseCandles.at(-1),age=Date.now()-last.closeTime;if(age>12*60*1000)return null;
+ const majorCore=majorTrendDecision(topDown);
+ const major={...majorCore,frames:topDown.frames};
+ const current=buildMinorSetup(symbol,baseTf,baseCandles,major);
+ if(!current)return null;
+ const previousCandles=baseCandles.slice(0,-1),previous=buildMinorSetup(symbol,baseTf,previousCandles,major);
+ const eventAligned=current.priceAction?.lastEvent?.side===(current.direction==='LONG'?'UP':'DOWN');
+ const sweepAligned=current.priceAction?.lastSweep?.side===(current.direction==='LONG'?'LOW':'HIGH');
+ if(!previous&&!(eventAligned||sweepAligned))return null;
  const lowerFrameContext=frameContext(baseTf,baseCandles),topDecision=topDownDecision(current.direction,topDown,current.price);
- if(!topDecision.allowed){console.log(symbol,baseTf,'HTF-FIRST ENGEL',topDecision.blockers);return null}
+ if(!topDecision.allowed){console.log(symbol,baseTf,'MAJÖR/MİNÖR TERS',topDecision.blockers);return null}
  const wantedConfirm=confirmFrames(baseTf),frames=[current];for(const tf of wantedConfirm){const cc=await candles(symbol,tf);frames.push(analyzeSingle(symbol,tf,cc))}
- const confirm=frames.slice(1),aligned=confirm.filter(x=>x.direction===current.direction).length,opposite=confirm.filter(x=>x.direction!=='WAIT'&&x.direction!==current.direction).length,available=confirm.filter(x=>x.direction!=='WAIT').length,agreement=available?aligned/available:(wantedConfirm.length?0:1);
- if(opposite>0||(wantedConfirm.length>0&&aligned<1))return null;
+ const confirm=frames.slice(1),aligned=confirm.filter(x=>x.direction===current.direction).length,opposite=confirm.filter(x=>x.direction!=='WAIT'&&x.direction!==current.direction).length,available=confirm.filter(x=>x.direction!=='WAIT').length,agreement=available?aligned/available:0;
  const htfContext=await buildHtfContext(symbol,current.price);
  const htfDecision=htfContextDecision(current.direction,htfContext,current.price);
- if(htfDecision.blocked){console.log(symbol,baseTf,'ESKİ HTF GÜVENLİK ENGELİ',htfDecision.reasons);return null}
  const baseLiquidity=buildLiquidityMap(baseCandles,baseTf);
- const confidence=clamp((current.confidence||60)+aligned*2+Math.min(6,Math.round(topDecision.alignedScore/2))-(topDecision.warnings.length?1:0),55,95);if(confidence<MIN_CONFIDENCE||(current.riskReward||0)<MIN_RR)return null;
+ let confidence=clamp(current.confidence+aligned*2-opposite*2-(topDecision.warnings.length?1:0),60,95);
+ if(confidence<MIN_CONFIDENCE)return null;
  const ev=current.priceAction?.lastEvent?.time||0,sw=current.priceAction?.lastSweep?.time||0,ob=current.priceAction?.lastOrderBlock?.time||0,fvg=current.priceAction?.lastFvg?.time||0,signalId=`${symbol}|futures|${baseTf}|${current.direction}|${ev}|${sw}|${ob}|${fvg}`;
- return{...current,market:'futures',timeframe:baseTf,confidence,quality:'GÜÇLÜ',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,multiTimeframe:frames,agreement,mtf:{frames:[baseTf,...wantedConfirm],aligned,opposite,available,status:wantedConfirm.length?'UYUMLU':'BAZ_TF'},htfContext,liquidityContext:{base:baseLiquidity,decision:htfDecision},topDownContext:{...topDown,decision:topDecision},lowerFrameContext,analysisVersion:ANALYSIS_VERSION,signalId,reasons:[`HTF: ${topDecision.summary}`,...(current.reasons||[]),'İki kapanış teyidi',...(topDecision.supports||[]).slice(0,2),...(topDecision.warnings||[]).slice(0,2)].slice(0,10)}
+ return{...current,market:'futures',timeframe:baseTf,confidence,quality:confidence>=82?'GÜÇLÜ':'SEÇİCİ',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,multiTimeframe:frames,agreement,mtf:{frames:[baseTf,...wantedConfirm],aligned,opposite,available,status:'MAJOR_MINOR'},htfContext,liquidityContext:{base:baseLiquidity,decision:htfDecision},topDownContext:{...topDown,decision:topDecision,major:majorCore},lowerFrameContext,analysisVersion:ANALYSIS_VERSION,signalId,reasons:[`MAJÖR ${majorCore.direction}: ${majorCore.summary}`,...(current.reasons||[]),...(topDecision.supports||[]).slice(0,2),...(topDecision.warnings||[]).slice(0,2)].slice(0,10)}
 }
 
 let sent=0;console.log(`ŞAOMİ ${ANALYSIS_VERSION} taraması: ${new Date().toISOString()} · Sinyal TF=${BASE_TFS.join(',')} · HTF=${HTF_ORDER.join('→')}`);
@@ -542,7 +616,7 @@ scanLoop:
 for(const symbol of SYMBOLS){
  try{
   const topDown=await buildTopDownContext(symbol);
-  console.log(symbol,'HTF ÖN ANALİZ',topDownDecision('LONG',topDown,null).summary);
+  const major=majorTrendDecision(topDown); console.log(symbol,'MAJÖR YÖN',major.direction,major.summary,'güç',major.conviction);
   for(const baseTf of BASE_TFS){
    try{
     const active=activeSignalForSymbol(signalState,symbol,baseTf);
