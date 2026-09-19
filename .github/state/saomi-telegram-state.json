@@ -3830,14 +3830,14 @@
           ]
         }
       },
-      "status": "ACTIVE",
-      "stage": 0,
+      "status": "TP2",
+      "stage": 2,
       "enteredAt": "2026-09-19T12:24:59.999Z",
       "lastCheckedAt": "2026-09-19T12:24:21.311Z",
       "notified": {
         "entry": true,
         "tp1": false,
-        "tp2": false,
+        "tp2": true,
         "tp3": false,
         "stop": false,
         "ambiguous": false
@@ -4983,18 +4983,19 @@
           ]
         }
       },
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-19T12:45:59.999Z",
       "lastCheckedAt": "2026-09-19T12:45:12.536Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789821900000
     },
     "SOLUSDT|futures|1m|SHORT|1789820340000|1789820520000|1789820220000|1789821720000": {
       "fingerprint": "SOLUSDT|futures|1m|SHORT|BOS|DOWN|1789820340000|LOW|1789820520000|1789820220000|1789821720000",
@@ -5520,18 +5521,19 @@
           ]
         }
       },
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-19T12:45:59.999Z",
       "lastCheckedAt": "2026-09-19T12:45:19.016Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789821900000
     }
   },
   "history": [
@@ -7856,13 +7858,13 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-19T12:34:56.276Z",
+    "updatedAt": "2026-09-19T12:46:24.568Z",
     "scoredTrades": 7,
     "wins": 5,
     "losses": 2,
     "winRate": 71.43,
-    "tp1Reached": 7,
-    "tp2Reached": 6,
+    "tp1Reached": 8,
+    "tp2Reached": 7,
     "tp3Reached": 5,
     "stopAfterTp1": 0,
     "stopAfterTp2": 0,
@@ -7870,17 +7872,17 @@
     "expired": 2,
     "expiredBeforeEntry": 1,
     "expiredAfterEntry": 1,
-    "active": 3,
-    "waitingEntry": 0,
-    "inTrade": 3,
+    "active": 6,
+    "waitingEntry": 1,
+    "inTrade": 5,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 1,
         "wins": 1,
         "losses": 0,
         "winRate": 100,
-        "tp1Reached": 2,
-        "tp2Reached": 1,
+        "tp1Reached": 3,
+        "tp2Reached": 2,
         "tp3Reached": 1,
         "stopAfterTp1": 0,
         "stopAfterTp2": 0,
@@ -7888,9 +7890,9 @@
         "expired": 0,
         "expiredBeforeEntry": 0,
         "expiredAfterEntry": 0,
-        "active": 1,
-        "waitingEntry": 0,
-        "inTrade": 1
+        "active": 3,
+        "waitingEntry": 1,
+        "inTrade": 2
       },
       "5m": {
         "scoredTrades": 0,
@@ -7906,9 +7908,9 @@
         "expired": 0,
         "expiredBeforeEntry": 0,
         "expiredAfterEntry": 0,
-        "active": 0,
+        "active": 1,
         "waitingEntry": 0,
-        "inTrade": 0
+        "inTrade": 1
       },
       "15m": {
         "scoredTrades": 6,
