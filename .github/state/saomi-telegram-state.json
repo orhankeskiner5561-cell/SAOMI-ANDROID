@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "signals": {
     "BTCUSDT": {
       "fingerprint": "BTCUSDT|futures|15m|LONG|BOS|UP|1789715700000|HIGH|1789719300000|1789713000000|1789722000000",
@@ -14808,5 +14808,55 @@
         "inTrade": 0
       }
     }
+  },
+  "scannerUniverse": {
+    "cursor": 40,
+    "total": 571,
+    "lastRefreshAt": "2026-09-19T21:43:13.030Z",
+    "lastBatchAt": "2026-09-19T21:43:13.033Z",
+    "lastBatch": [
+      "0GUSDT",
+      "1000000BOBUSDT",
+      "1000000MOGUSDT",
+      "1000BONKUSDC",
+      "1000BONKUSDT",
+      "1000CATUSDT",
+      "1000CHEEMSUSDT",
+      "1000FLOKIUSDT",
+      "1000LUNCUSDT",
+      "1000PEPEUSDC",
+      "1000PEPEUSDT",
+      "1000RATSUSDT",
+      "1000SATSUSDT",
+      "1000SHIBUSDC",
+      "1000SHIBUSDT",
+      "1000XECUSDT",
+      "1INCHUSDT",
+      "1MBABYDOGEUSDT",
+      "2ZUSDT",
+      "4USDT",
+      "AAVEUSDC",
+      "AAVEUSDT",
+      "ACEUSDT",
+      "ACHUSDT",
+      "ACTUSDT",
+      "ACUUSDT",
+      "ADAUSDC",
+      "ADAUSDT",
+      "AEROUSDT",
+      "AEVOUSDT",
+      "AGLDUSDT",
+      "AGTUSDT",
+      "AIAUSDT",
+      "AIGENSYNUSDT",
+      "AINUSDT",
+      "AIOTUSDT",
+      "AIOUSDT",
+      "AIXBTUSDT",
+      "AKEUSDT",
+      "AKTUSDT"
+    ],
+    "batchSize": 40,
+    "cyclesCompleted": 0
   }
 }
