@@ -470,24 +470,3 @@ for(const baseTf of BASE_TFS){
   }
 }
 console.log(`ŞAOMİ Telegram MULTI-TF bitti. Gönderilen: ${sent}`);
-let sent=0;console.log(`ŞAOMİ Telegram PA+Gemini V1 taraması: ${new Date().toISOString()}`);
-for(const symbol of SYMBOLS){try{
-  const active=activeSignalForSymbol(signalState,symbol);
-  if(active){
-    await shadowReanalysis(active);
-    console.log(symbol,'AKTİF SİNYAL VAR · yeni işlem üretilmedi');
-    continue;
-  }
-  const setup=await buildSetup(symbol);
-  if(!setup){console.log(symbol,'BEKLE / filtre dışı');continue}
-  const dup=duplicateReason(signalState,setup);
-  if(dup){console.log(symbol,`TEKRAR GÖNDERİLMEDİ (${dup})`,{signalId:setup.signalId});continue}
-  console.log(symbol,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,mtf:setup.mtf});
-  const g=await gemini(setup);
-  const t=await telegram(setup,g.commentary,g.provider);
-  rememberSignal(signalState,setup,t);
-  sent++;
-  console.log(`GÖNDERİLDİ ${symbol}`,t);
-  if(sent>=MAX_SIGNALS){console.log('Bu tur maksimum güçlü sinyal sayısına ulaşıldı.');break}
-}catch(e){console.error(`HATA ${symbol}:`,e?.message||e)}}
-console.log(`ŞAOMİ Telegram PA+Gemini V1 bitti. Gönderilen: ${sent}`);
