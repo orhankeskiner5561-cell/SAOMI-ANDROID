@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "signals": {
     "BTCUSDT": {
       "fingerprint": "BTCUSDT|futures|15m|LONG|BOS|UP|1789715700000|HIGH|1789719300000|1789713000000|1789722000000",
@@ -3191,13 +3191,13 @@
           ]
         }
       },
-      "status": "ACTIVE",
-      "stage": 0,
+      "status": "TP1",
+      "stage": 1,
       "enteredAt": "2026-09-18T20:46:59.999Z",
       "lastCheckedAt": "2026-09-18T20:26:56.696Z",
       "notified": {
         "entry": false,
-        "tp1": false,
+        "tp1": true,
         "tp2": false,
         "tp3": false,
         "stop": false,
@@ -7884,12 +7884,12 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-19T12:54:38.342Z",
+    "updatedAt": "2026-09-19T13:11:10.986Z",
     "scoredTrades": 10,
     "wins": 6,
     "losses": 4,
     "winRate": 60,
-    "tp1Reached": 8,
+    "tp1Reached": 9,
     "tp2Reached": 7,
     "tp3Reached": 6,
     "stopAfterTp1": 0,
@@ -7943,7 +7943,7 @@
         "wins": 4,
         "losses": 2,
         "winRate": 66.67,
-        "tp1Reached": 5,
+        "tp1Reached": 6,
         "tp2Reached": 5,
         "tp3Reached": 4,
         "stopAfterTp1": 0,
