@@ -189,41 +189,41 @@
       "messageId": 125
     },
     "ADAUSDT": {
-      "fingerprint": "ADAUSDT|futures|15m|LONG|BOS|UP|1789738200000|HIGH|1789698600000|1789735500000|1789735500000",
-      "signalId": "ADAUSDT|futures|15m|LONG|1789738200000|1789698600000|1789735500000|1789735500000",
+      "fingerprint": "ADAUSDT|futures|15m|LONG|BOS|UP|1789783200000|HIGH|1789784100000|1789780500000|1789784100000",
+      "signalId": "ADAUSDT|futures|15m|LONG|1789783200000|1789784100000|1789780500000|1789784100000",
       "symbol": "ADAUSDT",
       "market": "futures",
       "timeframe": "15m",
       "direction": "LONG",
       "confidence": 95,
       "riskReward": 3,
-      "sentAt": "2026-09-18T13:53:08.384Z",
-      "entry": 0.2176,
-      "stop": 0.21263951173444984,
-      "tp1": 0.2242966591584927,
-      "tp2": 0.2277690009443778,
-      "tp3": 0.23248146479665044,
-      "messageId": 132,
+      "sentAt": "2026-09-19T02:52:14.152Z",
+      "entry": 0.234,
+      "stop": 0.22428987669473693,
+      "tp1": 0.24710866646210516,
+      "tp2": 0.2539057527757893,
+      "tp3": 0.26313036991578925,
+      "messageId": 150,
       "contextSnapshot": {
-        "previousDayHigh": 0.2042,
-        "previousDayLow": 0.1942,
+        "previousDayHigh": 0.2272,
+        "previousDayLow": 0.2012,
         "previousWeekHigh": 0.2321,
         "previousWeekLow": 0.2001,
-        "dailyAtr": 0.011845786521765607,
-        "dailyEma50": 0.1994303226033533,
-        "extensionAtr": 1.5338514975988697,
-        "riseFrom20dLowPct": 15.010570824524304,
-        "fallFrom20dHighPct": -6.247307195174501,
+        "dailyAtr": 0.013733014985530196,
+        "dailyEma50": 0.20041736898544846,
+        "extensionAtr": 2.445393895654809,
+        "riseFrom20dLowPct": 23.67864693446089,
+        "fallFrom20dHighPct": 0.8186126669539107,
         "nearestResistance": {
           "side": "RESISTANCE",
-          "price": 0.2271,
-          "time": 1788480000000,
+          "price": 0.2545,
+          "time": 1779408000000,
           "timeframe": "1d"
         },
         "nearestSupport": {
           "side": "SUPPORT",
-          "price": 0.2001,
-          "time": 1789084800000,
+          "price": 0.2324,
+          "time": 1774742400000,
           "timeframe": "1d"
         },
         "nearestUntakenHigh": {
@@ -245,12 +245,26 @@
           "timeframe": "4h"
         },
         "brokenSupportRetest": null,
-        "brokenResistanceRetest": null,
+        "brokenResistanceRetest": {
+          "type": "RESISTANCE_TO_SUPPORT",
+          "timeframe": "4h",
+          "level": 0.21576666666666666,
+          "tests": 3,
+          "firstTouchTime": 1789027200000,
+          "lastTouchTime": 1789416000000,
+          "breakTime": 1789689600000,
+          "breakClose": 0.2165,
+          "breakStrengthAtr": 2.37,
+          "retestTime": 1789732800000,
+          "retestClose": 0.2201,
+          "reclaimed": false,
+          "nearNow": false,
+          "active": true
+        },
         "decision": {
           "blocked": false,
           "reasons": [],
           "warnings": [
-            "Yakında 1d direnç",
             "Yukarıda alınmamış likidite havuzu var"
           ]
         }
@@ -1070,6 +1084,100 @@
         }
       },
       "entryCandleOpenTime": 1789764360000
+    },
+    "ADAUSDT|futures|15m|LONG|1789783200000|1789784100000|1789780500000|1789784100000": {
+      "fingerprint": "ADAUSDT|futures|15m|LONG|BOS|UP|1789783200000|HIGH|1789784100000|1789780500000|1789784100000",
+      "signalId": "ADAUSDT|futures|15m|LONG|1789783200000|1789784100000|1789780500000|1789784100000",
+      "symbol": "ADAUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "direction": "LONG",
+      "confidence": 95,
+      "riskReward": 3,
+      "sentAt": "2026-09-19T02:52:14.152Z",
+      "entry": 0.234,
+      "stop": 0.22428987669473693,
+      "tp1": 0.24710866646210516,
+      "tp2": 0.2539057527757893,
+      "tp3": 0.26313036991578925,
+      "messageId": 150,
+      "contextSnapshot": {
+        "previousDayHigh": 0.2272,
+        "previousDayLow": 0.2012,
+        "previousWeekHigh": 0.2321,
+        "previousWeekLow": 0.2001,
+        "dailyAtr": 0.013733014985530196,
+        "dailyEma50": 0.20041736898544846,
+        "extensionAtr": 2.445393895654809,
+        "riseFrom20dLowPct": 23.67864693446089,
+        "fallFrom20dHighPct": 0.8186126669539107,
+        "nearestResistance": {
+          "side": "RESISTANCE",
+          "price": 0.2545,
+          "time": 1779408000000,
+          "timeframe": "1d"
+        },
+        "nearestSupport": {
+          "side": "SUPPORT",
+          "price": 0.2324,
+          "time": 1774742400000,
+          "timeframe": "1d"
+        },
+        "nearestUntakenHigh": {
+          "side": "HIGH",
+          "price": 0.25815,
+          "from": 1776816000000,
+          "to": 1787356800000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "1d"
+        },
+        "nearestUntakenLow": {
+          "side": "LOW",
+          "price": 0.16044999999999998,
+          "from": 1784520000000,
+          "to": 1785355200000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "4h"
+        },
+        "brokenSupportRetest": null,
+        "brokenResistanceRetest": {
+          "type": "RESISTANCE_TO_SUPPORT",
+          "timeframe": "4h",
+          "level": 0.21576666666666666,
+          "tests": 3,
+          "firstTouchTime": 1789027200000,
+          "lastTouchTime": 1789416000000,
+          "breakTime": 1789689600000,
+          "breakClose": 0.2165,
+          "breakStrengthAtr": 2.37,
+          "retestTime": 1789732800000,
+          "retestClose": 0.2201,
+          "reclaimed": false,
+          "nearNow": false,
+          "active": true
+        },
+        "decision": {
+          "blocked": false,
+          "reasons": [],
+          "warnings": [
+            "Yukarıda alınmamış likidite havuzu var"
+          ]
+        }
+      },
+      "status": "WAIT_ENTRY",
+      "stage": 0,
+      "enteredAt": null,
+      "lastCheckedAt": "2026-09-19T02:52:14.152Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
+      }
     }
   },
   "history": [
