@@ -1,9 +1,9 @@
-name: SAOMI Trade AI Liquidity-Sequence Telegram
+name: SAOMI Trade AI Indicator Fusion Telegram
 
 on:
   schedule:
     # GitHub Actions minimum guvenli siklik: her 5 dakikada bir.
-    # Önce 1W, 1D, 4H, 1H majör yönü belirler; sonra 1m, 5m, 15m, 30m içinde likidite sweep -> BOS/CHoCH -> retest sırasını arar.
+    # 1W, 1D, 4H, 1H Indicator Fusion ile majör yönü belirler; 1m, 5m, 15m, 30m içinde likidite sweep -> BOS/CHoCH -> retest girişi arar.
     - cron: '*/5 * * * *'
   workflow_dispatch:
   push:
@@ -30,10 +30,10 @@ jobs:
       - name: Node surumunu goster
         run: node --version
 
-      - name: Liquidity-sequence tarayici syntax kontrolu
+      - name: Indicator Fusion tarayici syntax kontrolu
         run: node --check .github/scripts/saomi-telegram-pa-v1.mjs
 
-      - name: Majör yön + liquidity sweep-break-retest girişi tara ve Telegram'a gonder
+      - name: Indicator Fusion majör yön + küçük TF likidite girişi tara ve Telegram'a gonder
         run: node .github/scripts/saomi-telegram-pa-v1.mjs
 
       - name: Dedupe state kaydet
