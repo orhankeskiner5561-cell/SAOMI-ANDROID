@@ -2,15 +2,43 @@ import fs from 'node:fs';
 const BASE = 'https://saomi-trade-ai.vercel.app';
 const FUTURES = 'https://www.binance.com';
 const SYMBOLS = ['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT'];
-const BASE_TF = '15m';
-const CONFIRM_TFS = ['1h','4h'];
+const BASE_TFS = ['1m','5m','15m','30m','1h','4h'];
+const CONFIRM_MAP = {
+  '1m':['5m','15m'],
+  '5m':['15m','30m'],
+  '15m':['30m','1h','4h'],
+  '30m':['1h','4h'],
+  '1h':['4h'],
+  '4h':[]
+};
 const MIN_CONFIDENCE = 84;
 const MIN_RR = 2.5;
-const MAX_SIGNALS = 3;
+const MAX_SIGNALS = 8;
 const STATE_PATH = '.github/state/saomi-telegram-state.json';
-const DUP_TTL_MS = 12*60*60*1000;
-const SYMBOL_COOLDOWN_MS = 30*60*1000;
+const DEFAULT_DUP_TTL_MS = 12*60*60*1000;
+const DEFAULT_COOLDOWN_MS = 30*60*1000;
+const TF_DUP_TTL_MS = {
+  '1m':30*60*1000,
+  '5m':2*60*60*1000,
+  '15m':6*60*60*1000,
+  '30m':8*60*60*1000,
+  '1h':12*60*60*1000,
+  '4h':24*60*60*1000
+};
+const TF_COOLDOWN_MS = {
+  '1m':5*60*1000,
+  '5m':15*60*1000,
+  '15m':30*60*1000,
+  '30m':60*60*1000,
+  '1h':2*60*60*1000,
+  '4h':8*60*60*1000
+};
 const REANALYSIS_MAX = 3;
+
+const confirmFrames=tf=>CONFIRM_MAP[tf]||[];
+const signalStateKey=(symbol,tf)=>`${String(symbol||'').toUpperCase()}|${String(tf||'15m').toLowerCase()}`;
+const cooldownMs=tf=>TF_COOLDOWN_MS[tf]??DEFAULT_COOLDOWN_MS;
+const dupTtlMs=tf=>TF_DUP_TTL_MS[tf]??DEFAULT_DUP_TTL_MS;
 
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const finite=a=>a.filter(Number.isFinite);
@@ -284,21 +312,30 @@ function loadSignalState(){
 function saveSignalState(state){fs.mkdirSync('.github/state',{recursive:true});fs.writeFileSync(STATE_PATH,JSON.stringify(state,null,2)+'\n')}
 function structuralFingerprint(setup){const pa=setup?.priceAction||{};return [setup.symbol,'futures',setup.timeframe,setup.direction,pa.lastEvent?.type||'',pa.lastEvent?.side||'',pa.lastEvent?.time||0,pa.lastSweep?.side||'',pa.lastSweep?.time||0,pa.lastOrderBlock?.time||0,pa.lastFvg?.time||0].join('|')}
 function duplicateReason(state,setup){
-  const active=Object.values(state.activeSignals||{}).find(x=>x?.symbol===setup.symbol&&!['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status));
-  if(active)return 'aktif sinyal var';
-  const prev=state.signals?.[setup.symbol];
+  const tf=String(setup.timeframe||'15m').toLowerCase();
+  const active=Object.values(state.activeSignals||{}).find(x=>
+    x?.symbol===setup.symbol &&
+    String(x.timeframe||'15m').toLowerCase()===tf &&
+    !['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status)
+  );
+  if(active)return 'aynı timeframe aktif sinyal var';
+  const keyed=state.signals?.[signalStateKey(setup.symbol,tf)];
+  const legacy=Object.values(state.signals||{})
+    .filter(x=>x?.symbol===setup.symbol&&String(x.timeframe||'15m').toLowerCase()===tf)
+    .sort((a,b)=>(Date.parse(b.sentAt||0)||0)-(Date.parse(a.sentAt||0)||0))[0];
+  const prev=keyed||legacy;
   if(!prev)return null;
   const sentAt=Date.parse(prev.sentAt||0),age=Number.isFinite(sentAt)?Date.now()-sentAt:Infinity;
-  if(age<SYMBOL_COOLDOWN_MS)return 'sembol cooldown';
+  if(age<cooldownMs(tf))return 'timeframe cooldown';
   const fp=structuralFingerprint(setup);
-  if(prev.fingerprint===fp&&age<DUP_TTL_MS)return 'aynı yapısal setup';
+  if(prev.fingerprint===fp&&age<dupTtlMs(tf))return 'aynı yapısal setup';
   return null
 }
 function rememberSignal(state,setup,telegramResult){
   state.version=2;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
   const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup);
   const base={fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null,contextSnapshot:setup.htfContext?{previousDayHigh:setup.htfContext.previousDayHigh,previousDayLow:setup.htfContext.previousDayLow,previousWeekHigh:setup.htfContext.previousWeekHigh,previousWeekLow:setup.htfContext.previousWeekLow,dailyAtr:setup.htfContext.dailyAtr,dailyEma50:setup.htfContext.dailyEma50,extensionAtr:setup.htfContext.extensionAtr,riseFrom20dLowPct:setup.htfContext.riseFrom20dLowPct,fallFrom20dHighPct:setup.htfContext.fallFrom20dHighPct,nearestResistance:setup.htfContext.nearestResistance,nearestSupport:setup.htfContext.nearestSupport,nearestUntakenHigh:setup.htfContext.nearestUntakenHigh,nearestUntakenLow:setup.htfContext.nearestUntakenLow,brokenSupportRetest:setup.htfContext.brokenSupportRetest,brokenResistanceRetest:setup.htfContext.brokenResistanceRetest,decision:setup.liquidityContext?.decision||null}:null};
-  state.signals[setup.symbol]=base;
+  state.signals[signalStateKey(setup.symbol,setup.timeframe)]=base;
   state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};
   for(const [k,v] of Object.entries(state.signals)){const t=Date.parse(v?.sentAt||0);if(!Number.isFinite(t)||Date.now()-t>7*24*60*60*1000)delete state.signals[k]}
   saveSignalState(state)
@@ -306,13 +343,18 @@ function rememberSignal(state,setup,telegramResult){
 const signalState=loadSignalState();
 async function candles(symbol,tf){const key=`${symbol}|${tf}`;if(cache.has(key))return cache.get(key);const u=`${FUTURES}/fapi/v1/klines?symbol=${symbol}&interval=${tf}&limit=500`;const r=await fetch(u);if(!r.ok)throw new Error(`${symbol} ${tf} Binance HTTP ${r.status}`);const d=await r.json();const rows=d.map(k=>({time:Number(k[0]),openTime:Number(k[0]),open:Number(k[1]),high:Number(k[2]),low:Number(k[3]),close:Number(k[4]),volume:Number(k[5]),closeTime:Number(k[6])})).filter(x=>x.closeTime<Date.now()-500);cache.set(key,rows);return rows}
 
-function activeSignalForSymbol(state,symbol){
-  return Object.values(state.activeSignals||{}).find(x=>x?.symbol===symbol&&!['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status))||null
+function activeSignalForSymbol(state,symbol,timeframe){
+  const tf=String(timeframe||'15m').toLowerCase();
+  return Object.values(state.activeSignals||{}).find(x=>
+    x?.symbol===symbol &&
+    String(x.timeframe||'15m').toLowerCase()===tf &&
+    !['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status)
+  )||null
 }
 async function geminiRecheck(active,current,frames,verdict){
   const payload={
     analysisProfile:'PRICE_ACTION_RECHECK',
-    symbol:active.symbol,market:'futures',timeframe:active.timeframe||BASE_TF,
+    symbol:active.symbol,market:'futures',timeframe:active.timeframe||'15m',
     originalDirection:active.direction,originalEntry:active.entry,originalStop:active.stop,
     originalTp1:active.tp1,originalTp2:active.tp2,originalTp3:active.tp3,
     currentDirection:current.direction,currentConfidence:current.confidence,currentScore:current.score,
@@ -333,15 +375,16 @@ async function shadowReanalysis(active){
   active.reanalysis.snapshots=Array.isArray(active.reanalysis.snapshots)?active.reanalysis.snapshots:[];
   if(active.reanalysis.snapshots.length>=REANALYSIS_MAX)return false;
 
-  const base=await candles(active.symbol,BASE_TF);
+  const baseTf=String(active.timeframe||'15m').toLowerCase();
+  const base=await candles(active.symbol,baseTf);
   if(base.length<180)return false;
   const last=base.at(-1);
   const sentAt=Date.parse(active.sentAt||0);
   if(!last?.closeTime||last.closeTime<=sentAt||last.closeTime<=Number(active.reanalysis.lastCandleCloseTime||0))return false;
 
-  const current=analyzeSingle(active.symbol,BASE_TF,base);
+  const current=analyzeSingle(active.symbol,baseTf,base);
   const frames=[current];
-  for(const tf of CONFIRM_TFS){frames.push(analyzeSingle(active.symbol,tf,await candles(active.symbol,tf)))}
+  for(const tf of confirmFrames(baseTf)){frames.push(analyzeSingle(active.symbol,tf,await candles(active.symbol,tf)))}
   const mtf=frames.slice(1);
   const mtfAligned=mtf.filter(x=>x.direction===active.direction).length;
   const mtfOpposite=mtf.filter(x=>x.direction!=='WAIT'&&x.direction!==active.direction).length;
@@ -386,20 +429,47 @@ function aiPayload(a){return{analysisProfile:'PRICE_ACTION_CONFIRMATION',symbol:
 async function gemini(setup){const r=await fetch(`${BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(aiPayload(setup))});if(!r.ok)throw new Error(`Gemini HTTP ${r.status}`);const j=await r.json();const commentary=String(j.commentary||'').trim(),provider=String(j.provider||'');if(!/gemini/i.test(provider))throw new Error(`Gemini provider doğrulanmadı: ${provider||'boş'}`);if(!validAiText(commentary,setup))throw new Error('Gemini yorumu doğrulama filtresini geçmedi');return{provider,commentary}}
 async function telegram(setup,commentary,provider){const r=await fetch(`${BASE}/api/telegram`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setup,commentary,provider,riskReward:setup.riskReward,mode:'github-pa-v1',signalId:setup.signalId})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||`Telegram HTTP ${r.status}`);return j}
 
-async function buildSetup(symbol){
- const baseCandles=await candles(symbol,BASE_TF);if(baseCandles.length<200)return null;const last=baseCandles.at(-1);const age=Date.now()-last.closeTime;if(age>12*60*1000)return null;
- const current=analyzeSingle(symbol,BASE_TF,baseCandles),previous=analyzeSingle(symbol,BASE_TF,baseCandles.slice(0,-1));if(!isStableSetupPair(current,previous)||current.quality!=='GÜÇLÜ')return null;
- const frames=[current];for(const tf of CONFIRM_TFS){const c=await candles(symbol,tf);frames.push(analyzeSingle(symbol,tf,c))}
- const confirm=frames.slice(1),aligned=confirm.filter(x=>x.direction===current.direction).length,opposite=confirm.filter(x=>x.direction!=='WAIT'&&x.direction!==current.direction).length,available=confirm.filter(x=>x.direction!=='WAIT').length,agreement=available?aligned/available:0;if(opposite>0||aligned<1)return null;
+async function buildSetup(symbol,baseTf){
+ const baseCandles=await candles(symbol,baseTf);if(baseCandles.length<200)return null;const last=baseCandles.at(-1);const age=Date.now()-last.closeTime;if(age>12*60*1000)return null;
+ const current=analyzeSingle(symbol,baseTf,baseCandles),previous=analyzeSingle(symbol,baseTf,baseCandles.slice(0,-1));if(!isStableSetupPair(current,previous)||current.quality!=='GÜÇLÜ')return null;
+ const wantedConfirm=confirmFrames(baseTf),frames=[current];for(const tf of wantedConfirm){const cc=await candles(symbol,tf);frames.push(analyzeSingle(symbol,tf,cc))}
+ const confirm=frames.slice(1),aligned=confirm.filter(x=>x.direction===current.direction).length,opposite=confirm.filter(x=>x.direction!=='WAIT'&&x.direction!==current.direction).length,available=confirm.filter(x=>x.direction!=='WAIT').length,agreement=available?aligned/available:(wantedConfirm.length?0:1);
+ if(opposite>0||(wantedConfirm.length>0&&aligned<1))return null;
  const htfContext=await buildHtfContext(symbol,current.price);
  const htfDecision=htfContextDecision(current.direction,htfContext,current.price);
- if(htfDecision.blocked){console.log(symbol,'HTF CONTEXT ENGELLEDİ',htfDecision.reasons);return null}
- const baseLiquidity=buildLiquidityMap(baseCandles,BASE_TF);
+ if(htfDecision.blocked){console.log(symbol,baseTf,'HTF CONTEXT ENGELLEDİ',htfDecision.reasons);return null}
+ const baseLiquidity=buildLiquidityMap(baseCandles,baseTf);
  const confidence=clamp((current.confidence||60)+aligned*3-(htfDecision.warnings.length?1:0),55,95);if(confidence<MIN_CONFIDENCE||(current.riskReward||0)<MIN_RR)return null;
- const ev=current.priceAction?.lastEvent?.time||0,sw=current.priceAction?.lastSweep?.time||0,ob=current.priceAction?.lastOrderBlock?.time||0,fvg=current.priceAction?.lastFvg?.time||0,signalId=`${symbol}|futures|${BASE_TF}|${current.direction}|${ev}|${sw}|${ob}|${fvg}`;
- return{...current,market:'futures',confidence,quality:'GÜÇLÜ',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,multiTimeframe:frames,agreement,mtf:{frames:[BASE_TF,...CONFIRM_TFS],aligned,opposite,available,status:'UYUMLU'},htfContext,liquidityContext:{base:baseLiquidity,decision:htfDecision},signalId,reasons:[...(current.reasons||[]),'İki kapanış teyidi','MTF uyumu',...htfDecision.warnings].slice(0,9)}
+ const ev=current.priceAction?.lastEvent?.time||0,sw=current.priceAction?.lastSweep?.time||0,ob=current.priceAction?.lastOrderBlock?.time||0,fvg=current.priceAction?.lastFvg?.time||0,signalId=`${symbol}|futures|${baseTf}|${current.direction}|${ev}|${sw}|${ob}|${fvg}`;
+ return{...current,market:'futures',timeframe:baseTf,confidence,quality:'GÜÇLÜ',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,multiTimeframe:frames,agreement,mtf:{frames:[baseTf,...wantedConfirm],aligned,opposite,available,status:wantedConfirm.length?'UYUMLU':'BAZ_TF'},htfContext,liquidityContext:{base:baseLiquidity,decision:htfDecision},signalId,reasons:[...(current.reasons||[]),'İki kapanış teyidi',...(wantedConfirm.length?['MTF uyumu']:['4H baz setup']),...htfDecision.warnings].slice(0,9)}
 }
 
+let sent=0;console.log(`ŞAOMİ Telegram MULTI-TF taraması: ${new Date().toISOString()} · TF=${BASE_TFS.join(',')}`);
+scanLoop:
+for(const baseTf of BASE_TFS){
+  for(const symbol of SYMBOLS){
+    try{
+      const active=activeSignalForSymbol(signalState,symbol,baseTf);
+      if(active){
+        await shadowReanalysis(active);
+        console.log(symbol,baseTf,'AKTİF SİNYAL VAR · aynı timeframe için yeni işlem üretilmedi');
+        continue;
+      }
+      const setup=await buildSetup(symbol,baseTf);
+      if(!setup){console.log(symbol,baseTf,'BEKLE / filtre dışı');continue}
+      const dup=duplicateReason(signalState,setup);
+      if(dup){console.log(symbol,baseTf,`TEKRAR GÖNDERİLMEDİ (${dup})`,{signalId:setup.signalId});continue}
+      console.log(symbol,baseTf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,mtf:setup.mtf});
+      const g=await gemini(setup);
+      const t=await telegram(setup,g.commentary,g.provider);
+      rememberSignal(signalState,setup,t);
+      sent++;
+      console.log(`GÖNDERİLDİ ${symbol} ${baseTf}`,t);
+      if(sent>=MAX_SIGNALS){console.log('Bu tur maksimum güçlü sinyal sayısına ulaşıldı.');break scanLoop}
+    }catch(e){console.error(`HATA ${symbol} ${baseTf}:`,e?.message||e)}
+  }
+}
+console.log(`ŞAOMİ Telegram MULTI-TF bitti. Gönderilen: ${sent}`);
 let sent=0;console.log(`ŞAOMİ Telegram PA+Gemini V1 taraması: ${new Date().toISOString()}`);
 for(const symbol of SYMBOLS){try{
   const active=activeSignalForSymbol(signalState,symbol);
