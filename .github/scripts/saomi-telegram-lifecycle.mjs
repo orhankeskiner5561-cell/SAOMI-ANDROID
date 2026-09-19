@@ -285,10 +285,17 @@ for(const [id,sig] of entries){
   }
 }
 
-state.performance=performance(state);
-if(changed){
+const nextPerformance=performance(state);
+const comparablePerformance=p=>{
+  if(!p||typeof p!=='object')return {};
+  const {updatedAt,...rest}=p;
+  return rest
+};
+const performanceChanged=JSON.stringify(comparablePerformance(state.performance))!==JSON.stringify(comparablePerformance(nextPerformance));
+if(changed||performanceChanged){
+  state.performance=nextPerformance;
   saveState(state);
-  console.log('Lifecycle state güncellendi',state.performance);
+  console.log(performanceChanged?'Performans/timeframe özeti güncellendi':'Lifecycle state güncellendi',state.performance);
 }else{
   console.log('Yeni lifecycle olayı yok',state.performance);
 }
