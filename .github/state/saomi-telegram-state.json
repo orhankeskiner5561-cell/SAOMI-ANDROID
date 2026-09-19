@@ -4088,213 +4088,6 @@
     }
   },
   "activeSignals": {
-    "SOLUSDT|futures|15m|LONG|1789738200000|1789747200000|1789736400000|1789742700000": {
-      "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789738200000|HIGH|1789747200000|1789736400000|1789742700000",
-      "signalId": "SOLUSDT|futures|15m|LONG|1789738200000|1789747200000|1789736400000|1789742700000",
-      "symbol": "SOLUSDT",
-      "market": "futures",
-      "timeframe": "15m",
-      "direction": "LONG",
-      "confidence": 91,
-      "riskReward": 3,
-      "sentAt": "2026-09-18T16:26:33.136Z",
-      "entry": 111.5,
-      "stop": 105.18740559663132,
-      "tp1": 120.02200244454772,
-      "tp2": 124.44081852690579,
-      "tp3": 130.43778321010603,
-      "messageId": 144,
-      "contextSnapshot": {
-        "previousDayHigh": 102.03,
-        "previousDayLow": 98.41,
-        "previousWeekHigh": 107.03,
-        "previousWeekLow": 97.36,
-        "dailyAtr": 4.577351027374949,
-        "dailyEma50": 93.09459593789441,
-        "extensionAtr": 4.020972818565075,
-        "riseFrom20dLowPct": 16.485582950271628,
-        "fallFrom20dHighPct": 3.778853313477293,
-        "nearestResistance": {
-          "side": "RESISTANCE",
-          "price": 126.938,
-          "time": 1703462400000,
-          "timeframe": "1w"
-        },
-        "nearestSupport": {
-          "side": "SUPPORT",
-          "price": 109.162,
-          "time": 1722816000000,
-          "timeframe": "1w"
-        },
-        "nearestUntakenHigh": {
-          "side": "HIGH",
-          "price": 128.52,
-          "from": 1766361600000,
-          "to": 1769558400000,
-          "taken": false,
-          "takenAt": null,
-          "timeframe": "1d"
-        },
-        "nearestUntakenLow": {
-          "side": "LOW",
-          "price": 75.24953124999999,
-          "from": 1784476800000,
-          "to": 1787011200000,
-          "taken": false,
-          "takenAt": null,
-          "timeframe": "4h"
-        },
-        "brokenSupportRetest": null,
-        "brokenResistanceRetest": {
-          "type": "RESISTANCE_TO_SUPPORT",
-          "timeframe": "4h",
-          "level": 104.68833333333335,
-          "tests": 6,
-          "firstTouchTime": 1788192000000,
-          "lastTouchTime": 1789416000000,
-          "breakTime": 1789704000000,
-          "breakClose": 105.75,
-          "breakStrengthAtr": 0.6,
-          "retestTime": 1789718400000,
-          "retestClose": 105.71,
-          "reclaimed": false,
-          "nearNow": false,
-          "active": true
-        },
-        "decision": {
-          "blocked": false,
-          "reasons": [],
-          "warnings": [
-            "Fiyat günlük EMA50'den 4.0 ATR uzakta",
-            "Yukarıda alınmamış likidite havuzu var"
-          ]
-        }
-      },
-      "status": "ACTIVE",
-      "stage": 0,
-      "enteredAt": "2026-09-18T16:26:59.999Z",
-      "lastCheckedAt": "2026-09-18T16:26:33.136Z",
-      "notified": {
-        "entry": false,
-        "tp1": false,
-        "tp2": false,
-        "tp3": false,
-        "stop": false,
-        "ambiguous": false
-      },
-      "entryCandleOpenTime": 1789748760000,
-      "reanalysis": {
-        "max": 3,
-        "snapshots": [
-          {
-            "no": 1,
-            "checkedAt": "2026-09-18T16:40:23.365Z",
-            "candleCloseTime": 1789748999999,
-            "price": 111.76,
-            "originalDirection": "LONG",
-            "currentDirection": "LONG",
-            "currentConfidence": 84,
-            "score": {
-              "long": 5.8,
-              "short": 1.8
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 94
-              },
-              {
-                "timeframe": "4h",
-                "direction": "LONG",
-                "confidence": 87
-              }
-            ],
-            "mtfAligned": 2,
-            "mtfOpposite": 0,
-            "verdict": "AYNI_YON",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          },
-          {
-            "no": 2,
-            "checkedAt": "2026-09-18T16:51:43.145Z",
-            "candleCloseTime": 1789749899999,
-            "price": 111.95,
-            "originalDirection": "LONG",
-            "currentDirection": "LONG",
-            "currentConfidence": 84,
-            "score": {
-              "long": 5.8,
-              "short": 1.8
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 94
-              },
-              {
-                "timeframe": "4h",
-                "direction": "LONG",
-                "confidence": 87
-              }
-            ],
-            "mtfAligned": 2,
-            "mtfOpposite": 0,
-            "verdict": "AYNI_YON",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          },
-          {
-            "no": 3,
-            "checkedAt": "2026-09-18T17:11:13.886Z",
-            "candleCloseTime": 1789750799999,
-            "price": 111.71,
-            "originalDirection": "LONG",
-            "currentDirection": "LONG",
-            "currentConfidence": 84,
-            "score": {
-              "long": 5.8,
-              "short": 1.8
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 94
-              },
-              {
-                "timeframe": "4h",
-                "direction": "LONG",
-                "confidence": 87
-              }
-            ],
-            "mtfAligned": 2,
-            "mtfOpposite": 0,
-            "verdict": "AYNI_YON",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          }
-        ],
-        "lastCandleCloseTime": 1789750799999,
-        "summary": {
-          "same": 3,
-          "wait": 0,
-          "opposite": 0,
-          "total": 3
-        }
-      }
-    },
     "XRPUSDT|futures|15m|LONG|1789758000000|1789761600000|1789757100000|1789759800000": {
       "fingerprint": "XRPUSDT|futures|15m|LONG|BOS|UP|1789758000000|HIGH|1789761600000|1789757100000|1789759800000",
       "signalId": "XRPUSDT|futures|15m|LONG|1789758000000|1789761600000|1789757100000|1789759800000",
@@ -10905,10 +10698,223 @@
       "finalStage": 0,
       "maxStage": 0,
       "exitPrice": 767.544500322196
+    },
+    {
+      "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789738200000|HIGH|1789747200000|1789736400000|1789742700000",
+      "signalId": "SOLUSDT|futures|15m|LONG|1789738200000|1789747200000|1789736400000|1789742700000",
+      "symbol": "SOLUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "direction": "LONG",
+      "confidence": 91,
+      "riskReward": 3,
+      "sentAt": "2026-09-18T16:26:33.136Z",
+      "entry": 111.5,
+      "stop": 105.18740559663132,
+      "tp1": 120.02200244454772,
+      "tp2": 124.44081852690579,
+      "tp3": 130.43778321010603,
+      "messageId": 144,
+      "contextSnapshot": {
+        "previousDayHigh": 102.03,
+        "previousDayLow": 98.41,
+        "previousWeekHigh": 107.03,
+        "previousWeekLow": 97.36,
+        "dailyAtr": 4.577351027374949,
+        "dailyEma50": 93.09459593789441,
+        "extensionAtr": 4.020972818565075,
+        "riseFrom20dLowPct": 16.485582950271628,
+        "fallFrom20dHighPct": 3.778853313477293,
+        "nearestResistance": {
+          "side": "RESISTANCE",
+          "price": 126.938,
+          "time": 1703462400000,
+          "timeframe": "1w"
+        },
+        "nearestSupport": {
+          "side": "SUPPORT",
+          "price": 109.162,
+          "time": 1722816000000,
+          "timeframe": "1w"
+        },
+        "nearestUntakenHigh": {
+          "side": "HIGH",
+          "price": 128.52,
+          "from": 1766361600000,
+          "to": 1769558400000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "1d"
+        },
+        "nearestUntakenLow": {
+          "side": "LOW",
+          "price": 75.24953124999999,
+          "from": 1784476800000,
+          "to": 1787011200000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "4h"
+        },
+        "brokenSupportRetest": null,
+        "brokenResistanceRetest": {
+          "type": "RESISTANCE_TO_SUPPORT",
+          "timeframe": "4h",
+          "level": 104.68833333333335,
+          "tests": 6,
+          "firstTouchTime": 1788192000000,
+          "lastTouchTime": 1789416000000,
+          "breakTime": 1789704000000,
+          "breakClose": 105.75,
+          "breakStrengthAtr": 0.6,
+          "retestTime": 1789718400000,
+          "retestClose": 105.71,
+          "reclaimed": false,
+          "nearNow": false,
+          "active": true
+        },
+        "decision": {
+          "blocked": false,
+          "reasons": [],
+          "warnings": [
+            "Fiyat günlük EMA50'den 4.0 ATR uzakta",
+            "Yukarıda alınmamış likidite havuzu var"
+          ]
+        }
+      },
+      "status": "EXPIRED",
+      "stage": 0,
+      "enteredAt": "2026-09-18T16:26:59.999Z",
+      "lastCheckedAt": "2026-09-18T16:26:33.136Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
+      },
+      "entryCandleOpenTime": 1789748760000,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-18T16:40:23.365Z",
+            "candleCloseTime": 1789748999999,
+            "price": 111.76,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 84,
+            "score": {
+              "long": 5.8,
+              "short": 1.8
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 87
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-18T16:51:43.145Z",
+            "candleCloseTime": 1789749899999,
+            "price": 111.95,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 84,
+            "score": {
+              "long": 5.8,
+              "short": 1.8
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 87
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T17:11:13.886Z",
+            "candleCloseTime": 1789750799999,
+            "price": 111.71,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 84,
+            "score": {
+              "long": 5.8,
+              "short": 1.8
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 94
+              },
+              {
+                "timeframe": "4h",
+                "direction": "LONG",
+                "confidence": 87
+              }
+            ],
+            "mtfAligned": 2,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "SOLUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          }
+        ],
+        "lastCandleCloseTime": 1789750799999,
+        "summary": {
+          "same": 3,
+          "wait": 0,
+          "opposite": 0,
+          "total": 3
+        }
+      },
+      "result": "EXPIRED",
+      "closedAt": "2026-09-19T16:26:59.999Z",
+      "finalStage": 0,
+      "maxStage": 0,
+      "expiryKind": "ACTIVE_TIMEOUT",
+      "preExpiryStatus": "ACTIVE"
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-19T15:37:27.662Z",
+    "updatedAt": "2026-09-19T16:34:10.675Z",
     "scoredTrades": 11,
     "wins": 6,
     "losses": 5,
@@ -10919,12 +10925,12 @@
     "stopAfterTp1": 0,
     "stopAfterTp2": 0,
     "ambiguous": 2,
-    "expired": 3,
+    "expired": 4,
     "expiredBeforeEntry": 2,
-    "expiredAfterEntry": 1,
-    "active": 2,
+    "expiredAfterEntry": 2,
+    "active": 1,
     "waitingEntry": 0,
-    "inTrade": 2,
+    "inTrade": 1,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 3,
@@ -10973,12 +10979,12 @@
         "stopAfterTp1": 0,
         "stopAfterTp2": 0,
         "ambiguous": 0,
-        "expired": 2,
+        "expired": 3,
         "expiredBeforeEntry": 1,
-        "expiredAfterEntry": 1,
-        "active": 2,
+        "expiredAfterEntry": 2,
+        "active": 1,
         "waitingEntry": 0,
-        "inTrade": 2
+        "inTrade": 1
       },
       "30m": {
         "scoredTrades": 0,
