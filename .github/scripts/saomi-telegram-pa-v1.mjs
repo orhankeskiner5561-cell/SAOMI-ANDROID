@@ -78,7 +78,7 @@ function wickTrendLines(c,structure=null){
    const row={kind,a:{i:A.i,time:A.time,price:A.price},b:{i:B.i,time:B.time,price:B.price},slopePerBar:slope,current,absoluteDistance:Math.abs(distance),distanceAtr:Number(Math.abs(distanceAtr).toFixed(2)),touches,breaches,score:Number(score.toFixed(2)),direction:Math.abs(slope)<=tol*.035?'FLAT':slope>0?'UP':'DOWN'};
    if(!best||row.score>best.score)best=row
   }
-  if(!best)return null;const broken=kind==='support'?last.close<best.current-tol:last.close>best.current+tol;return{...best,broken,breakSide:broken?(kind==='support'?'DOWN':'UP'):null,tolerance:tol}
+  if(!best||best.score<1.5||best.breaches>1)return null;const broken=kind==='support'?last.close<best.current-tol:last.close>best.current+tol;return{...best,broken,breakSide:broken?(kind==='support'?'DOWN':'UP'):null,tolerance:tol}
  };
  const support=build(st.pivots?.lows,'support'),resistance=build(st.pivots?.highs,'resistance');let bull=0,bear=0;
  if(support?.direction==='UP'&&!support.broken)bull+=2;if(resistance?.direction==='UP')bull+=.7;if(resistance?.broken&&resistance.breakSide==='UP')bull+=2.3;
