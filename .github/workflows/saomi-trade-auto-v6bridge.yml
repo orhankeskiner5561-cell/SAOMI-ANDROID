@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Repo kodunu al
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Node surumunu goster
         run: node --version
