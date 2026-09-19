@@ -7024,18 +7024,19 @@
           ]
         }
       },
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-19T19:35:29.570Z",
       "lastCheckedAt": "2026-09-19T19:35:22.958Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789846500000
     }
   },
   "history": [
@@ -14608,7 +14609,7 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-19T17:11:40.729Z",
+    "updatedAt": "2026-09-19T19:40:48.399Z",
     "scoredTrades": 12,
     "wins": 6,
     "losses": 6,
@@ -14622,9 +14623,9 @@
     "expired": 4,
     "expiredBeforeEntry": 2,
     "expiredAfterEntry": 2,
-    "active": 1,
+    "active": 2,
     "waitingEntry": 0,
-    "inTrade": 1,
+    "inTrade": 2,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 3,
@@ -14676,9 +14677,9 @@
         "expired": 3,
         "expiredBeforeEntry": 1,
         "expiredAfterEntry": 2,
-        "active": 1,
+        "active": 2,
         "waitingEntry": 0,
-        "inTrade": 1
+        "inTrade": 2
       },
       "30m": {
         "scoredTrades": 0,
