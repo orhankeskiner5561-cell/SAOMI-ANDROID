@@ -3,8 +3,25 @@ import fs from 'node:fs';
 const BASE='https://saomi-trade-ai.vercel.app';
 const FUTURES='https://www.binance.com';
 const STATE_PATH='.github/state/saomi-telegram-state.json';
-const PENDING_EXPIRY_MS=12*60*60*1000;
-const ACTIVE_EXPIRY_MS=72*60*60*1000;
+const TRACKED_TFS=['1m','5m','15m','30m','1h','4h'];
+const PENDING_EXPIRY_BY_TF={
+  '1m':20*60*1000,
+  '5m':60*60*1000,
+  '15m':3*60*60*1000,
+  '30m':6*60*60*1000,
+  '1h':12*60*60*1000,
+  '4h':48*60*60*1000
+};
+const ACTIVE_EXPIRY_BY_TF={
+  '1m':6*60*60*1000,
+  '5m':12*60*60*1000,
+  '15m':24*60*60*1000,
+  '30m':36*60*60*1000,
+  '1h':72*60*60*1000,
+  '4h':7*24*60*60*1000
+};
+const pendingExpiryMs=tf=>PENDING_EXPIRY_BY_TF[String(tf||'15m').toLowerCase()]??12*60*60*1000;
+const activeExpiryMs=tf=>ACTIVE_EXPIRY_BY_TF[String(tf||'15m').toLowerCase()]??72*60*60*1000;
 const MAX_HISTORY=500;
 
 function finite(v){return Number.isFinite(Number(v))}
@@ -126,9 +143,8 @@ function closeSignal(state,id,sig,result,closedAt,extra={}){
   if(state.history.length>MAX_HISTORY)state.history=state.history.slice(-MAX_HISTORY);
   delete state.activeSignals[id];
 }
-function performance(state){
-  const h=state.history||[];
-  const active=Object.values(state.activeSignals||{});
+function statsForRows(historyRows,activeRows){
+  const h=historyRows||[],active=activeRows||[];
   const scored=h.filter(x=>x.result==='TP3'||String(x.result).startsWith('STOP'));
   const wins=scored.filter(x=>x.result==='TP3').length;
   const losses=scored.length-wins;
@@ -136,20 +152,34 @@ function performance(state){
   const tp1=milestoneRows.filter(x=>(x.maxStage??x.finalStage??x.stage??0)>=1).length;
   const tp2=milestoneRows.filter(x=>(x.maxStage??x.finalStage??x.stage??0)>=2).length;
   const tp3=h.filter(x=>x.result==='TP3').length;
-  const stopAfterTp1=h.filter(x=>x.result==='STOP_AFTER_TP1').length;
-  const stopAfterTp2=h.filter(x=>x.result==='STOP_AFTER_TP2').length;
-  const ambiguous=h.filter(x=>x.result==='AMBIGUOUS').length;
-  const expired=h.filter(x=>x.result==='EXPIRED').length;
-  return {
-    updatedAt:new Date().toISOString(),
-    scoredTrades:scored.length,wins,losses,
+  return{
+    scoredTrades:scored.length,
+    wins,losses,
     winRate:scored.length?Number((wins/scored.length*100).toFixed(2)):null,
-    tp1Reached:tp1,tp2Reached:tp2,tp3Reached:tp3,
-    stopAfterTp1,stopAfterTp2,ambiguous,expired,
+    tp1Reached:tp1,
+    tp2Reached:tp2,
+    tp3Reached:tp3,
+    stopAfterTp1:h.filter(x=>x.result==='STOP_AFTER_TP1').length,
+    stopAfterTp2:h.filter(x=>x.result==='STOP_AFTER_TP2').length,
+    ambiguous:h.filter(x=>x.result==='AMBIGUOUS').length,
+    expired:h.filter(x=>x.result==='EXPIRED').length,
     active:active.length,
     waitingEntry:active.filter(x=>x.status==='WAIT_ENTRY').length,
     inTrade:active.filter(x=>x.status==='ACTIVE').length
   }
+}
+function performance(state){
+  const h=state.history||[];
+  const active=Object.values(state.activeSignals||{});
+  const all=statsForRows(h,active);
+  const byTimeframe={};
+  for(const tf of TRACKED_TFS){
+    byTimeframe[tf]=statsForRows(
+      h.filter(x=>String(x.timeframe||'15m').toLowerCase()===tf),
+      active.filter(x=>String(x.timeframe||'15m').toLowerCase()===tf)
+    );
+  }
+  return {updatedAt:new Date().toISOString(),...all,byTimeframe}
 }
 
 const state=loadState();
@@ -171,8 +201,8 @@ for(const [id,sig] of entries){
     const sentMs=Date.parse(sig.sentAt||0);
     if(!Number.isFinite(sentMs)){console.log(sig.symbol,'sentAt geçersiz');continue}
 
-    if(sig.status==='WAIT_ENTRY'&&Date.now()-sentMs>PENDING_EXPIRY_MS){
-      const ev={type:'EXPIRED',time:Date.now(),price:sig.entry,text:`⌛ ${sig.symbol} sinyali girişe temas etmeden süresi doldu. Doğruluk/başarı hesabına dahil edilmedi.`};
+    if(sig.status==='WAIT_ENTRY'&&Date.now()-sentMs>pendingExpiryMs(sig.timeframe)){
+      const ev={type:'EXPIRED',time:Date.now(),price:sig.entry,text:`⌛ ${sig.symbol} ${sig.timeframe||'15m'} sinyali girişe temas etmeden süresi doldu. Doğruluk/başarı hesabına dahil edilmedi.`};
       await notify(sig,ev).catch(e=>console.error(sig.symbol,'expiry telegram',e.message));
       closeSignal(state,id,sig,'EXPIRED',Date.now(),{maxStage:0});
       changed=true;continue;
@@ -198,8 +228,9 @@ for(const [id,sig] of entries){
     }
 
     const enteredMs=Date.parse(sig.enteredAt||sig.sentAt);
-    if(Number.isFinite(enteredMs)&&Date.now()-enteredMs>ACTIVE_EXPIRY_MS){
-      const ev={type:'EXPIRED',time:Date.now(),price:sig.entry,text:`⌛ ${sig.symbol} aktif sinyali 72 saat içinde TP3/STOP ile sonuçlanmadı. Performans hesabına dahil edilmedi.`};
+    if(Number.isFinite(enteredMs)&&Date.now()-enteredMs>activeExpiryMs(sig.timeframe)){
+      const hours=Math.round(activeExpiryMs(sig.timeframe)/3600000);
+      const ev={type:'EXPIRED',time:Date.now(),price:sig.entry,text:`⌛ ${sig.symbol} ${sig.timeframe||'15m'} aktif sinyali ${hours} saat içinde TP3/STOP ile sonuçlanmadı. Performans hesabına dahil edilmedi.`};
       await notify(sig,ev).catch(e=>console.error(sig.symbol,'active expiry telegram',e.message));
       closeSignal(state,id,sig,'EXPIRED',Date.now(),{maxStage:sig.stage});
       changed=true;continue;
