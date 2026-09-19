@@ -2,11 +2,12 @@ import fs from 'node:fs';
 
 const BASE='https://saomi-trade-ai.vercel.app';
 const FUTURES='https://www.binance.com';
-const SYMBOLS=['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT'];
 const BASE_TFS=['1m','5m','15m','30m'];
+const FUTURES_BATCH_SIZE=40;
+const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.30_INDICATOR_FUSION';
+const ANALYSIS_VERSION='RC5.32_ALL_FUTURES_ROTATION';
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
 const MAX_SIGNALS=8;
@@ -123,22 +124,98 @@ function fmtNum(v){const x=Number(v);if(!Number.isFinite(x))return'—';const a=
 function commentary(setup){const td=setup.topDownContext,d=td.decision,ctx=setup.indicatorContext,tr=setup.entryTrigger;const frames=(td.frames||[]).map(f=>f.timeframe.toUpperCase()+': ST '+(f.supertrend?.direction||'—')+' / Trend '+(f.trend?.alignment||'—')+' / Hacim '+(f.volume?.rvol??'—')+'x').join(' · ');return 'Major '+d.majorDirection+' · '+d.summary+' · guc %'+d.conviction+'. '+frames+'. Kucuk '+setup.timeframe.toUpperCase()+': ST '+(ctx.supertrend?.direction||'—')+', Trend '+(ctx.trend?.alignment||'—')+', Hacim '+(ctx.volume?.rvol??'—')+'x. '+tr.sweep.side+' sweep '+fmtNum(tr.sweep.extreme)+' → '+tr.break.type+' '+tr.break.side+' → '+tr.retest.type+' → '+setup.direction+' giris '+fmtNum(setup.entry)+'. STOP '+fmtNum(setup.stop)+' · TP1 '+fmtNum(setup.tp1)+' · TP2 '+fmtNum(setup.tp2)+' · TP3 '+fmtNum(setup.tp3)+'.'}
 
 const cache=new Map();
-async function candles(symbol,tf){const key=symbol+'|'+tf;if(cache.has(key))return cache.get(key);const u=FUTURES+'/fapi/v1/klines?symbol='+symbol+'&interval='+tf+'&limit=500',r=await fetch(u);if(!r.ok)throw new Error(symbol+' '+tf+' Binance HTTP '+r.status);const d=await r.json(),rows=d.map(k=>({time:Number(k[0]),openTime:Number(k[0]),open:Number(k[1]),high:Number(k[2]),low:Number(k[3]),close:Number(k[4]),volume:Number(k[5]),closeTime:Number(k[6]),quoteVolume:Number(k[7]),takerBuyVolume:Number(k[9]),takerBuyQuote:Number(k[10])})).filter(x=>x.closeTime<Date.now()-500);cache.set(key,rows);return rows}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function futuresFetch(url,label,attempt=0){
+  const r=await fetch(url);
+  if(r.ok)return r;
+  if((r.status===429||r.status===418||r.status>=500)&&attempt<3){
+    const wait=Math.min(12000,1200*Math.pow(2,attempt));
+    console.log('BINANCE RETRY',label,'HTTP',r.status,'wait',wait);
+    await sleep(wait);
+    return futuresFetch(url,label,attempt+1)
+  }
+  throw new Error(label+' Binance HTTP '+r.status)
+}
+async function loadFuturesUniverse(){
+  const u=FUTURES+'/fapi/v1/exchangeInfo',r=await futuresFetch(u,'exchangeInfo'),d=await r.json();
+  return (d.symbols||[])
+    .filter(x=>x?.status==='TRADING'&&x?.contractType==='PERPETUAL'&&x?.symbol)
+    .map(x=>String(x.symbol).toUpperCase())
+    .sort((a,b)=>a.localeCompare(b))
+}
+async function candles(symbol,tf){
+  const key=symbol+'|'+tf;if(cache.has(key))return cache.get(key);
+  const u=FUTURES+'/fapi/v1/klines?symbol='+encodeURIComponent(symbol)+'&interval='+tf+'&limit=500';
+  const r=await futuresFetch(u,symbol+' '+tf),d=await r.json();
+  const rows=d.map(k=>({time:Number(k[0]),openTime:Number(k[0]),open:Number(k[1]),high:Number(k[2]),low:Number(k[3]),close:Number(k[4]),volume:Number(k[5]),closeTime:Number(k[6]),quoteVolume:Number(k[7]),takerBuyVolume:Number(k[9]),takerBuyQuote:Number(k[10])})).filter(x=>x.closeTime<Date.now()-500);
+  cache.set(key,rows);
+  await sleep(45);
+  return rows
+}
 
-function loadSignalState(){let state;try{state=JSON.parse(fs.readFileSync(STATE_PATH,'utf8'))}catch{state={}}state.version=7;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];return state}
+function loadSignalState(){
+ let state;try{state=JSON.parse(fs.readFileSync(STATE_PATH,'utf8'))}catch{state={}}
+ state.version=8;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
+ state.scannerUniverse=state.scannerUniverse||{cursor:0,total:0,lastRefreshAt:null,lastBatchAt:null,lastBatch:[]};
+ return state
+}
 function saveSignalState(state){fs.mkdirSync('.github/state',{recursive:true});fs.writeFileSync(STATE_PATH,JSON.stringify(state,null,2)+'\n')}
 function structuralFingerprint(setup){const t=setup.entryTrigger||{},d=setup.topDownContext?.decision||{};return[setup.symbol,'futures',setup.timeframe,setup.direction,d.majorDirection||setup.direction,t.sweep?.side||'',t.sweep?.time||0,t.break?.type||'',t.break?.side||'',t.break?.time||0,t.retest?.type||'',t.retest?.time||0,setup.indicatorContext?.supertrend?.direction||'',setup.indicatorContext?.trend?.alignment||''].join('|')}
 function duplicateReason(state,setup){const tf=String(setup.timeframe||'15m').toLowerCase(),now=Date.now(),active=Object.values(state.activeSignals||{}).find(x=>x?.symbol===setup.symbol&&String(x.timeframe||'15m').toLowerCase()===tf&&!['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status));if(active)return'ayni timeframe aktif sinyal var';const fp=structuralFingerprint(setup),recent=(state.history||[]).filter(x=>x?.symbol===setup.symbol&&String(x.timeframe||'15m').toLowerCase()===tf&&x.direction===setup.direction).sort((a,b)=>(Date.parse(b.closedAt||0)||0)-(Date.parse(a.closedAt||0)||0))[0];if(recent){const t=Date.parse(recent.closedAt||0),age=Number.isFinite(t)?now-t:Infinity;if(age<terminalReentryMs(tf))return'terminal sonrasi yeniden giris bekleme suresi';if((recent.fingerprint||recent.structureKey)===fp&&age<dupTtlMs(tf))return'ayni yapi terminal sonrasi tekrar etti'}const prev=state.signals?.[signalStateKey(setup.symbol,tf)];if(!prev)return null;const t=Date.parse(prev.sentAt||0),age=Number.isFinite(t)?now-t:Infinity;if(age<cooldownMs(tf))return'timeframe cooldown';if((prev.fingerprint||prev.structureKey)===fp&&age<dupTtlMs(tf))return'ayni yapisal setup';return null}
-function rememberSignal(state,setup,tg,meta){state.version=7;const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup),base={fingerprint,structureKey:fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:tg?.messageId??null,analysisVersion:ANALYSIS_VERSION,topDownContext:setup.topDownContext,lowerFrameContext:setup.lowerFrameContext,indicatorContext:setup.indicatorContext,entryTrigger:setup.entryTrigger,entrySequence:setup.entrySequence,liquidityEvidence:setup.liquidityEvidence,majorObstacle:setup.majorObstacle,riskAtr:setup.riskAtr,commentary:String(meta.commentary||''),commentaryProvider:String(meta.provider||'')};state.signals[signalStateKey(setup.symbol,setup.timeframe)]=base;state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};saveSignalState(state)}
+function rememberSignal(state,setup,tg,meta){state.version=8;const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup),base={fingerprint,structureKey:fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:tg?.messageId??null,analysisVersion:ANALYSIS_VERSION,topDownContext:setup.topDownContext,lowerFrameContext:setup.lowerFrameContext,indicatorContext:setup.indicatorContext,entryTrigger:setup.entryTrigger,entrySequence:setup.entrySequence,liquidityEvidence:setup.liquidityEvidence,majorObstacle:setup.majorObstacle,riskAtr:setup.riskAtr,commentary:String(meta.commentary||''),commentaryProvider:String(meta.provider||'')};state.signals[signalStateKey(setup.symbol,setup.timeframe)]=base;state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};saveSignalState(state)}
 
 const signalState=loadSignalState();
+function chooseRotatingBatch(universe,state){
+ const clean=[...new Set(universe||[])].filter(Boolean),n=clean.length;if(!n)return[];
+ const old=state.scannerUniverse||{},cursor=((Number(old.cursor)||0)%n+n)%n,size=Math.min(FUTURES_BATCH_SIZE,n),batch=[];
+ for(let i=0;i<size;i++)batch.push(clean[(cursor+i)%n]);
+ const next=(cursor+size)%n;
+ state.scannerUniverse={
+   cursor:next,total:n,lastRefreshAt:new Date().toISOString(),lastBatchAt:new Date().toISOString(),lastBatch:batch,
+   batchSize:size,cyclesCompleted:Number(old.cyclesCompleted||0)+(next<cursor?1:0)
+ };
+ return batch
+}
+function activeSymbols(state){return [...new Set(Object.values(state.activeSignals||{}).filter(x=>x&&!['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status)).map(x=>String(x.symbol||'').toUpperCase()).filter(Boolean))]}
 function activeSignalForSymbol(state,symbol,tf){return Object.values(state.activeSignals||{}).find(x=>x?.symbol===symbol&&String(x.timeframe||'15m').toLowerCase()===String(tf).toLowerCase()&&!['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status))||null}
 async function shadowReanalysis(active){active.reanalysis=active.reanalysis||{max:REANALYSIS_MAX,snapshots:[],lastCandleCloseTime:0};active.reanalysis.snapshots=Array.isArray(active.reanalysis.snapshots)?active.reanalysis.snapshots:[];if(active.reanalysis.snapshots.length>=REANALYSIS_MAX)return false;const tf=String(active.timeframe||'15m').toLowerCase(),base=await candles(active.symbol,tf),last=base.at(-1),sent=Date.parse(active.sentAt||0);if(!last?.closeTime||last.closeTime<=sent||last.closeTime<=Number(active.reanalysis.lastCandleCloseTime||0))return false;const top=await buildTopDownContext(active.symbol),major=top.major,lower=fusionFrameContext(tf,base),lowerDir=lower.bias==='NEUTRAL'?'WAIT':lower.bias,verdict=major.direction!==active.direction?'TERS_MAJOR':lowerDir===active.direction?'AYNI_YON':lowerDir==='WAIT'?'BEKLE':'TERS_MINOR',snap={no:active.reanalysis.snapshots.length+1,checkedAt:new Date().toISOString(),candleCloseTime:last.closeTime,price:last.close,originalDirection:active.direction,majorDirection:major.direction,majorConviction:major.conviction,currentDirection:lowerDir,currentConfidence:lower.strength,lowerSupertrend:lower.supertrend,lowerTrend:lower.trend,lowerVolume:lower.volume,verdict,commentary:active.symbol+' '+tf+' recheck: major '+major.direction+' · minor '+lowerDir+' · '+major.summary};active.reanalysis.snapshots.push(snap);active.reanalysis.lastCandleCloseTime=last.closeTime;active.reanalysis.summary={same:active.reanalysis.snapshots.filter(x=>x.verdict==='AYNI_YON').length,wait:active.reanalysis.snapshots.filter(x=>x.verdict==='BEKLE').length,opposite:active.reanalysis.snapshots.filter(x=>x.verdict==='TERS_MAJOR'||x.verdict==='TERS_MINOR').length,total:active.reanalysis.snapshots.length};signalState.activeSignals[active.signalId]=active;saveSignalState(signalState);console.log(active.symbol,'INDICATOR FUSION RECHECK',snap.no+'/'+REANALYSIS_MAX,verdict);return true}
 
 async function telegram(setup,commentaryText,provider){const r=await fetch(BASE+'/api/telegram',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setup,commentary:commentaryText,provider,riskReward:setup.riskReward,mode:'indicator-fusion-v1',signalId:setup.signalId})}),j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||'Telegram HTTP '+r.status);return j}
 async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf);if(base.length<200)return null;const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return null;const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return null;const signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|SWEEP:'+plan.entryTrigger.sweep.time+'|BREAK:'+plan.entryTrigger.break.time+'|RETEST:'+plan.entryTrigger.retest.time;return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'INDICATOR_FUSION'}}}
 
-let sent=0;console.log('SAOMI '+ANALYSIS_VERSION+' scan '+new Date().toISOString()+' · SIGNAL TF='+BASE_TFS.join(',')+' · HTF='+HTF_ORDER.join('→'));
+let sent=0;
+const universe=await loadFuturesUniverse();
+const rotationBatch=chooseRotatingBatch(universe,signalState);
+const actives=activeSymbols(signalState);
+const scanSymbols=[...new Set([...actives,...rotationBatch])];
+console.log('SAOMI '+ANALYSIS_VERSION+' scan '+new Date().toISOString()+' · FUTURES universe='+universe.length+' · rotating batch='+rotationBatch.length+' · active extras='+actives.length+' · SIGNAL TF='+BASE_TFS.join(',')+' · HTF='+HTF_ORDER.join('→'));
+console.log('BATCH',rotationBatch.join(','));
 scanLoop:
-for(const symbol of SYMBOLS){try{const topDown=await buildTopDownContext(symbol),major=topDown.major;console.log(symbol,'MAJOR',major.direction,major.summary,'strength',major.conviction);for(const tf of BASE_TFS){try{const active=activeSignalForSymbol(signalState,symbol,tf);if(active){await shadowReanalysis(active);console.log(symbol,tf,'ACTIVE SIGNAL · no duplicate');continue}const setup=await buildSetup(symbol,tf,topDown);if(!setup){console.log(symbol,tf,'WAIT / filter');continue}const dup=duplicateReason(signalState,setup);if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});const meta={provider:'SAOMI RC5.30 INDICATOR FUSION',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);rememberSignal(signalState,setup,tg,meta);sent++;console.log('SENT',symbol,tf,tg);if(sent>=MAX_SIGNALS)break scanLoop}catch(e){console.error('ERROR '+symbol+' '+tf+':',e?.message||e)}}}catch(e){console.error('HTF ERROR '+symbol+':',e?.message||e)}}
-console.log('SAOMI '+ANALYSIS_VERSION+' finished. Sent: '+sent);
+for(const symbol of scanSymbols){
+ try{
+  const topDown=await buildTopDownContext(symbol),major=topDown.major;
+  console.log(symbol,'MAJOR',major.direction,major.summary,'strength',major.conviction);
+  for(const tf of BASE_TFS){
+   try{
+    const active=activeSignalForSymbol(signalState,symbol,tf);
+    if(active){
+      await shadowReanalysis(active);
+      console.log(symbol,tf,'ACTIVE SIGNAL · no duplicate');
+      continue
+    }
+    const setup=await buildSetup(symbol,tf,topDown);
+    if(!setup){console.log(symbol,tf,'WAIT / filter');continue}
+    const dup=duplicateReason(signalState,setup);
+    if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
+    console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
+    const meta={provider:'SAOMI RC5.32 ALL FUTURES INDICATOR FUSION',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
+    rememberSignal(signalState,setup,tg,meta);
+    sent++;
+    console.log('SENT',symbol,tf,tg);
+    if(sent>=MAX_SIGNALS)break scanLoop
+   }catch(e){console.error('ERROR '+symbol+' '+tf+':',e?.message||e)}
+  }
+ }catch(e){console.error('HTF ERROR '+symbol+':',e?.message||e)}
+}
+saveSignalState(signalState);
+console.log('SAOMI '+ANALYSIS_VERSION+' finished. Sent: '+sent+' · universe='+universe.length+' · nextCursor='+signalState.scannerUniverse.cursor+' · cycles='+signalState.scannerUniverse.cyclesCompleted);
