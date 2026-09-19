@@ -5,7 +5,7 @@ const SYMBOLS = ['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','A
 const BASE_TFS = ['1m','5m','15m','30m'];
 const HTF_ORDER = ['1w','1d','4h','1h'];
 const HTF_WEIGHT = {'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.27_LIQUIDITY_SEQUENCE';
+const ANALYSIS_VERSION='RC5.27.1_LIQUIDITY_SEQUENCE_SAFE';
 const CONFIRM_MAP = {
   '1m':['5m','15m'],
   '5m':['15m','30m'],
@@ -422,11 +422,23 @@ function findEntrySequence(c,s,dir,av){
  const up=dir==='LONG',wantedSweep=up?'LOW':'HIGH',wantedBreak=up?'UP':'DOWN';
  const sweeps=(s.sweeps||[]).filter(x=>x.side===wantedSweep).slice().reverse();
  for(const sweep of sweeps){
-   if(!Number.isFinite(sweep.extreme))continue;
+   if(!Number.isFinite(sweep.extreme)||!Number.isFinite(sweep.index))continue;
+
+   // Sweep wick'i sonraki mumlarda yeniden aşılırsa o sweep artık geçerli referans değildir.
+   const afterSweep=c.slice(sweep.index+1);
+   const sweepInvalidated=up
+     ? afterSweep.some(k=>k.low<sweep.extreme)
+     : afterSweep.some(k=>k.high>sweep.extreme);
+   if(sweepInvalidated)continue;
+
    const event=(s.events||[]).find(e=>e.side===wantedBreak&&e.time>sweep.time);
    if(!event)continue;
    const retest=directionalRetest(c,s,dir,sweep,event,av);
    if(!retest)continue;
+
+   // Retest de sweep wick'in geçerli tarafında kalmalıdır.
+   if(up&&retest.candle?.low<sweep.extreme)continue;
+   if(!up&&retest.candle?.high>sweep.extreme)continue;
    return{sweep,event,retest};
  }
  return null
@@ -451,10 +463,17 @@ function buildMinorSetup(symbol,tf,c,major){
  // Stop likidite wick'inin DIŞINDA tutulur.
  const stopBuffer=Math.max(av*.20,Math.abs(entry)*0.00025);
  const stop=up?sweep.extreme-stopBuffer:sweep.extreme+stopBuffer;
+
+ // Yön geometrisi kesin doğrulanır: LONG stop giriş altı, SHORT stop giriş üstü.
+ if(up&&!(stop<entry))return null;
+ if(!up&&!(stop>entry))return null;
+
  const risk=Math.abs(entry-stop),riskAtr=risk/Math.max(av,1e-12);
  if(!Number.isFinite(risk)||risk<=0||riskAtr<.45||riskAtr>2.6)return null;
 
  // Retest sonrasında fiyat fazla kaçmışsa geç giriş yapılmaz.
+ if(up&&entry<=sweep.extreme)return null;
+ if(!up&&entry>=sweep.extreme)return null;
  const retestDistanceAtr=Math.abs(entry-retest.level)/Math.max(av,1e-12);
  if(retestDistanceAtr>.85)return null;
 
@@ -562,7 +581,7 @@ const cache=new Map();
 function loadSignalState(){
   let state;
   try{state=JSON.parse(fs.readFileSync(STATE_PATH,'utf8'))}catch{state={}}
-  state.version=5;
+  state.version=6;
   state.signals=state.signals||{};
   state.activeSignals=state.activeSignals||{};
   state.history=Array.isArray(state.history)?state.history:[];
@@ -611,7 +630,7 @@ function duplicateReason(state,setup){
 }
 
 function rememberSignal(state,setup,telegramResult,analysisMeta={}){
-  state.version=5;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
+  state.version=6;state.signals=state.signals||{};state.activeSignals=state.activeSignals||{};state.history=Array.isArray(state.history)?state.history:[];
   const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup);
   const base={fingerprint,structureKey:fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:telegramResult?.messageId??null,analysisVersion:ANALYSIS_VERSION,topDownContext:setup.topDownContext||null,lowerFrameContext:setup.lowerFrameContext||null,liquidityEvidence:setup.liquidityEvidence||null,entrySequence:setup.entrySequence||null,majorObstacle:setup.majorObstacle||null,localTarget:setup.localTarget||null,riskAtr:setup.riskAtr??null,retestDistanceAtr:setup.retestDistanceAtr??null,commentary:String(analysisMeta.commentary||''),commentaryProvider:String(analysisMeta.provider||''),contextSnapshot:setup.htfContext?{previousDayHigh:setup.htfContext.previousDayHigh,previousDayLow:setup.htfContext.previousDayLow,previousWeekHigh:setup.htfContext.previousWeekHigh,previousWeekLow:setup.htfContext.previousWeekLow,dailyAtr:setup.htfContext.dailyAtr,dailyEma50:setup.htfContext.dailyEma50,extensionAtr:setup.htfContext.extensionAtr,riseFrom20dLowPct:setup.htfContext.riseFrom20dLowPct,fallFrom20dHighPct:setup.htfContext.fallFrom20dHighPct,nearestResistance:setup.htfContext.nearestResistance,nearestSupport:setup.htfContext.nearestSupport,nearestUntakenHigh:setup.htfContext.nearestUntakenHigh,nearestUntakenLow:setup.htfContext.nearestUntakenLow,brokenSupportRetest:setup.htfContext.brokenSupportRetest,brokenResistanceRetest:setup.htfContext.brokenResistanceRetest,decision:setup.liquidityContext?.decision||null}:null};
   state.signals[signalStateKey(setup.symbol,setup.timeframe)]=base;
