@@ -347,147 +347,6 @@
     }
   },
   "activeSignals": {
-    "DOGEUSDT|futures|15m|LONG|1789721100000|1789721100000|1789718400000|1789722900000": {
-      "fingerprint": "DOGEUSDT|futures|15m|LONG|BOS|UP|1789721100000|HIGH|1789721100000|1789718400000|1789722900000",
-      "signalId": "DOGEUSDT|futures|15m|LONG|1789721100000|1789721100000|1789718400000|1789722900000",
-      "direction": "LONG",
-      "sentAt": "2026-09-18T09:53:06.750Z",
-      "entry": 0.08564,
-      "stop": 0.08411333526776321,
-      "tp1": 0.08770099738851965,
-      "tp2": 0.0887696627010854,
-      "tp3": 0.09021999419671034,
-      "messageId": 125,
-      "symbol": "DOGEUSDT",
-      "market": "futures",
-      "timeframe": "15m",
-      "confidence": null,
-      "riskReward": 3,
-      "status": "ACTIVE",
-      "stage": 2,
-      "enteredAt": "2026-09-18T11:01:59.999Z",
-      "notified": {
-        "entry": true,
-        "tp1": true,
-        "tp2": true,
-        "tp3": false,
-        "stop": false,
-        "ambiguous": false
-      },
-      "migrated": true,
-      "entryCandleOpenTime": 1789729260000,
-      "reanalysis": {
-        "max": 3,
-        "snapshots": [
-          {
-            "no": 1,
-            "checkedAt": "2026-09-18T12:35:07.581Z",
-            "candleCloseTime": 1789734599999,
-            "price": 0.08526,
-            "originalDirection": "LONG",
-            "currentDirection": "LONG",
-            "currentConfidence": 90,
-            "score": {
-              "long": 7.7,
-              "short": 3.75
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 92
-              },
-              {
-                "timeframe": "4h",
-                "direction": "WAIT",
-                "confidence": 46
-              }
-            ],
-            "mtfAligned": 1,
-            "mtfOpposite": 0,
-            "verdict": "AYNI_YON",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "DOGEUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          },
-          {
-            "no": 2,
-            "checkedAt": "2026-09-18T12:55:51.310Z",
-            "candleCloseTime": 1789735499999,
-            "price": 0.0855,
-            "originalDirection": "LONG",
-            "currentDirection": "LONG",
-            "currentConfidence": 91,
-            "score": {
-              "long": 7.45,
-              "short": 3
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 92
-              },
-              {
-                "timeframe": "4h",
-                "direction": "WAIT",
-                "confidence": 46
-              }
-            ],
-            "mtfAligned": 1,
-            "mtfOpposite": 0,
-            "verdict": "AYNI_YON",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "DOGEUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          },
-          {
-            "no": 3,
-            "checkedAt": "2026-09-18T13:12:21.224Z",
-            "candleCloseTime": 1789736399999,
-            "price": 0.08544,
-            "originalDirection": "LONG",
-            "currentDirection": "LONG",
-            "currentConfidence": 90,
-            "score": {
-              "long": 7.45,
-              "short": 3.35
-            },
-            "mtf": [
-              {
-                "timeframe": "1h",
-                "direction": "LONG",
-                "confidence": 92
-              },
-              {
-                "timeframe": "4h",
-                "direction": "WAIT",
-                "confidence": 46
-              }
-            ],
-            "mtfAligned": 1,
-            "mtfOpposite": 0,
-            "verdict": "AYNI_YON",
-            "gemini": {
-              "ok": true,
-              "provider": "kural motoru (Gemini fallback)",
-              "commentary": "DOGEUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
-            }
-          }
-        ],
-        "lastCandleCloseTime": 1789736399999,
-        "summary": {
-          "same": 3,
-          "wait": 0,
-          "opposite": 0,
-          "total": 3
-        }
-      }
-    },
     "SOLUSDT|futures|15m|LONG|1789738200000|1789747200000|1789736400000|1789742700000": {
       "fingerprint": "SOLUSDT|futures|15m|LONG|BOS|UP|1789738200000|HIGH|1789747200000|1789736400000|1789742700000",
       "signalId": "SOLUSDT|futures|15m|LONG|1789738200000|1789747200000|1789736400000|1789742700000",
@@ -1971,10 +1830,155 @@
       "finalStage": 0,
       "maxStage": 0,
       "exitPrice": 0.22428987669473693
+    },
+    {
+      "fingerprint": "DOGEUSDT|futures|15m|LONG|BOS|UP|1789721100000|HIGH|1789721100000|1789718400000|1789722900000",
+      "signalId": "DOGEUSDT|futures|15m|LONG|1789721100000|1789721100000|1789718400000|1789722900000",
+      "direction": "LONG",
+      "sentAt": "2026-09-18T09:53:06.750Z",
+      "entry": 0.08564,
+      "stop": 0.08411333526776321,
+      "tp1": 0.08770099738851965,
+      "tp2": 0.0887696627010854,
+      "tp3": 0.09021999419671034,
+      "messageId": 125,
+      "symbol": "DOGEUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "confidence": null,
+      "riskReward": 3,
+      "status": "ACTIVE",
+      "stage": 2,
+      "enteredAt": "2026-09-18T11:01:59.999Z",
+      "notified": {
+        "entry": true,
+        "tp1": true,
+        "tp2": true,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
+      },
+      "migrated": true,
+      "entryCandleOpenTime": 1789729260000,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-18T12:35:07.581Z",
+            "candleCloseTime": 1789734599999,
+            "price": 0.08526,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 90,
+            "score": {
+              "long": 7.7,
+              "short": 3.75
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 92
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 46
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "DOGEUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-18T12:55:51.310Z",
+            "candleCloseTime": 1789735499999,
+            "price": 0.0855,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "score": {
+              "long": 7.45,
+              "short": 3
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 92
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 46
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "DOGEUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-18T13:12:21.224Z",
+            "candleCloseTime": 1789736399999,
+            "price": 0.08544,
+            "originalDirection": "LONG",
+            "currentDirection": "LONG",
+            "currentConfidence": 90,
+            "score": {
+              "long": 7.45,
+              "short": 3.35
+            },
+            "mtf": [
+              {
+                "timeframe": "1h",
+                "direction": "LONG",
+                "confidence": 92
+              },
+              {
+                "timeframe": "4h",
+                "direction": "WAIT",
+                "confidence": 46
+              }
+            ],
+            "mtfAligned": 1,
+            "mtfOpposite": 0,
+            "verdict": "AYNI_YON",
+            "gemini": {
+              "ok": true,
+              "provider": "kural motoru (Gemini fallback)",
+              "commentary": "DOGEUSDT 15m için mevcut hesaplamada aşağı yön daha güçlü. Güven undefined%. Giriş undefined, stop undefined, hedefler undefined / undefined / undefined. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir."
+            }
+          }
+        ],
+        "lastCandleCloseTime": 1789736399999,
+        "summary": {
+          "same": 3,
+          "wait": 0,
+          "opposite": 0,
+          "total": 3
+        }
+      },
+      "result": "EXPIRED",
+      "closedAt": "2026-09-19T11:12:31.017Z",
+      "finalStage": 2,
+      "maxStage": 2
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-19T08:38:20.735Z",
+    "updatedAt": "2026-09-19T11:12:31.935Z",
     "scoredTrades": 6,
     "wins": 4,
     "losses": 2,
@@ -1985,10 +1989,10 @@
     "stopAfterTp1": 0,
     "stopAfterTp2": 0,
     "ambiguous": 0,
-    "expired": 1,
-    "active": 3,
+    "expired": 2,
+    "active": 2,
     "waitingEntry": 0,
-    "inTrade": 3,
+    "inTrade": 2,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 0,
@@ -2033,10 +2037,10 @@
         "stopAfterTp1": 0,
         "stopAfterTp2": 0,
         "ambiguous": 0,
-        "expired": 1,
-        "active": 3,
+        "expired": 2,
+        "active": 2,
         "waitingEntry": 0,
-        "inTrade": 3
+        "inTrade": 2
       },
       "30m": {
         "scoredTrades": 0,
