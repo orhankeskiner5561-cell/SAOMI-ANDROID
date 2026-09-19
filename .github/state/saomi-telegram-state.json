@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "signals": {
     "BTCUSDT": {
       "fingerprint": "BTCUSDT|futures|15m|LONG|BOS|UP|1789715700000|HIGH|1789719300000|1789713000000|1789722000000",
@@ -7036,7 +7036,68 @@
         "stop": false,
         "ambiguous": false
       },
-      "entryCandleOpenTime": 1789846500000
+      "entryCandleOpenTime": 1789846500000,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-19T19:45:07.630Z",
+            "candleCloseTime": 1789847099999,
+            "price": 111.2,
+            "originalDirection": "SHORT",
+            "majorDirection": "LONG",
+            "majorConviction": 95,
+            "currentDirection": "SHORT",
+            "currentConfidence": 92,
+            "lowerSupertrend": {
+              "direction": "SHORT",
+              "value": 112.45198666588189,
+              "period": 10,
+              "multiplier": 3
+            },
+            "lowerTrend": {
+              "ema9": 111.23088421911518,
+              "ema21": 111.40995295125674,
+              "ema50": 111.65060688059545,
+              "ema200": 109.06258803670114,
+              "alignment": "NEUTRAL",
+              "fastCross": {
+                "side": "DOWN",
+                "time": 1789839000000,
+                "index": 490
+              },
+              "midCross": {
+                "side": "DOWN",
+                "time": 1789811100000,
+                "index": 459
+              },
+              "bias": "SHORT",
+              "longScore": 1,
+              "shortScore": 2.5999999999999996
+            },
+            "lowerVolume": {
+              "rvol": 0.45,
+              "average": 192965.94449999993,
+              "current": 86043.26,
+              "deltaPct": -24.6,
+              "obvSlope": -90306.26000000164,
+              "bias": "SHORT",
+              "longScore": 0,
+              "shortScore": 2.6
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "SOLUSDT 15m recheck: major LONG · minor SHORT · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↔"
+          }
+        ],
+        "lastCandleCloseTime": 1789847099999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
+      }
     }
   },
   "history": [
