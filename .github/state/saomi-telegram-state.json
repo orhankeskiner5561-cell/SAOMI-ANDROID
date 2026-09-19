@@ -346,31 +346,32 @@
       }
     },
     "BNBUSDT|1m": {
-      "fingerprint": "BNBUSDT|futures|1m|LONG|BOS|UP|1789820220000|HIGH|1789819620000|1789820100000|1789820580000",
-      "signalId": "BNBUSDT|futures|1m|LONG|1789820220000|1789819620000|1789820100000|1789820580000",
+      "fingerprint": "BNBUSDT|futures|1m|LONG|LONG|LOW|1789824600000|CHoCH|UP|1789825140000|OB_RETEST|1789828860000",
+      "structureKey": "BNBUSDT|futures|1m|LONG|LONG|LOW|1789824600000|CHoCH|UP|1789825140000|OB_RETEST|1789828860000",
+      "signalId": "BNBUSDT|futures|1m|LONG|SWEEP:1789824600000|BREAK:1789825140000|RETEST:1789828860000",
       "symbol": "BNBUSDT",
       "market": "futures",
       "timeframe": "1m",
       "direction": "LONG",
-      "confidence": 89,
+      "confidence": 92,
       "riskReward": 3,
-      "sentAt": "2026-09-19T12:24:10.155Z",
-      "entry": 767.89,
-      "stop": 767.6074664144365,
-      "tp1": 768.2431669819543,
-      "tp2": 768.4550671711269,
-      "tp3": 768.7376007566903,
-      "messageId": 154,
-      "analysisVersion": "RC5.25_MAJOR_MINOR",
+      "sentAt": "2026-09-19T14:42:11.616Z",
+      "entry": 769.83,
+      "stop": 768.7575425,
+      "tp1": 771.1705718750001,
+      "tp2": 771.9749150000001,
+      "tp3": 773.0473725000002,
+      "messageId": 181,
+      "analysisVersion": "RC5.27.1_LIQUIDITY_SEQUENCE_SAFE",
       "topDownContext": {
-        "version": "RC5.25_MAJOR_MINOR",
+        "version": "RC5.27.1_LIQUIDITY_SEQUENCE_SAFE",
         "order": [
           "1w",
           "1d",
           "4h",
           "1h"
         ],
-        "builtAt": "2026-09-19T12:24:05.105Z",
+        "builtAt": "2026-09-19T14:42:09.338Z",
         "frames": [
           {
             "timeframe": "1w",
@@ -599,8 +600,8 @@
             "bias": "LONG",
             "strength": 78,
             "trend": "RANGE",
-            "close": 768.54,
-            "atr": 4.570699727275292,
+            "close": 770.27,
+            "atr": 4.888125572931211,
             "reasons": [
               "BOS yukarı",
               "EMA200 üstü"
@@ -617,27 +618,27 @@
               "price": 769.57
             },
             "ema200": {
-              "value": 734.6276773458985,
+              "value": 735.3856180690944,
               "position": "ABOVE",
               "lastBreak": null
             },
             "support": {
-              "i": 490,
+              "i": 488,
               "time": 1789786800000,
               "price": 759.11,
-              "distance": 9.42999999999995,
-              "distanceAtr": 2.06,
-              "distancePct": 1.23,
+              "distance": 11.159999999999968,
+              "distanceAtr": 2.28,
+              "distancePct": 1.45,
               "proximity": "UZAK"
             },
             "resistance": {
-              "i": 482,
-              "time": 1789758000000,
-              "price": 769.57,
-              "distance": 1.0300000000000864,
-              "distanceAtr": 0.23,
-              "distancePct": 0.13,
-              "proximity": "ÇOK YAKIN"
+              "i": 166,
+              "time": 1788627600000,
+              "price": 781.44,
+              "distance": 11.170000000000073,
+              "distanceAtr": 2.29,
+              "distancePct": 1.45,
+              "proximity": "UZAK"
             },
             "liquidity": {
               "nearestUntakenHigh": null,
@@ -649,9 +650,9 @@
                 "taken": false,
                 "takenAt": null,
                 "timeframe": "1h",
-                "distance": 23.214999999999918,
-                "distanceAtr": 5.08,
-                "distancePct": 3.02,
+                "distance": 24.944999999999936,
+                "distanceAtr": 5.1,
+                "distancePct": 3.24,
                 "proximity": "UZAK"
               },
               "untakenHighPools": 0,
@@ -673,8 +674,7 @@
           "warnings": [
             "1W direnç çok yakın · 0.11 ATR",
             "1D direnç yakın · 0.79 ATR",
-            "4H direnç çok yakın · 0.11 ATR",
-            "1H direnç çok yakın · 0.23 ATR"
+            "4H direnç çok yakın · 0.11 ATR"
           ],
           "supports": [
             "1W likidite sweep LOW",
@@ -694,8 +694,7 @@
           "warnings": [
             "1W direnç çok yakın · 0.11 ATR",
             "1D direnç yakın · 0.79 ATR",
-            "4H direnç çok yakın · 0.11 ATR",
-            "1H direnç çok yakın · 0.23 ATR"
+            "4H direnç çok yakın · 0.11 ATR"
           ],
           "supports": [
             "1W likidite sweep LOW",
@@ -708,62 +707,154 @@
       },
       "lowerFrameContext": {
         "timeframe": "1m",
-        "bias": "LONG",
-        "strength": 95,
-        "trend": "UP",
-        "close": 767.89,
-        "atr": 0.3139262061815649,
+        "bias": "SHORT",
+        "strength": 85,
+        "trend": "DOWN",
+        "close": 769.83,
+        "atr": 0.5997846535748277,
         "reasons": [
-          "HH/HL trend",
-          "BOS yukarı",
-          "EMA200 üstü"
+          "LH/LL trend",
+          "BOS aşağı",
+          "EMA200 altı"
         ],
         "marketBreak": {
           "type": "BOS",
-          "side": "UP",
-          "time": 1789820220000,
-          "price": 768.74
+          "side": "DOWN",
+          "time": 1789828860000,
+          "price": 770.46
         },
         "recentSweep": {
-          "side": "HIGH",
-          "time": 1789819620000,
-          "price": 768.86
+          "side": "LOW",
+          "time": 1789828740000,
+          "price": 770.09
         },
         "ema200": {
-          "value": 766.8454528656848,
-          "position": "ABOVE",
-          "lastBreak": null
+          "value": 770.0062470774351,
+          "position": "BELOW",
+          "lastBreak": {
+            "type": "BREAK_DOWN",
+            "time": 1789828860000,
+            "price": 769.83,
+            "ageBars": 0
+          }
         },
         "support": {
-          "i": 477,
-          "time": 1789819320000,
-          "price": 767.68,
-          "distance": 0.21000000000003638,
-          "distanceAtr": 0.67,
-          "distancePct": 0.03,
+          "i": 448,
+          "time": 1789825860000,
+          "price": 769.55,
+          "distance": 0.2800000000000864,
+          "distanceAtr": 0.47,
+          "distancePct": 0.04,
           "proximity": "YAKIN"
         },
         "resistance": {
-          "i": 357,
-          "time": 1789812120000,
-          "price": 767.95,
-          "distance": 0.06000000000005912,
-          "distanceAtr": 0.19,
-          "distancePct": 0.01,
-          "proximity": "ÇOK YAKIN"
+          "i": 446,
+          "time": 1789825740000,
+          "price": 770.11,
+          "distance": 0.2799999999999727,
+          "distanceAtr": 0.47,
+          "distancePct": 0.04,
+          "proximity": "YAKIN"
         },
         "liquidity": {
-          "nearestUntakenHigh": null,
-          "nearestUntakenLow": null,
-          "untakenHighPools": 0,
-          "untakenLowPools": 0,
-          "takenHighPools": 0,
+          "nearestUntakenHigh": {
+            "side": "HIGH",
+            "price": 773.9725,
+            "from": 1789822620000,
+            "to": 1789828260000,
+            "taken": false,
+            "takenAt": null,
+            "timeframe": "1m",
+            "distance": 4.142499999999927,
+            "distanceAtr": 6.91,
+            "distancePct": 0.54,
+            "proximity": "UZAK"
+          },
+          "nearestUntakenLow": {
+            "side": "LOW",
+            "price": 760.6565625000001,
+            "from": 1789803480000,
+            "to": 1789804980000,
+            "taken": false,
+            "takenAt": null,
+            "timeframe": "1m",
+            "distance": 9.173437499999977,
+            "distanceAtr": 15.29,
+            "distancePct": 1.19,
+            "proximity": "UZAK"
+          },
+          "untakenHighPools": 1,
+          "untakenLowPools": 1,
+          "takenHighPools": 3,
           "takenLowPools": 2
         },
         "roleReversal": null
       },
-      "commentary": "HTF→LTF: 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑. 1W EMA200 üstü, 1D EMA200 üstü, 4H EMA200 üstü, 1H EMA200 üstü. 1W likidite sweep LOW; 1W BOS UP. 1M yapı UP, BOS UP. Risk: 1W direnç çok yakın · 0.11 ATR; 1D direnç yakın · 0.79 ATR. BNBUSDT 1m için mevcut hesaplamada yukarı yön daha güçlü. Güven 89%. Giriş 767.89, stop 767.6074664144365, hedefler 768.2431669819543 / 768.4550671711269 / 768.7376007566903. Bu değerlendirme olasılıksaldır; yapı bozulursa işlem bekletilmelidir.",
-      "commentaryProvider": "kural motoru (Gemini fallback)",
+      "liquidityEvidence": {
+        "sweep": {
+          "side": "LOW",
+          "time": 1789824600000,
+          "level": 769.11,
+          "extreme": 768.95
+        },
+        "postSweepBreak": {
+          "type": "CHoCH",
+          "side": "UP",
+          "time": 1789825140000,
+          "price": 772.08,
+          "breakClose": 772.17
+        },
+        "retest": {
+          "type": "OB_RETEST",
+          "time": 1789828860000,
+          "level": 769.8399999999999,
+          "low": 769.63,
+          "high": 770.05,
+          "ageBars": 0,
+          "distanceAtr": 0.02
+        },
+        "source": "ORDERED_SEQUENCE"
+      },
+      "entrySequence": {
+        "order": [
+          "LIQUIDITY_SWEEP",
+          "STRUCTURE_BREAK",
+          "RETEST",
+          "ENTRY"
+        ],
+        "sweepTime": 1789824600000,
+        "breakTime": 1789825140000,
+        "retestTime": 1789828860000,
+        "stopBasis": {
+          "type": "SWEEP_EXTREME_PLUS_ATR_BUFFER",
+          "extreme": 768.95,
+          "buffer": 0.1924575,
+          "riskAtr": 1.79
+        },
+        "nearestForward": {
+          "price": 773.9725,
+          "source": "LOCAL_LIQUIDITY",
+          "timeframe": "1m"
+        }
+      },
+      "majorObstacle": {
+        "price": 781.44,
+        "timeframe": "1d",
+        "type": "RESISTANCE"
+      },
+      "localTarget": {
+        "side": "HIGH",
+        "price": 773.9725,
+        "from": 1789822620000,
+        "to": 1789828260000,
+        "taken": false,
+        "takenAt": null,
+        "timeframe": "1m"
+      },
+      "riskAtr": 1.79,
+      "retestDistanceAtr": 0.02,
+      "commentary": "Majör yön LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑ · güç %95. Aşağı/Sell-side sweep: seviye 769.11, wick 768.95 → CHoCH UP @ 772.08 → OB_RETEST @ 769.84 → LONG giriş 769.83. STOP sweep wick dışı: 768.76 · tampon 0.19246 · risk 1.79 ATR. Öndeki hedef/bölge: 1M LOCAL_LIQUIDITY @ 773.97. 1W EMA200 üstü · 1D EMA200 üstü · 4H EMA200 üstü · 1H EMA200 üstü. Risk: 1W direnç çok yakın · 0.11 ATR; 1D direnç yakın · 0.79 ATR.",
+      "commentaryProvider": "ŞAOMİ RC5.27 LIQUIDITY-SEQUENCE",
       "contextSnapshot": {
         "previousDayHigh": 769.57,
         "previousDayLow": 735.75,
@@ -771,9 +862,9 @@
         "previousWeekLow": 703,
         "dailyAtr": 24.801090181684668,
         "dailyEma50": 681.7273030600128,
-        "extensionAtr": 3.4741495760382906,
-        "riseFrom20dLowPct": 13.761481481481486,
-        "fallFrom20dHighPct": -1.7339782964783002,
+        "extensionAtr": 3.5523719439176156,
+        "riseFrom20dLowPct": 14.04888888888889,
+        "fallFrom20dHighPct": -1.4857186732186722,
         "nearestResistance": {
           "side": "RESISTANCE",
           "price": 781.44,
@@ -814,13 +905,11 @@
           "active": true
         },
         "decision": {
-          "blocked": true,
-          "reasons": [
-            "Aşırı yükselmiş + HTF direnç kombinasyonu"
-          ],
+          "blocked": false,
+          "critical": [],
           "warnings": [
             "Yakında 1d direnç",
-            "Fiyat günlük EMA50'den 3.5 ATR uzakta"
+            "Fiyat günlük EMA50'den 3.6 ATR uzakta"
           ]
         }
       }
@@ -5000,6 +5089,587 @@
         }
       },
       "entryCandleOpenTime": 1789823520000
+    },
+    "BNBUSDT|futures|1m|LONG|SWEEP:1789824600000|BREAK:1789825140000|RETEST:1789828860000": {
+      "fingerprint": "BNBUSDT|futures|1m|LONG|LONG|LOW|1789824600000|CHoCH|UP|1789825140000|OB_RETEST|1789828860000",
+      "structureKey": "BNBUSDT|futures|1m|LONG|LONG|LOW|1789824600000|CHoCH|UP|1789825140000|OB_RETEST|1789828860000",
+      "signalId": "BNBUSDT|futures|1m|LONG|SWEEP:1789824600000|BREAK:1789825140000|RETEST:1789828860000",
+      "symbol": "BNBUSDT",
+      "market": "futures",
+      "timeframe": "1m",
+      "direction": "LONG",
+      "confidence": 92,
+      "riskReward": 3,
+      "sentAt": "2026-09-19T14:42:11.616Z",
+      "entry": 769.83,
+      "stop": 768.7575425,
+      "tp1": 771.1705718750001,
+      "tp2": 771.9749150000001,
+      "tp3": 773.0473725000002,
+      "messageId": 181,
+      "analysisVersion": "RC5.27.1_LIQUIDITY_SEQUENCE_SAFE",
+      "topDownContext": {
+        "version": "RC5.27.1_LIQUIDITY_SEQUENCE_SAFE",
+        "order": [
+          "1w",
+          "1d",
+          "4h",
+          "1h"
+        ],
+        "builtAt": "2026-09-19T14:42:09.338Z",
+        "frames": [
+          {
+            "timeframe": "1w",
+            "bias": "LONG",
+            "strength": 92,
+            "trend": "RANGE",
+            "close": 716.74,
+            "atr": 60.969938473166465,
+            "reasons": [
+              "BOS yukarı",
+              "EMA200 üstü"
+            ],
+            "marketBreak": {
+              "type": "BOS",
+              "side": "UP",
+              "time": 1788134400000,
+              "price": 746.59
+            },
+            "recentSweep": {
+              "side": "LOW",
+              "time": 1782691200000,
+              "price": 540.5
+            },
+            "ema200": {
+              "value": 578.5028907205234,
+              "position": "ABOVE",
+              "lastBreak": {
+                "type": "RECLAIM_UP",
+                "time": 1784505600000,
+                "price": 575.61,
+                "ageBars": 7
+              }
+            },
+            "support": {
+              "i": 279,
+              "time": 1750032000000,
+              "price": 600.91,
+              "distance": 115.83000000000004,
+              "distanceAtr": 1.9,
+              "distancePct": 16.16,
+              "proximity": "UZAK"
+            },
+            "resistance": {
+              "i": 225,
+              "time": 1717372800000,
+              "price": 723.2,
+              "distance": 6.460000000000036,
+              "distanceAtr": 0.11,
+              "distancePct": 0.9,
+              "proximity": "ÇOK YAKIN"
+            },
+            "liquidity": {
+              "nearestUntakenHigh": null,
+              "nearestUntakenLow": {
+                "side": "LOW",
+                "price": 540.265,
+                "from": 1730678400000,
+                "to": 1782691200000,
+                "taken": false,
+                "takenAt": null,
+                "timeframe": "1w",
+                "distance": 176.47500000000002,
+                "distanceAtr": 2.89,
+                "distancePct": 24.62,
+                "proximity": "UZAK"
+              },
+              "untakenHighPools": 0,
+              "untakenLowPools": 4,
+              "takenHighPools": 7,
+              "takenLowPools": 5
+            },
+            "roleReversal": null
+          },
+          {
+            "timeframe": "1d",
+            "bias": "LONG",
+            "strength": 95,
+            "trend": "UP",
+            "close": 761.92,
+            "atr": 24.801090181684668,
+            "reasons": [
+              "HH/HL trend",
+              "BOS yukarı",
+              "EMA200 üstü"
+            ],
+            "marketBreak": {
+              "type": "BOS",
+              "side": "UP",
+              "time": 1788566400000,
+              "price": 727.15
+            },
+            "recentSweep": {
+              "side": "HIGH",
+              "time": 1788480000000,
+              "price": 728.92
+            },
+            "ema200": {
+              "value": 662.1742289571228,
+              "position": "ABOVE",
+              "lastBreak": null
+            },
+            "support": {
+              "i": 77,
+              "time": 1753315200000,
+              "price": 742.61,
+              "distance": 19.309999999999945,
+              "distanceAtr": 0.78,
+              "distancePct": 2.53,
+              "proximity": "ORTA"
+            },
+            "resistance": {
+              "i": 485,
+              "time": 1788566400000,
+              "price": 781.44,
+              "distance": 19.520000000000095,
+              "distanceAtr": 0.79,
+              "distancePct": 2.56,
+              "proximity": "ORTA"
+            },
+            "liquidity": {
+              "nearestUntakenHigh": null,
+              "nearestUntakenLow": {
+                "side": "LOW",
+                "price": 587.2075,
+                "from": 1770768000000,
+                "to": 1786060800000,
+                "taken": false,
+                "takenAt": null,
+                "timeframe": "1d",
+                "distance": 174.71249999999998,
+                "distanceAtr": 7.04,
+                "distancePct": 22.93,
+                "proximity": "UZAK"
+              },
+              "untakenHighPools": 0,
+              "untakenLowPools": 3,
+              "takenHighPools": 8,
+              "takenLowPools": 4
+            },
+            "roleReversal": null
+          },
+          {
+            "timeframe": "4h",
+            "bias": "LONG",
+            "strength": 78,
+            "trend": "RANGE",
+            "close": 768.54,
+            "atr": 9.6053252369202,
+            "reasons": [
+              "BOS yukarı",
+              "EMA200 üstü"
+            ],
+            "marketBreak": {
+              "type": "BOS",
+              "side": "UP",
+              "time": 1789646400000,
+              "price": 725.94
+            },
+            "recentSweep": {
+              "side": "HIGH",
+              "time": 1789804800000,
+              "price": 769.57
+            },
+            "ema200": {
+              "value": 701.903698590936,
+              "position": "ABOVE",
+              "lastBreak": null
+            },
+            "support": {
+              "i": 421,
+              "time": 1788696000000,
+              "price": 740.59,
+              "distance": 27.949999999999932,
+              "distanceAtr": 2.91,
+              "distancePct": 3.64,
+              "proximity": "UZAK"
+            },
+            "resistance": {
+              "i": 494,
+              "time": 1789747200000,
+              "price": 769.57,
+              "distance": 1.0300000000000864,
+              "distanceAtr": 0.11,
+              "distancePct": 0.13,
+              "proximity": "ÇOK YAKIN"
+            },
+            "liquidity": {
+              "nearestUntakenHigh": null,
+              "nearestUntakenLow": {
+                "side": "LOW",
+                "price": 601.45,
+                "from": 1786924800000,
+                "to": 1787112000000,
+                "taken": false,
+                "takenAt": null,
+                "timeframe": "4h",
+                "distance": 167.08999999999992,
+                "distanceAtr": 17.4,
+                "distancePct": 21.74,
+                "proximity": "UZAK"
+              },
+              "untakenHighPools": 0,
+              "untakenLowPools": 5,
+              "takenHighPools": 6,
+              "takenLowPools": 4
+            },
+            "roleReversal": {
+              "type": "RESISTANCE_TO_SUPPORT",
+              "timeframe": "4h",
+              "level": 729.7866666666667,
+              "tests": 3,
+              "firstTouchTime": 1788480000000,
+              "lastTouchTime": 1789603200000,
+              "breakTime": 1789660800000,
+              "breakClose": 733.09,
+              "breakStrengthAtr": 0.57,
+              "retestTime": 1789675200000,
+              "retestClose": 738.89,
+              "reclaimed": false,
+              "nearNow": false,
+              "active": true
+            }
+          },
+          {
+            "timeframe": "1h",
+            "bias": "LONG",
+            "strength": 78,
+            "trend": "RANGE",
+            "close": 770.27,
+            "atr": 4.888125572931211,
+            "reasons": [
+              "BOS yukarı",
+              "EMA200 üstü"
+            ],
+            "marketBreak": {
+              "type": "BOS",
+              "side": "UP",
+              "time": 1789815600000,
+              "price": 768.37
+            },
+            "recentSweep": {
+              "side": "HIGH",
+              "time": 1789808400000,
+              "price": 769.57
+            },
+            "ema200": {
+              "value": 735.3856180690944,
+              "position": "ABOVE",
+              "lastBreak": null
+            },
+            "support": {
+              "i": 488,
+              "time": 1789786800000,
+              "price": 759.11,
+              "distance": 11.159999999999968,
+              "distanceAtr": 2.28,
+              "distancePct": 1.45,
+              "proximity": "UZAK"
+            },
+            "resistance": {
+              "i": 166,
+              "time": 1788627600000,
+              "price": 781.44,
+              "distance": 11.170000000000073,
+              "distanceAtr": 2.29,
+              "distancePct": 1.45,
+              "proximity": "UZAK"
+            },
+            "liquidity": {
+              "nearestUntakenHigh": null,
+              "nearestUntakenLow": {
+                "side": "LOW",
+                "price": 745.325,
+                "from": 1788750000000,
+                "to": 1789732800000,
+                "taken": false,
+                "takenAt": null,
+                "timeframe": "1h",
+                "distance": 24.944999999999936,
+                "distanceAtr": 5.1,
+                "distancePct": 3.24,
+                "proximity": "UZAK"
+              },
+              "untakenHighPools": 0,
+              "untakenLowPools": 2,
+              "takenHighPools": 8,
+              "takenLowPools": 6
+            },
+            "roleReversal": null
+          }
+        ],
+        "decision": {
+          "allowed": true,
+          "direction": "LONG",
+          "majorDirection": "LONG",
+          "alignedScore": 10,
+          "oppositeScore": 0,
+          "summary": "1W ↑ · 1D ↑ · 4H ↑ · 1H ↑",
+          "blockers": [],
+          "warnings": [
+            "1W direnç çok yakın · 0.11 ATR",
+            "1D direnç yakın · 0.79 ATR",
+            "4H direnç çok yakın · 0.11 ATR"
+          ],
+          "supports": [
+            "1W likidite sweep LOW",
+            "1W BOS UP",
+            "1D BOS UP",
+            "4H BOS UP",
+            "1H BOS UP"
+          ],
+          "conviction": 95
+        },
+        "major": {
+          "direction": "LONG",
+          "longScore": 10,
+          "shortScore": 0,
+          "conviction": 95,
+          "summary": "1W ↑ · 1D ↑ · 4H ↑ · 1H ↑",
+          "warnings": [
+            "1W direnç çok yakın · 0.11 ATR",
+            "1D direnç yakın · 0.79 ATR",
+            "4H direnç çok yakın · 0.11 ATR"
+          ],
+          "supports": [
+            "1W likidite sweep LOW",
+            "1W BOS UP",
+            "1D BOS UP",
+            "4H BOS UP",
+            "1H BOS UP"
+          ]
+        }
+      },
+      "lowerFrameContext": {
+        "timeframe": "1m",
+        "bias": "SHORT",
+        "strength": 85,
+        "trend": "DOWN",
+        "close": 769.83,
+        "atr": 0.5997846535748277,
+        "reasons": [
+          "LH/LL trend",
+          "BOS aşağı",
+          "EMA200 altı"
+        ],
+        "marketBreak": {
+          "type": "BOS",
+          "side": "DOWN",
+          "time": 1789828860000,
+          "price": 770.46
+        },
+        "recentSweep": {
+          "side": "LOW",
+          "time": 1789828740000,
+          "price": 770.09
+        },
+        "ema200": {
+          "value": 770.0062470774351,
+          "position": "BELOW",
+          "lastBreak": {
+            "type": "BREAK_DOWN",
+            "time": 1789828860000,
+            "price": 769.83,
+            "ageBars": 0
+          }
+        },
+        "support": {
+          "i": 448,
+          "time": 1789825860000,
+          "price": 769.55,
+          "distance": 0.2800000000000864,
+          "distanceAtr": 0.47,
+          "distancePct": 0.04,
+          "proximity": "YAKIN"
+        },
+        "resistance": {
+          "i": 446,
+          "time": 1789825740000,
+          "price": 770.11,
+          "distance": 0.2799999999999727,
+          "distanceAtr": 0.47,
+          "distancePct": 0.04,
+          "proximity": "YAKIN"
+        },
+        "liquidity": {
+          "nearestUntakenHigh": {
+            "side": "HIGH",
+            "price": 773.9725,
+            "from": 1789822620000,
+            "to": 1789828260000,
+            "taken": false,
+            "takenAt": null,
+            "timeframe": "1m",
+            "distance": 4.142499999999927,
+            "distanceAtr": 6.91,
+            "distancePct": 0.54,
+            "proximity": "UZAK"
+          },
+          "nearestUntakenLow": {
+            "side": "LOW",
+            "price": 760.6565625000001,
+            "from": 1789803480000,
+            "to": 1789804980000,
+            "taken": false,
+            "takenAt": null,
+            "timeframe": "1m",
+            "distance": 9.173437499999977,
+            "distanceAtr": 15.29,
+            "distancePct": 1.19,
+            "proximity": "UZAK"
+          },
+          "untakenHighPools": 1,
+          "untakenLowPools": 1,
+          "takenHighPools": 3,
+          "takenLowPools": 2
+        },
+        "roleReversal": null
+      },
+      "liquidityEvidence": {
+        "sweep": {
+          "side": "LOW",
+          "time": 1789824600000,
+          "level": 769.11,
+          "extreme": 768.95
+        },
+        "postSweepBreak": {
+          "type": "CHoCH",
+          "side": "UP",
+          "time": 1789825140000,
+          "price": 772.08,
+          "breakClose": 772.17
+        },
+        "retest": {
+          "type": "OB_RETEST",
+          "time": 1789828860000,
+          "level": 769.8399999999999,
+          "low": 769.63,
+          "high": 770.05,
+          "ageBars": 0,
+          "distanceAtr": 0.02
+        },
+        "source": "ORDERED_SEQUENCE"
+      },
+      "entrySequence": {
+        "order": [
+          "LIQUIDITY_SWEEP",
+          "STRUCTURE_BREAK",
+          "RETEST",
+          "ENTRY"
+        ],
+        "sweepTime": 1789824600000,
+        "breakTime": 1789825140000,
+        "retestTime": 1789828860000,
+        "stopBasis": {
+          "type": "SWEEP_EXTREME_PLUS_ATR_BUFFER",
+          "extreme": 768.95,
+          "buffer": 0.1924575,
+          "riskAtr": 1.79
+        },
+        "nearestForward": {
+          "price": 773.9725,
+          "source": "LOCAL_LIQUIDITY",
+          "timeframe": "1m"
+        }
+      },
+      "majorObstacle": {
+        "price": 781.44,
+        "timeframe": "1d",
+        "type": "RESISTANCE"
+      },
+      "localTarget": {
+        "side": "HIGH",
+        "price": 773.9725,
+        "from": 1789822620000,
+        "to": 1789828260000,
+        "taken": false,
+        "takenAt": null,
+        "timeframe": "1m"
+      },
+      "riskAtr": 1.79,
+      "retestDistanceAtr": 0.02,
+      "commentary": "Majör yön LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑ · güç %95. Aşağı/Sell-side sweep: seviye 769.11, wick 768.95 → CHoCH UP @ 772.08 → OB_RETEST @ 769.84 → LONG giriş 769.83. STOP sweep wick dışı: 768.76 · tampon 0.19246 · risk 1.79 ATR. Öndeki hedef/bölge: 1M LOCAL_LIQUIDITY @ 773.97. 1W EMA200 üstü · 1D EMA200 üstü · 4H EMA200 üstü · 1H EMA200 üstü. Risk: 1W direnç çok yakın · 0.11 ATR; 1D direnç yakın · 0.79 ATR.",
+      "commentaryProvider": "ŞAOMİ RC5.27 LIQUIDITY-SEQUENCE",
+      "contextSnapshot": {
+        "previousDayHigh": 769.57,
+        "previousDayLow": 735.75,
+        "previousWeekHigh": 761.91,
+        "previousWeekLow": 703,
+        "dailyAtr": 24.801090181684668,
+        "dailyEma50": 681.7273030600128,
+        "extensionAtr": 3.5523719439176156,
+        "riseFrom20dLowPct": 14.04888888888889,
+        "fallFrom20dHighPct": -1.4857186732186722,
+        "nearestResistance": {
+          "side": "RESISTANCE",
+          "price": 781.44,
+          "time": 1788566400000,
+          "timeframe": "1d"
+        },
+        "nearestSupport": {
+          "side": "SUPPORT",
+          "price": 703,
+          "time": 1788998400000,
+          "timeframe": "1d"
+        },
+        "nearestUntakenHigh": null,
+        "nearestUntakenLow": {
+          "side": "LOW",
+          "price": 601.45,
+          "from": 1786924800000,
+          "to": 1787112000000,
+          "taken": false,
+          "takenAt": null,
+          "timeframe": "4h"
+        },
+        "brokenSupportRetest": null,
+        "brokenResistanceRetest": {
+          "type": "RESISTANCE_TO_SUPPORT",
+          "timeframe": "4h",
+          "level": 729.7866666666667,
+          "tests": 3,
+          "firstTouchTime": 1788480000000,
+          "lastTouchTime": 1789603200000,
+          "breakTime": 1789660800000,
+          "breakClose": 733.09,
+          "breakStrengthAtr": 0.57,
+          "retestTime": 1789675200000,
+          "retestClose": 738.89,
+          "reclaimed": false,
+          "nearNow": false,
+          "active": true
+        },
+        "decision": {
+          "blocked": false,
+          "critical": [],
+          "warnings": [
+            "Yakında 1d direnç",
+            "Fiyat günlük EMA50'den 3.6 ATR uzakta"
+          ]
+        }
+      },
+      "status": "WAIT_ENTRY",
+      "stage": 0,
+      "enteredAt": null,
+      "lastCheckedAt": "2026-09-19T14:42:11.616Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
+      }
     }
   },
   "history": [
