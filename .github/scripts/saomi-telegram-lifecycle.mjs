@@ -89,14 +89,14 @@ async function resolveSequence(sig,c,startMs,enteredInitially=false,stageInitial
 function loadState(){
   let state;
   try{state=JSON.parse(fs.readFileSync(STATE_PATH,'utf8'))}catch{state={}}
-  state.version=6;
+  state.version=7;
   state.signals=state.signals||{};
   state.activeSignals=state.activeSignals||{};
   state.history=Array.isArray(state.history)?state.history:[];
   return state
 }
 function saveState(state){
-  state.version=6;
+  state.version=7;
   fs.mkdirSync('.github/state',{recursive:true});
   fs.writeFileSync(STATE_PATH,JSON.stringify(state,null,2)+'\n');
 }
