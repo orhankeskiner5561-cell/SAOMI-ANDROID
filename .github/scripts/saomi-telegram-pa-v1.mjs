@@ -244,45 +244,33 @@ async function buildHtfContext(symbol,price){
     liquidity:{h4:liq4h,d1:liq1d}
   }
 }
-function htfContextDecision(direction,ctx,price){
-  const reasons=[],warnings=[];let blocked=false;
+function htfRiskContext(direction,ctx,price){
+  const warnings=[],critical=[];
   const av=ctx.dailyAtr||Math.max(price*.01,1e-8);
   if(direction==='LONG'){
-    if(ctx.brokenSupportRetest?.active){
-      blocked=true;
-      reasons.push(`4H S/R FLIP: ${ctx.brokenSupportRetest.tests} kez test edilen destek kırıldı, alttan direnç retesti`);
-    }
+    if(ctx.brokenSupportRetest?.active)critical.push(`4H S/R flip: kırılmış destek direnç retestinde`);
     const r=ctx.nearestResistance;
     if(r){
       const dist=r.price-price;
-      if(dist>0&&dist<=av*.45){blocked=true;reasons.push(`1D/1W direnç çok yakın (${r.timeframe})`)}
+      if(dist>0&&dist<=av*.45)critical.push(`1D/1W direnç çok yakın (${r.timeframe})`);
       else if(dist>0&&dist<=av*1.0)warnings.push(`Yakında ${r.timeframe} direnç`);
     }
-    if(Number.isFinite(ctx.extensionAtr)&&ctx.extensionAtr>=3.0){
-      warnings.push(`Fiyat günlük EMA50'den ${ctx.extensionAtr.toFixed(1)} ATR uzakta`);
-      if(r&&r.price-price<=av*1.0){blocked=true;reasons.push('Aşırı yükselmiş + HTF direnç kombinasyonu')}
-    }
+    if(Number.isFinite(ctx.extensionAtr)&&ctx.extensionAtr>=3.0)warnings.push(`Fiyat günlük EMA50'den ${ctx.extensionAtr.toFixed(1)} ATR uzakta`);
     if(ctx.nearestUntakenHigh)warnings.push('Yukarıda alınmamış likidite havuzu var');
     if(ctx.previousWeekHigh&&price<ctx.previousWeekHigh&&ctx.previousWeekHigh-price<=av*.35)warnings.push('Previous Week High yakın');
-  }else if(direction==='SHORT'){
-    if(ctx.brokenResistanceRetest?.active){
-      blocked=true;
-      reasons.push(`4H S/R FLIP: ${ctx.brokenResistanceRetest.tests} kez test edilen direnç kırıldı, üstten destek retesti`);
-    }
+  }else{
+    if(ctx.brokenResistanceRetest?.active)critical.push(`4H S/R flip: kırılmış direnç destek retestinde`);
     const s=ctx.nearestSupport;
     if(s){
       const dist=price-s.price;
-      if(dist>0&&dist<=av*.45){blocked=true;reasons.push(`1D/1W destek çok yakın (${s.timeframe})`)}
+      if(dist>0&&dist<=av*.45)critical.push(`1D/1W destek çok yakın (${s.timeframe})`);
       else if(dist>0&&dist<=av*1.0)warnings.push(`Yakında ${s.timeframe} destek`);
     }
-    if(Number.isFinite(ctx.extensionAtr)&&ctx.extensionAtr<=-3.0){
-      warnings.push(`Fiyat günlük EMA50'nin ${Math.abs(ctx.extensionAtr).toFixed(1)} ATR altında`);
-      if(s&&price-s.price<=av*1.0){blocked=true;reasons.push('Aşırı düşmüş + HTF destek kombinasyonu')}
-    }
+    if(Number.isFinite(ctx.extensionAtr)&&ctx.extensionAtr<=-3.0)warnings.push(`Fiyat günlük EMA50'nin ${Math.abs(ctx.extensionAtr).toFixed(1)} ATR altında`);
     if(ctx.nearestUntakenLow)warnings.push('Aşağıda alınmamış likidite havuzu var');
     if(ctx.previousWeekLow&&price>ctx.previousWeekLow&&price-ctx.previousWeekLow<=av*.35)warnings.push('Previous Week Low yakın');
   }
-  return{blocked,reasons,warnings}
+  return{blocked:false,critical:[...new Set(critical)],warnings:[...new Set([...critical,...warnings])]}
 }
 
 function proximityGrade(distanceAtr){
@@ -481,7 +469,6 @@ function analyzeSingle(symbol,tf,c){
  if(!Number.isFinite(stop)||stop===close)stop=direction==='LONG'?close-av*1.25:close+av*1.25;const entry=close,risk=Math.max(Math.abs(entry-stop),av*.65),sgn=direction==='LONG'?1:-1,tp1=entry+sgn*risk*1.35,tp2=entry+sgn*risk*2.05,tp3=entry+sgn*risk*3.0,rr=3.0,quality=confidence>=82&&edge>=4.2?'GÜÇLÜ':'SEÇİCİ';
  return{symbol,timeframe:tf,price:close,direction,confidence,entry,stop,tp1,tp2,tp3,riskReward:rr,indicators:i,structure:s,reasons:[...new Set(reasons)].slice(0,7),invalidation:direction==='LONG'?'Stop altında kapanış veya son HL/price-action yapısının kaybı':'Stop üzerinde kapanış veya son LH/price-action yapısının kaybı',quality,priceAction:context,score:{long:Number(long.toFixed(2)),short:Number(short.toFixed(2))}}
 }
-function isStableSetupPair(current,previous){if(!current||!previous||current.direction==='WAIT'||previous.direction!==current.direction)return false;const edge=Math.abs((current.score?.long||0)-(current.score?.short||0)),prevEdge=Math.abs((previous.score?.long||0)-(previous.score?.short||0));return(current.confidence||0)>=80&&(previous.confidence||0)>=76&&edge>=4.0&&prevEdge>=3.2&&(current.riskReward||0)>=2.5}
 
 const cache=new Map();
 function loadSignalState(){
@@ -558,33 +545,6 @@ function activeSignalForSymbol(state,symbol,timeframe){
     !['TP3','STOP','EXPIRED','AMBIGUOUS'].includes(x.status)
   )||null
 }
-function recheckBaseCommentary(active,current,frames,verdict){
-  const conf=Number.isFinite(Number(current?.confidence))?` · güven %${Math.round(Number(current.confidence))}`:'';
-  const mtf=(frames||[]).slice(1).map(x=>`${String(x.timeframe||'').toUpperCase()} ${x.direction||'WAIT'}`).join(' · ');
-  const verdictText=verdict==='TERS'?'güncel yapı ilk sinyal yönüne ters dönüyor':verdict==='HTF_ENGEL'?'üst zaman bağlamı artık engel oluşturuyor':verdict==='BEKLE'?'güncel yapı teyit vermiyor':'ilk sinyal yönü korunuyor';
-  return `${active.symbol} ${active.timeframe||'15m'} yeniden kontrol: ${verdictText}${conf}.${mtf?' '+mtf+'.':''} Orijinal giriş, stop ve TP seviyeleri değiştirilmedi.`;
-}
-async function geminiRecheck(active,current,frames,verdict){
-  const base=recheckBaseCommentary(active,current,frames,verdict);
-  const payload={
-    analysisProfile:'PRICE_ACTION_RECHECK',
-    symbol:active.symbol,market:'futures',timeframe:active.timeframe||'15m',
-    originalDirection:active.direction,originalEntry:active.entry,originalStop:active.stop,
-    originalTp1:active.tp1,originalTp2:active.tp2,originalTp3:active.tp3,
-    currentDirection:current.direction,currentConfidence:current.confidence,currentScore:current.score,
-    currentPrice:current.price,currentReasons:current.reasons,currentPriceAction:current.priceAction,htfContext:current.htfContext,htfDecision:current.htfDecision,
-    multiTimeframe:frames.map(x=>({timeframe:x.timeframe,direction:x.direction,confidence:x.confidence,score:x.score})),
-    verdict,
-    request:'Bu mevcut sinyalin yeniden kontrolüdür. Yeni giriş/stop/hedef üretme. Orijinal seviyeleri değiştirme. Yalnız setup aynı yönde güçlü mü, zayıfladı mı, ters mi dönüyor kısa Türkçe değerlendir.'
-  };
-  try{
-    const r=await fetch(`${BASE}/api/ai`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
-    const j=await r.json().catch(()=>({}));
-    const ai=String(j.commentary||'').trim(),provider=String(j.provider||'');
-    const valid=r.ok&&ai.length>=20&&!/undefined|null|system prompt|instruction|prompt:/i.test(ai);
-    return{ok:valid&&/gemini/i.test(provider),provider:valid?(provider||'ŞAOMİ yeniden analiz'):'ŞAOMİ yeniden analiz',commentary:valid?`${base} ${ai}`:base}
-  }catch(e){return{ok:false,provider:'ŞAOMİ yeniden analiz',commentary:base,error:e?.message||String(e)}}
-}
 async function shadowReanalysis(active){
   active.reanalysis=active.reanalysis||{max:REANALYSIS_MAX,snapshots:[],lastCandleCloseTime:0};
   active.reanalysis.snapshots=Array.isArray(active.reanalysis.snapshots)?active.reanalysis.snapshots:[];
@@ -656,7 +616,7 @@ async function buildSetup(symbol,baseTf,topDown){
  const wantedConfirm=confirmFrames(baseTf),frames=[current];for(const tf of wantedConfirm){const cc=await candles(symbol,tf);frames.push(analyzeSingle(symbol,tf,cc))}
  const confirm=frames.slice(1),aligned=confirm.filter(x=>x.direction===current.direction).length,opposite=confirm.filter(x=>x.direction!=='WAIT'&&x.direction!==current.direction).length,available=confirm.filter(x=>x.direction!=='WAIT').length,agreement=available?aligned/available:0;
  const htfContext=await buildHtfContext(symbol,current.price);
- const htfDecision=htfContextDecision(current.direction,htfContext,current.price);
+ const htfDecision=htfRiskContext(current.direction,htfContext,current.price);
  const baseLiquidity=buildLiquidityMap(baseCandles,baseTf);
  let confidence=clamp(current.confidence+aligned*2-opposite*2-(topDecision.warnings.length?1:0),60,95);
  if(confidence<MIN_CONFIDENCE)return null;
