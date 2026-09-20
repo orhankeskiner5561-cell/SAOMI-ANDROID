@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
+const TELEGRAM_CARRIER_SYMBOL='BTCUSDT';
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 const FUTURES='https://www.binance.com';
@@ -201,22 +202,35 @@ async function notify(sig,event){
     if(!r.ok||!j.ok)throw new Error(j.description||('Telegram lifecycle direct HTTP '+r.status));
     return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
   }
+  const transportSetup={
+    ...setup,
+    symbol:TELEGRAM_CARRIER_SYMBOL,
+    direction:'AKTARIM',
+    price:null,entry:null,stop:null,tp1:null,tp2:null,tp3:null,
+    confidence:null,riskReward:null,
+    signalId:'RELAY|'+setup.signalId
+  };
+  const commentary=
+    'GERÇEK SİNYAL TAKİBİ: '+sig.symbol+' — '+sig.direction+'\n'
+    +'Zaman: '+String(sig.timeframe||'15m')+'\n'
+    +levelsText(sig)+'\n\n'
+    +'TAKİP — AYNI SİNYAL · '+event.text+htfSummaryText(sig);
   const r=await fetch(TELEGRAM_PUBLIC+'/api/telegram',{
     method:'POST',
     headers:{'content-type':'application/json'},
     body:JSON.stringify({
-      setup,
-      commentary:`TAKİP — AYNI SİNYAL · ${event.text}${htfSummaryText(sig)}`.trim(),
+      setup:transportSetup,
+      commentary,
       provider:'ŞAOMİ TAKİP',
-      riskReward:sig.riskReward??3,
+      riskReward:null,
       mode:'github-lifecycle',
-      signalId:setup.signalId
+      signalId:transportSetup.signalId
     }),
     signal:AbortSignal.timeout(15000)
   });
   const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
-  if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram lifecycle public HTTP '+r.status+' '+raw.slice(0,180)));
-  return {...j,mode:'public-fallback'}
+  if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram lifecycle carrier HTTP '+r.status+' '+raw.slice(0,180)));
+  return {...j,mode:'carrier-all-futures',actualSymbol:sig.symbol}
 }
 function closeSignal(state,id,sig,result,closedAt,extra={}){
   state.history.push({
