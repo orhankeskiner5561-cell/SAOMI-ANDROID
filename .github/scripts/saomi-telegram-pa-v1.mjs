@@ -12,7 +12,7 @@ const HOT_LANE_SIZE=24;
 const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.33_SIGNAL_FLOW_FIX';
+const ANALYSIS_VERSION='RC5.34_ALL_FUTURES_TELEGRAM_RECONNECT';
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
 const MAX_SIGNALS=8;
@@ -321,7 +321,7 @@ async function validateTelegramTransport(state){
    console.log('TELEGRAM_TRANSPORT direct-github');
    return true
  }
- const marker='RC5.33_ALL_FUTURES_BRIDGE_V1';
+ const marker='RC5.34_ALL_FUTURES_BRIDGE_V1';
  if(state.telegramTransport?.marker===marker&&state.telegramTransport?.validated===true){
    console.log('TELEGRAM_TRANSPORT bridge=validated');
    return true
@@ -329,7 +329,7 @@ async function validateTelegramTransport(state){
  const testSetup={
    symbol:'SAOMI-TEST',timeframe:'TEST',direction:'WAIT',confidence:0,quality:'BAĞLANTI TESTİ',
    entry:null,stop:null,tp1:null,tp2:null,tp3:null,riskReward:null,
-   reasons:['RC5.33 ALL FUTURES Telegram bağlantı testi']
+   reasons:['RC5.34 ALL FUTURES Telegram bağlantı testi']
  };
  const r=await fetch(TELEGRAM_BRIDGE+'/api/telegram',{
    method:'POST',headers:{'content-type':'application/json'},
@@ -373,7 +373,7 @@ for(const symbol of scanSymbols){
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
     console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
-    const meta={provider:'SAOMI RC5.33 SIGNAL FLOW FIX',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
+    const meta={provider:'SAOMI RC5.34 ALL FUTURES TELEGRAM RECONNECT',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
     rememberSignal(signalState,setup,tg,meta);
     sent++;
     console.log('SENT',symbol,tf,tg);
