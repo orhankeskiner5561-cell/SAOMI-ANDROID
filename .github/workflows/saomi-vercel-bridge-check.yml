@@ -1,0 +1,24 @@
+name: SAOMI Vercel Bridge Check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/saomi-vercel-bridge-check.yml'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check Vercel deploy credential availability
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "VERCEL_TOKEN_PRESENT=yes"
+          else
+            echo "VERCEL_TOKEN_PRESENT=no"
+          fi
