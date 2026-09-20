@@ -1,28 +1,9 @@
 import fs from 'node:fs';
-// TELEGRAM_ROUTE_PREFLIGHT: verify delivery route before each all-futures scan.
-// DIRECT_TELEGRAM_V2
-// RC5.35_RECONNECT_TRIGGER
-
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
-const TELEGRAM_CARRIER_SYMBOL='BTCUSDT';
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
-const TELEGRAM_ENDPOINT_CANDIDATES=[
- 'https://saomi-trade-ai.vercel.app',
- 'https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-i2yhgb529-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-qsm3wbd45-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-qyka5teuj-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-q2gl72krf-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-o0v97i3p5-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-27h8ktxv0-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-66i1om1nb-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-pmnkixjsc-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-6n1ocz5jb-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-53o1gwf2x-orhankeskiner5561-cells-projects.vercel.app',
- 'https://saomi-trade-j3nd7vx1f-orhankeskiner5561-cells-projects.vercel.app'
-];
 let TELEGRAM_SELECTED_ENDPOINT=TELEGRAM_PUBLIC;
+let TELEGRAM_READY=false;
 const FUTURES='https://www.binance.com';
 const BASE_TFS=['1m','5m','15m','30m'];
 const FUTURES_BATCH_SIZE=40;
@@ -296,57 +277,90 @@ function tgText(setup,commentaryText){
 async function telegram(setup,commentaryText,provider){
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
    const r=await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage',{
-     method:'POST',headers:{'content-type':'application/json'},
-     body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:tgText(setup,commentaryText),parse_mode:'HTML',disable_web_page_preview:true}),
+     method:'POST',
+     headers:{'content-type':'application/json'},
+     body:JSON.stringify({
+       chat_id:TELEGRAM_CHAT_ID,
+       text:tgText(setup,commentaryText),
+       parse_mode:'HTML',
+       disable_web_page_preview:true
+     }),
      signal:AbortSignal.timeout(15000)
    });
    const j=await r.json().catch(()=>({}));
    if(!r.ok||!j.ok)throw new Error(j.description||('Telegram direct HTTP '+r.status));
    return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
  }
+ if(!TELEGRAM_READY)throw new Error('Telegram all-Futures transport is not ready');
  const r=await fetch(TELEGRAM_SELECTED_ENDPOINT+'/api/telegram',{
-   method:'POST',headers:{'content-type':'application/json'},
-   body:JSON.stringify({setup,commentary:commentaryText,provider,riskReward:setup.riskReward,mode:'github-pa-v1',signalId:setup.signalId}),
+   method:'POST',
+   headers:{'content-type':'application/json'},
+   body:JSON.stringify({
+     setup,
+     commentary:commentaryText,
+     provider,
+     riskReward:setup.riskReward,
+     mode:'github-pa-v1',
+     signalId:setup.signalId
+   }),
    signal:AbortSignal.timeout(15000)
  });
  const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
- if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram endpoint HTTP '+r.status+' '+raw.slice(0,240)));
+ if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram HTTP '+r.status+' '+raw.slice(0,240)));
  return {...j,mode:'vercel-all-futures',endpoint:TELEGRAM_SELECTED_ENDPOINT}
 }
 async function validateTelegramTransport(state){
+ const now=new Date().toISOString();
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
-   state.telegramTransport={mode:'direct-github',allFutures:true,validated:true,validatedAt:new Date().toISOString()};
+   TELEGRAM_READY=true;
+   state.telegramTransport={mode:'direct-github',allFutures:true,validated:true,validatedAt:now};
    saveSignalState(state);
    console.log('TELEGRAM_TRANSPORT direct-github allFutures=true');
    return true
  }
- for(const base of TELEGRAM_ENDPOINT_CANDIDATES){
-   try{
-     const r=await fetch(base+'/api/telegram',{redirect:'manual',signal:AbortSignal.timeout(8000)});
-     const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
-     const configured=r.ok&&j&&typeof j==='object'&&j.configured===true;
-     const allowed=Array.isArray(j.allowedSymbols)?j.allowedSymbols:null;
-     const allFutures=configured&&(!allowed||allowed.length===0);
-     console.log('TELEGRAM_ENDPOINT_PROBE',base,'http='+r.status,'configured='+configured,'allowed='+(allowed?allowed.length:'none'));
-     if(allFutures){
-       TELEGRAM_SELECTED_ENDPOINT=base;
-       state.telegramTransport={mode:'vercel-all-futures',endpoint:base,allFutures:true,validated:true,validatedAt:new Date().toISOString()};
-       saveSignalState(state);
-       console.log('TELEGRAM_TRANSPORT vercel-all-futures endpoint='+base);
-       return true
-     }
-   }catch(e){
-     console.log('TELEGRAM_ENDPOINT_PROBE_FAIL',base,String(e?.message||e).slice(0,140));
+ try{
+   const r=await fetch(TELEGRAM_PUBLIC+'/api/telegram',{cache:'no-store',signal:AbortSignal.timeout(8000)});
+   const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
+   if(!r.ok||!j||typeof j!=='object'||Array.isArray(j)||j.configured!==true){
+     TELEGRAM_READY=false;
+     state.telegramTransport={mode:'unavailable',endpoint:TELEGRAM_PUBLIC,allFutures:false,validated:false,validatedAt:now,httpStatus:r.status};
+     saveSignalState(state);
+     console.error('TELEGRAM_TRANSPORT unavailable http='+r.status);
+     return false
    }
+   const allowed=Array.isArray(j.allowedSymbols)?j.allowedSymbols.map(x=>String(x).toUpperCase()):null;
+   if(allowed&&allowed.length){
+     TELEGRAM_READY=false;
+     state.telegramTransport={
+       mode:'restricted-server',
+       endpoint:TELEGRAM_PUBLIC,
+       allFutures:false,
+       validated:true,
+       validatedAt:now,
+       allowedSymbols:allowed
+     };
+     saveSignalState(state);
+     console.error('TELEGRAM_TRANSPORT restricted allowedSymbols='+allowed.length+'; bogus carrier disabled');
+     return false
+   }
+   TELEGRAM_READY=true;
+   TELEGRAM_SELECTED_ENDPOINT=TELEGRAM_PUBLIC;
+   state.telegramTransport={mode:'vercel-all-futures',endpoint:TELEGRAM_PUBLIC,allFutures:true,validated:true,validatedAt:now};
+   saveSignalState(state);
+   console.log('TELEGRAM_TRANSPORT vercel-all-futures');
+   return true
+ }catch(e){
+   TELEGRAM_READY=false;
+   state.telegramTransport={mode:'unavailable',endpoint:TELEGRAM_PUBLIC,allFutures:false,validated:false,validatedAt:now,error:String(e?.message||e).slice(0,180)};
+   saveSignalState(state);
+   console.error('TELEGRAM_TRANSPORT probe failed',e?.message||e);
+   return false
  }
- state.telegramTransport={mode:'blocked-until-unrestricted-endpoint',allFutures:false,validated:false,validatedAt:new Date().toISOString()};
- saveSignalState(state);
- throw new Error('All-Futures Telegram endpoint unavailable; carrier transport disabled to prevent bogus BTCUSDT/zero-level messages')
 }
 async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf);if(base.length<200)return rejectReason('SETUP_LT_200_BARS');const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return rejectReason('SETUP_STALE_CANDLE');const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return rejectReason('SETUP_MAJOR_DIRECTION_MISMATCH');const signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|SWEEP:'+plan.entryTrigger.sweep.time+'|BREAK:'+plan.entryTrigger.break.time+'|RETEST:'+plan.entryTrigger.retest.time;return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'INDICATOR_FUSION'}}}
 
 let sent=0;
-await validateTelegramTransport(signalState);
+const telegramReady=await validateTelegramTransport(signalState);
 const universe=await loadFuturesUniverse();
 const rotationBatch=chooseRotatingBatch(universe,signalState);
 const hotLane=await loadHotLane(universe);
@@ -373,7 +387,12 @@ for(const symbol of scanSymbols){
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
     console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
-    const meta={provider:'SAOMI RC5.36 CLEAN TELEGRAM TRANSPORT',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
+    const meta={provider:'SAOMI RC5.36 CLEAN TELEGRAM TRANSPORT',commentary:commentary(setup)};
+    if(!telegramReady){
+      console.log('SIGNAL_READY_TELEGRAM_BLOCKED',symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward});
+      continue
+    }
+    const tg=await telegram(setup,meta.commentary,meta.provider);
     rememberSignal(signalState,setup,tg,meta);
     sent++;
     console.log('SENT',symbol,tf,tg);
