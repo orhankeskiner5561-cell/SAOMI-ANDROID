@@ -30,7 +30,7 @@ const HOT_LANE_SIZE=24;
 const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.35_ALL_FUTURES_NO_WHITELIST';
+const ANALYSIS_VERSION='RC5.36_CLEAN_TELEGRAM_TRANSPORT';
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
 const MAX_SIGNALS=8;
@@ -293,30 +293,6 @@ function tgText(setup,commentaryText){
   +tgEsc(String(commentaryText||'ŞAOMİ TRADE AI teknik analiz sinyali.')).slice(0,900)
   +'\n\n<i>Olasılık analizidir; yatırım tavsiyesi değildir.</i>'
 }
-function carrierPayload(setup,commentaryText){
- const actualSymbol=String(setup.symbol||'').toUpperCase();
- const actualDirection=String(setup.direction||'BEKLE').toUpperCase();
- const transportSetup={
-   ...setup,
-   symbol:TELEGRAM_CARRIER_SYMBOL,
-   direction:'AKTARIM',
-   price:null,entry:null,stop:null,tp1:null,tp2:null,tp3:null,
-   confidence:null,riskReward:null,
-   signalId:'RELAY|'+String(setup.signalId||Date.now())
- };
- const detail=
-   'GERÇEK SİNYAL: '+actualSymbol+' — '+actualDirection+'\n'
-   +'Zaman: '+String(setup.timeframe||'—')+' · Piyasa: FUTURES\n'
-   +'Güven: '+(Number.isFinite(Number(setup.confidence))?'%'+Math.round(Number(setup.confidence)):'—')
-   +(Number.isFinite(Number(setup.riskReward))?' · R/R: '+Number(setup.riskReward).toFixed(2):'')+'\n'
-   +'Giriş: '+tgNum(setup.entry)+'\n'
-   +'Stop: '+tgNum(setup.stop)+'\n'
-   +'TP1: '+tgNum(setup.tp1)+'\n'
-   +'TP2: '+tgNum(setup.tp2)+'\n'
-   +'TP3: '+tgNum(setup.tp3)+'\n\n'
-   +String(commentaryText||'ŞAOMİ TRADE AI teknik analiz sinyali.');
- return {transportSetup,transportCommentary:detail}
-}
 async function telegram(setup,commentaryText,provider){
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
    const r=await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage',{
@@ -328,16 +304,14 @@ async function telegram(setup,commentaryText,provider){
    if(!r.ok||!j.ok)throw new Error(j.description||('Telegram direct HTTP '+r.status));
    return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
  }
- const restricted=signalState?.telegramTransport?.mode==='carrier-all-futures';
- const payload=restricted?carrierPayload(setup,commentaryText):{transportSetup:setup,transportCommentary:commentaryText};
  const r=await fetch(TELEGRAM_SELECTED_ENDPOINT+'/api/telegram',{
    method:'POST',headers:{'content-type':'application/json'},
-   body:JSON.stringify({setup:payload.transportSetup,commentary:payload.transportCommentary,provider,riskReward:payload.transportSetup.riskReward,mode:'github-pa-v1',signalId:payload.transportSetup.signalId}),
+   body:JSON.stringify({setup,commentary:commentaryText,provider,riskReward:setup.riskReward,mode:'github-pa-v1',signalId:setup.signalId}),
    signal:AbortSignal.timeout(15000)
  });
  const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
  if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram endpoint HTTP '+r.status+' '+raw.slice(0,240)));
- return {...j,mode:restricted?'carrier-all-futures':'vercel-all-futures',endpoint:TELEGRAM_SELECTED_ENDPOINT,actualSymbol:setup.symbol}
+ return {...j,mode:'vercel-all-futures',endpoint:TELEGRAM_SELECTED_ENDPOINT}
 }
 async function validateTelegramTransport(state){
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
@@ -346,7 +320,6 @@ async function validateTelegramTransport(state){
    console.log('TELEGRAM_TRANSPORT direct-github allFutures=true');
    return true
  }
- let restricted=null;
  for(const base of TELEGRAM_ENDPOINT_CANDIDATES){
    try{
      const r=await fetch(base+'/api/telegram',{redirect:'manual',signal:AbortSignal.timeout(8000)});
@@ -362,51 +335,18 @@ async function validateTelegramTransport(state){
        console.log('TELEGRAM_TRANSPORT vercel-all-futures endpoint='+base);
        return true
      }
-     if(configured&&!restricted)restricted={base,allowed:allowed||[]};
    }catch(e){
      console.log('TELEGRAM_ENDPOINT_PROBE_FAIL',base,String(e?.message||e).slice(0,140));
    }
  }
- if(restricted){
-   TELEGRAM_SELECTED_ENDPOINT=restricted.base;
-   state.telegramTransport={
-     mode:'carrier-all-futures',
-     endpoint:restricted.base,
-     carrierSymbol:TELEGRAM_CARRIER_SYMBOL,
-     allFutures:true,
-     validated:true,
-     validatedAt:new Date().toISOString(),
-     allowedSymbols:restricted.allowed,
-     note:'All-Futures signals are wrapped in a non-trade carrier envelope; actual symbol and levels are printed in commentary.'
-   };
-   saveSignalState(state);
-   console.log('TELEGRAM_TRANSPORT carrier-all-futures endpoint='+restricted.base+' carrier='+TELEGRAM_CARRIER_SYMBOL);
-   return true
- }
- throw new Error('No usable Telegram endpoint found')
+ state.telegramTransport={mode:'blocked-until-unrestricted-endpoint',allFutures:false,validated:false,validatedAt:new Date().toISOString()};
+ saveSignalState(state);
+ throw new Error('All-Futures Telegram endpoint unavailable; carrier transport disabled to prevent bogus BTCUSDT/zero-level messages')
 }
 async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf);if(base.length<200)return rejectReason('SETUP_LT_200_BARS');const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return rejectReason('SETUP_STALE_CANDLE');const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return rejectReason('SETUP_MAJOR_DIRECTION_MISMATCH');const signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|SWEEP:'+plan.entryTrigger.sweep.time+'|BREAK:'+plan.entryTrigger.break.time+'|RETEST:'+plan.entryTrigger.retest.time;return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'INDICATOR_FUSION'}}}
 
 let sent=0;
 await validateTelegramTransport(signalState);
-if(!signalState.telegramTransport?.noticeSentAt){
-  try{
-    const systemSetup={
-      symbol:'SAOMI_SYSTEM',market:'futures',timeframe:'ALL',
-      direction:'AKTIF',confidence:null,entry:null,stop:null,tp1:null,tp2:null,tp3:null,
-      riskReward:null,signalId:'SAOMI_ALL_FUTURES_RECONNECT_'+Date.now()
-    };
-    const t=await telegram(
-      systemSetup,
-      'ŞAOMİ ALL FUTURES bağlantısı yeniden kuruldu. Eski aktif emir/cache temizlendi. Binance Futures evreni yeniden taranıyor; bundan sonraki taze sinyaller aynı Telegram grubuna gönderilecek.',
-      'ŞAOMİ SİSTEM'
-    );
-    signalState.telegramTransport.noticeSentAt=new Date().toISOString();
-    signalState.telegramTransport.noticeMessageId=t?.messageId??null;
-    saveSignalState(signalState);
-    console.log('TELEGRAM_RECONNECT_NOTICE_SENT',t?.messageId??'ok');
-  }catch(e){console.error('TELEGRAM_RECONNECT_NOTICE_ERROR',e?.message||e)}
-}
 const universe=await loadFuturesUniverse();
 const rotationBatch=chooseRotatingBatch(universe,signalState);
 const hotLane=await loadHotLane(universe);
@@ -433,7 +373,7 @@ for(const symbol of scanSymbols){
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
     console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
-    const meta={provider:'SAOMI RC5.35 ALL FUTURES NO WHITELIST',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
+    const meta={provider:'SAOMI RC5.36 CLEAN TELEGRAM TRANSPORT',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
     rememberSignal(signalState,setup,tg,meta);
     sent++;
     console.log('SENT',symbol,tf,tg);
