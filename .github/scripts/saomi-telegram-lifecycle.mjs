@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const BASE='https://saomi-trade-ai.vercel.app';
+const BASE='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
 const FUTURES='https://www.binance.com';
 const STATE_PATH='.github/state/saomi-telegram-state.json';
 const TRACKED_TFS=['1m','5m','15m','30m','1h','4h'];
