@@ -313,7 +313,7 @@ async function telegram(setup,commentaryText,provider){
    signal:AbortSignal.timeout(15000)
  });
  const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
- if(!r.ok||!j.ok)throw new Error(j.error||('Telegram bridge HTTP '+r.status+' '+raw.slice(0,180)));
+ if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram bridge HTTP '+r.status+' '+raw.slice(0,500)));
  return {...j,mode:'legacy-unrestricted-bridge'}
 }
 async function validateTelegramTransport(state){
@@ -337,7 +337,7 @@ async function validateTelegramTransport(state){
    signal:AbortSignal.timeout(15000)
  });
  const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
- if(!r.ok||!j.ok)throw new Error(j.error||('Telegram bridge test HTTP '+r.status+' '+raw.slice(0,180)));
+ if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram bridge test HTTP '+r.status+' '+raw.slice(0,500)));
  state.telegramTransport={marker,validated:true,validatedAt:new Date().toISOString(),mode:'legacy-unrestricted-bridge',messageId:j?.messageId??null};
  saveSignalState(state);
  console.log('TELEGRAM_TRANSPORT bridge=test-ok messageId='+String(j?.messageId??'—'));
