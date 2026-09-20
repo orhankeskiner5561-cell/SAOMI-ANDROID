@@ -2,9 +2,10 @@ import fs from 'node:fs';
 // TELEGRAM_ROUTE_PREFLIGHT: verify delivery route before each all-futures scan.
 // DIRECT_TELEGRAM_V2
 
-const TELEGRAM_BRIDGE='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
+const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
+const TELEGRAM_PUBLIC_ALLOWED=new Set(['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT']);
 const FUTURES='https://www.binance.com';
 const BASE_TFS=['1m','5m','15m','30m'];
 const FUTURES_BATCH_SIZE=40;
@@ -275,27 +276,6 @@ function tgText(setup,commentaryText){
   +tgEsc(String(commentaryText||'ŞAOMİ TRADE AI teknik analiz sinyali.')).slice(0,900)
   +'\n\n<i>Olasılık analizidir; yatırım tavsiyesi değildir.</i>'
 }
-function bridgeAnalysis(setup,commentaryText){
- return {
-   symbol:String(setup.symbol||''),
-   market:'futures',
-   plan:{
-     direction:String(setup.direction||'WAIT'),
-     confidence:Number.isFinite(Number(setup.confidence))?Math.round(Number(setup.confidence)):0,
-     quality:String(setup.quality||'SECICI'),
-     entryLow:finite(setup.entry)?Number(setup.entry):null,
-     entryHigh:finite(setup.entry)?Number(setup.entry):null,
-     stop:finite(setup.stop)?Number(setup.stop):null,
-     targets:[setup.tp1,setup.tp2,setup.tp3].map(x=>finite(x)?Number(x):null),
-     riskReward:finite(setup.riskReward)?Number(setup.riskReward):null,
-     reasons:[
-       'TF '+String(setup.timeframe||'—').toUpperCase(),
-       ...(setup.reasons||[]),
-       String(commentaryText||'')
-     ].filter(Boolean).slice(0,5)
-   }
- }
-}
 async function telegram(setup,commentaryText,provider){
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
    const r=await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage',{
@@ -307,40 +287,31 @@ async function telegram(setup,commentaryText,provider){
    if(!r.ok||!j.ok)throw new Error(j.description||('Telegram direct HTTP '+r.status));
    return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
  }
- const r=await fetch(TELEGRAM_BRIDGE+'/api/telegram',{
+ if(!TELEGRAM_PUBLIC_ALLOWED.has(String(setup.symbol||'').toUpperCase())){
+   throw new Error('TELEGRAM_PUBLIC_SYMBOL_BLOCKED '+setup.symbol)
+ }
+ const r=await fetch(TELEGRAM_PUBLIC+'/api/telegram',{
    method:'POST',headers:{'content-type':'application/json'},
-   body:JSON.stringify({analysis:bridgeAnalysis(setup,commentaryText)}),
+   body:JSON.stringify({setup,commentary:commentaryText,provider,riskReward:setup.riskReward,mode:'github-pa-v1',signalId:setup.signalId}),
    signal:AbortSignal.timeout(15000)
  });
  const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
- if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram bridge HTTP '+r.status+' '+raw.slice(0,500)));
- return {...j,mode:'legacy-unrestricted-bridge'}
+ if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram public HTTP '+r.status+' '+raw.slice(0,180)));
+ return {...j,mode:'public-7-symbol-fallback'}
 }
 async function validateTelegramTransport(state){
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
-   console.log('TELEGRAM_TRANSPORT direct-github');
+   state.telegramTransport={mode:'direct-github',allFutures:true,validated:true,validatedAt:new Date().toISOString()};
+   saveSignalState(state);
+   console.log('TELEGRAM_TRANSPORT direct-github allFutures=true');
    return true
  }
- const marker='RC5.34_ALL_FUTURES_BRIDGE_V1';
- if(state.telegramTransport?.marker===marker&&state.telegramTransport?.validated===true){
-   console.log('TELEGRAM_TRANSPORT bridge=validated');
-   return true
- }
- const testSetup={
-   symbol:'SAOMI-TEST',timeframe:'TEST',direction:'WAIT',confidence:0,quality:'BAĞLANTI TESTİ',
-   entry:null,stop:null,tp1:null,tp2:null,tp3:null,riskReward:null,
-   reasons:['RC5.34 ALL FUTURES Telegram bağlantı testi']
- };
- const r=await fetch(TELEGRAM_BRIDGE+'/api/telegram',{
-   method:'POST',headers:{'content-type':'application/json'},
-   body:JSON.stringify({analysis:bridgeAnalysis(testSetup,'Bağlantı aktif. Bundan sonraki taze Futures sinyalleri bu gruba gönderilecek.')}),
-   signal:AbortSignal.timeout(15000)
- });
+ const r=await fetch(TELEGRAM_PUBLIC+'/api/telegram',{signal:AbortSignal.timeout(10000)});
  const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
- if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram bridge test HTTP '+r.status+' '+raw.slice(0,500)));
- state.telegramTransport={marker,validated:true,validatedAt:new Date().toISOString(),mode:'legacy-unrestricted-bridge',messageId:j?.messageId??null};
+ if(!r.ok||!j?.configured)throw new Error('Telegram public route unavailable HTTP '+r.status+' '+raw.slice(0,180));
+ state.telegramTransport={mode:'public-fallback',allFutures:false,validated:true,validatedAt:new Date().toISOString(),allowedSymbols:Array.isArray(j.allowedSymbols)?j.allowedSymbols:[]};
  saveSignalState(state);
- console.log('TELEGRAM_TRANSPORT bridge=test-ok messageId='+String(j?.messageId??'—'));
+ console.log('TELEGRAM_TRANSPORT public-fallback allFutures=false allowed='+(Array.isArray(j.allowedSymbols)?j.allowedSymbols.length:0));
  return true
 }
 async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf);if(base.length<200)return rejectReason('SETUP_LT_200_BARS');const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return rejectReason('SETUP_STALE_CANDLE');const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return rejectReason('SETUP_MAJOR_DIRECTION_MISMATCH');const signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|SWEEP:'+plan.entryTrigger.sweep.time+'|BREAK:'+plan.entryTrigger.break.time+'|RETEST:'+plan.entryTrigger.retest.time;return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'INDICATOR_FUSION'}}}
@@ -373,7 +344,7 @@ for(const symbol of scanSymbols){
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
     console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
-    const meta={provider:'SAOMI RC5.34 ALL FUTURES TELEGRAM RECONNECT',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
+    const meta={provider:'SAOMI RC5.34 ALL FUTURES TELEGRAM READY',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
     rememberSignal(signalState,setup,tg,meta);
     sent++;
     console.log('SENT',symbol,tf,tg);
