@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 // TELEGRAM_ROUTE_PREFLIGHT: verify delivery route before each all-futures scan.
+// DIRECT_TELEGRAM_V2
 
 const BASE='https://saomi-trade-ai.vercel.app';
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
