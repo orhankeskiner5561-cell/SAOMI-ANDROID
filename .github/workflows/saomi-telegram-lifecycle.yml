@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Repo kodunu al
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Lifecycle syntax kontrolu
         run: node --check .github/scripts/saomi-telegram-lifecycle.mjs
