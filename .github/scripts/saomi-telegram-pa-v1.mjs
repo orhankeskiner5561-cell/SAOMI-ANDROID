@@ -3,6 +3,7 @@ import fs from 'node:fs';
 // DIRECT_TELEGRAM_V2
 
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
+const TELEGRAM_CARRIER_SYMBOL='BTCUSDT';
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 const TELEGRAM_ENDPOINT_CANDIDATES=[
@@ -291,6 +292,30 @@ function tgText(setup,commentaryText){
   +tgEsc(String(commentaryText||'ŞAOMİ TRADE AI teknik analiz sinyali.')).slice(0,900)
   +'\n\n<i>Olasılık analizidir; yatırım tavsiyesi değildir.</i>'
 }
+function carrierPayload(setup,commentaryText){
+ const actualSymbol=String(setup.symbol||'').toUpperCase();
+ const actualDirection=String(setup.direction||'BEKLE').toUpperCase();
+ const transportSetup={
+   ...setup,
+   symbol:TELEGRAM_CARRIER_SYMBOL,
+   direction:'AKTARIM',
+   price:null,entry:null,stop:null,tp1:null,tp2:null,tp3:null,
+   confidence:null,riskReward:null,
+   signalId:'RELAY|'+String(setup.signalId||Date.now())
+ };
+ const detail=
+   'GERÇEK SİNYAL: '+actualSymbol+' — '+actualDirection+'\n'
+   +'Zaman: '+String(setup.timeframe||'—')+' · Piyasa: FUTURES\n'
+   +'Güven: '+(Number.isFinite(Number(setup.confidence))?'%'+Math.round(Number(setup.confidence)):'—')
+   +(Number.isFinite(Number(setup.riskReward))?' · R/R: '+Number(setup.riskReward).toFixed(2):'')+'\n'
+   +'Giriş: '+tgNum(setup.entry)+'\n'
+   +'Stop: '+tgNum(setup.stop)+'\n'
+   +'TP1: '+tgNum(setup.tp1)+'\n'
+   +'TP2: '+tgNum(setup.tp2)+'\n'
+   +'TP3: '+tgNum(setup.tp3)+'\n\n'
+   +String(commentaryText||'ŞAOMİ TRADE AI teknik analiz sinyali.');
+ return {transportSetup,transportCommentary:detail}
+}
 async function telegram(setup,commentaryText,provider){
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
    const r=await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage',{
@@ -302,14 +327,16 @@ async function telegram(setup,commentaryText,provider){
    if(!r.ok||!j.ok)throw new Error(j.description||('Telegram direct HTTP '+r.status));
    return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
  }
+ const restricted=signalState?.telegramTransport?.mode==='carrier-all-futures';
+ const payload=restricted?carrierPayload(setup,commentaryText):{transportSetup:setup,transportCommentary:commentaryText};
  const r=await fetch(TELEGRAM_SELECTED_ENDPOINT+'/api/telegram',{
    method:'POST',headers:{'content-type':'application/json'},
-   body:JSON.stringify({setup,commentary:commentaryText,provider,riskReward:setup.riskReward,mode:'github-pa-v1',signalId:setup.signalId}),
+   body:JSON.stringify({setup:payload.transportSetup,commentary:payload.transportCommentary,provider,riskReward:payload.transportSetup.riskReward,mode:'github-pa-v1',signalId:payload.transportSetup.signalId}),
    signal:AbortSignal.timeout(15000)
  });
  const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
  if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram endpoint HTTP '+r.status+' '+raw.slice(0,240)));
- return {...j,mode:'vercel-all-futures',endpoint:TELEGRAM_SELECTED_ENDPOINT}
+ return {...j,mode:restricted?'carrier-all-futures':'vercel-all-futures',endpoint:TELEGRAM_SELECTED_ENDPOINT,actualSymbol:setup.symbol}
 }
 async function validateTelegramTransport(state){
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
@@ -341,9 +368,19 @@ async function validateTelegramTransport(state){
  }
  if(restricted){
    TELEGRAM_SELECTED_ENDPOINT=restricted.base;
-   state.telegramTransport={mode:'restricted-fallback',endpoint:restricted.base,allFutures:false,validated:true,validatedAt:new Date().toISOString(),allowedSymbols:restricted.allowed};
+   state.telegramTransport={
+     mode:'carrier-all-futures',
+     endpoint:restricted.base,
+     carrierSymbol:TELEGRAM_CARRIER_SYMBOL,
+     allFutures:true,
+     validated:true,
+     validatedAt:new Date().toISOString(),
+     allowedSymbols:restricted.allowed,
+     note:'All-Futures signals are wrapped in a non-trade carrier envelope; actual symbol and levels are printed in commentary.'
+   };
    saveSignalState(state);
-   throw new Error('No unrestricted Telegram endpoint found; restricted='+restricted.allowed.length);
+   console.log('TELEGRAM_TRANSPORT carrier-all-futures endpoint='+restricted.base+' carrier='+TELEGRAM_CARRIER_SYMBOL);
+   return true
  }
  throw new Error('No usable Telegram endpoint found')
 }
@@ -351,6 +388,24 @@ async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf)
 
 let sent=0;
 await validateTelegramTransport(signalState);
+if(!signalState.telegramTransport?.noticeSentAt){
+  try{
+    const systemSetup={
+      symbol:'SAOMI_SYSTEM',market:'futures',timeframe:'ALL',
+      direction:'AKTIF',confidence:null,entry:null,stop:null,tp1:null,tp2:null,tp3:null,
+      riskReward:null,signalId:'SAOMI_ALL_FUTURES_RECONNECT_'+Date.now()
+    };
+    const t=await telegram(
+      systemSetup,
+      'ŞAOMİ ALL FUTURES bağlantısı yeniden kuruldu. Eski aktif emir/cache temizlendi. Binance Futures evreni yeniden taranıyor; bundan sonraki taze sinyaller aynı Telegram grubuna gönderilecek.',
+      'ŞAOMİ SİSTEM'
+    );
+    signalState.telegramTransport.noticeSentAt=new Date().toISOString();
+    signalState.telegramTransport.noticeMessageId=t?.messageId??null;
+    saveSignalState(signalState);
+    console.log('TELEGRAM_RECONNECT_NOTICE_SENT',t?.messageId??'ok');
+  }catch(e){console.error('TELEGRAM_RECONNECT_NOTICE_ERROR',e?.message||e)}
+}
 const universe=await loadFuturesUniverse();
 const rotationBatch=chooseRotatingBatch(universe,signalState);
 const hotLane=await loadHotLane(universe);
