@@ -8949,23 +8949,9 @@
     "historyPreserved": true
   },
   "telegramTransport": {
-    "mode": "carrier-all-futures",
-    "endpoint": "https://saomi-trade-ai.vercel.app",
-    "carrierSymbol": "BTCUSDT",
-    "allFutures": true,
-    "validated": true,
-    "validatedAt": "2026-09-20T18:14:57.151Z",
-    "allowedSymbols": [
-      "BTCUSDT",
-      "ETHUSDT",
-      "XRPUSDT",
-      "SOLUSDT",
-      "BNBUSDT",
-      "DOGEUSDT",
-      "ADAUSDT"
-    ],
-    "note": "All-Futures signals are wrapped in a non-trade carrier envelope; actual symbol and levels are printed in commentary.",
-    "noticeSentAt": "2026-09-20T18:14:57.632Z",
-    "noticeMessageId": 194
+    "mode": "blocked-until-unrestricted-endpoint",
+    "allFutures": false,
+    "validated": false,
+    "validatedAt": "2026-09-20T18:24:05.970Z"
   }
 }
