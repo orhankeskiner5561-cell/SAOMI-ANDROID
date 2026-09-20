@@ -29,6 +29,11 @@ jobs:
         run: node --check .github/scripts/saomi-telegram-lifecycle.mjs
 
       - name: Aktif sinyallerde TP ve STOP kontrolu
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
         run: node .github/scripts/saomi-telegram-lifecycle.mjs
 
       - name: Lifecycle state kaydet
