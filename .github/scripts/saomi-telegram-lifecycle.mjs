@@ -348,15 +348,15 @@ for(const [id,sig] of entries){
         sig.stage=se.stage;const label=se.stage===3?'TP3':se.stage===2?'TP2':'TP1';sig.status=label;
         const passed=se.stage===3?'TP1 ve TP2 de geçildi.':se.stage===2?'TP1 de geçildi.':'İlk hedefe ulaşıldı.';
         const key=label.toLowerCase(),ev={type:label,time:se.time,price:se.price,text:`✅ ${sig.symbol} ${label} GELDİ. ${passed} Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. ${levelsText(sig)}. ${label==='TP3'?reanalysisSummaryText(sig):''}`};
-        if(!sig.notified[key])await notify(sig,ev).catch(e=>console.error(sig.symbol,label,'telegram',e.message));
-        sig.notified[key]=true;changed=true;
+        if(!sig.notified[key])await notifyOnce(sig,key,ev);
+        changed=true;
       }
       if(entryResolved.terminal==='STOP'){
         const stage=sig.stage||0,result=stage>=2?'STOP_AFTER_TP2':stage>=1?'STOP_AFTER_TP1':'STOP',note=stage>=2?'TP1 ve TP2 görüldükten sonra':stage>=1?'TP1 görüldükten sonra':'hedef görülmeden';
         sig.status='STOP';
         const ev={type:'STOP',time:entryResolved.time,price:sig.stop,text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(sig.stop)}. ${reanalysisSummaryText(sig)}`};
-        if(!sig.notified.stop)await notify(sig,ev).catch(e=>console.error(sig.symbol,'stop telegram',e.message));
-        sig.notified.stop=true;closeSignal(state,id,sig,result,entryResolved.time,{maxStage:stage,exitPrice:sig.stop,status:'STOP'});changed=true;continue;
+        if(!sig.notified.stop)await notifyOnce(sig,'stop',ev);
+        closeSignal(state,id,sig,result,entryResolved.time,{maxStage:stage,exitPrice:sig.stop,status:'STOP'});changed=true;continue;
       }
       if(entryResolved.terminal==='TP3'){
         sig.status='TP3';closeSignal(state,id,sig,'TP3',entryResolved.time,{maxStage:3,exitPrice:sig.tp3,status:'TP3'});changed=true;continue;
@@ -379,22 +379,22 @@ for(const [id,sig] of entries){
         const seq=await resolveSequence(sig,cand,cand.openTime,true,sig.stage).catch(e=>{console.error(sig.symbol,'agg active sequence',e.message);return null});
         if(!seq){
           const ev={type:'AMBIGUOUS',time:cand.closeTime,price:cand.close,text:`⚠️ ${sig.symbol}: aynı 1 dakikalık mumda STOP ve yeni TP görüldü; trade sırası alınamadığı için performans hesabına dahil edilmedi.`};
-          if(!sig.notified.ambiguous)await notify(sig,ev).catch(e=>console.error(sig.symbol,'ambiguous telegram',e.message));
-          sig.notified.ambiguous=true;sig.status='AMBIGUOUS';closeSignal(state,id,sig,'AMBIGUOUS',cand.closeTime,{maxStage:Math.max(sig.stage,newStage),ambiguityKind:'TRADE_SEQUENCE_UNAVAILABLE'});changed=true;closed=true;break;
+          if(!sig.notified.ambiguous)await notifyOnce(sig,'ambiguous',ev);
+          sig.status='AMBIGUOUS';closeSignal(state,id,sig,'AMBIGUOUS',cand.closeTime,{maxStage:Math.max(sig.stage,newStage),ambiguityKind:'TRADE_SEQUENCE_UNAVAILABLE'});changed=true;closed=true;break;
         }
         for(const se of seq.stageEvents||[]){
           if(se.stage<=sig.stage)continue;
           sig.stage=se.stage;const label=se.stage===3?'TP3':se.stage===2?'TP2':'TP1';sig.status=label;
           const passed=se.stage===3?'TP1 ve TP2 de geçildi.':se.stage===2?'TP1 de geçildi.':'İlk hedefe ulaşıldı.';
           const key=label.toLowerCase(),ev={type:label,time:se.time,price:se.price,text:`✅ ${sig.symbol} ${label} GELDİ. ${passed} Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. ${levelsText(sig)}. ${label==='TP3'?reanalysisSummaryText(sig):''}`};
-          if(!sig.notified[key])await notify(sig,ev).catch(e=>console.error(sig.symbol,label,'telegram',e.message));
-          sig.notified[key]=true;changed=true;
+          if(!sig.notified[key])await notifyOnce(sig,key,ev);
+          changed=true;
         }
         if(seq.terminal==='STOP'){
           const stage=sig.stage||0,result=stage>=2?'STOP_AFTER_TP2':stage>=1?'STOP_AFTER_TP1':'STOP',note=stage>=2?'TP1 ve TP2 görüldükten sonra':stage>=1?'TP1 görüldükten sonra':'hedef görülmeden';
           sig.status='STOP';const ev={type:'STOP',time:seq.time,price:sig.stop,text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(sig.stop)}. ${reanalysisSummaryText(sig)}`};
-          if(!sig.notified.stop)await notify(sig,ev).catch(e=>console.error(sig.symbol,'stop telegram',e.message));
-          sig.notified.stop=true;closeSignal(state,id,sig,result,seq.time,{maxStage:stage,exitPrice:sig.stop,status:'STOP'});changed=true;closed=true;break;
+          if(!sig.notified.stop)await notifyOnce(sig,'stop',ev);
+          closeSignal(state,id,sig,result,seq.time,{maxStage:stage,exitPrice:sig.stop,status:'STOP'});changed=true;closed=true;break;
         }
         if(seq.terminal==='TP3'){sig.status='TP3';closeSignal(state,id,sig,'TP3',seq.time,{maxStage:3,exitPrice:sig.tp3,status:'TP3'});changed=true;closed=true;break}
         continue;
@@ -404,16 +404,16 @@ for(const [id,sig] of entries){
         sig.stage=newStage;const label=newStage===3?'TP3':newStage===2?'TP2':'TP1';sig.status=label;
         const price=newStage===3?sig.tp3:newStage===2?sig.tp2:sig.tp1,passed=newStage===3?'TP1 ve TP2 de geçildi.':newStage===2?'TP1 de geçildi.':'İlk hedefe ulaşıldı.';
         const ev={type:label,time:cand.closeTime,price,text:`✅ ${sig.symbol} ${label} GELDİ. ${passed} Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. ${levelsText(sig)}. ${label==='TP3'?reanalysisSummaryText(sig):''}`},key=label.toLowerCase();
-        if(!sig.notified[key])await notify(sig,ev).catch(e=>console.error(sig.symbol,label,'telegram',e.message));
-        sig.notified[key]=true;changed=true;
+        if(!sig.notified[key])await notifyOnce(sig,key,ev);
+        changed=true;
         if(newStage===3){closeSignal(state,id,sig,'TP3',cand.closeTime,{maxStage:3,exitPrice:sig.tp3,status:'TP3'});closed=true;break}
       }
 
       if(hitStop){
         const stage=sig.stage||0,result=stage>=2?'STOP_AFTER_TP2':stage>=1?'STOP_AFTER_TP1':'STOP',note=stage>=2?'TP1 ve TP2 görüldükten sonra':stage>=1?'TP1 görüldükten sonra':'hedef görülmeden';
         sig.status='STOP';const ev={type:'STOP',time:cand.closeTime,price:sig.stop,text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(sig.stop)}. ${reanalysisSummaryText(sig)}`};
-        if(!sig.notified.stop)await notify(sig,ev).catch(e=>console.error(sig.symbol,'stop telegram',e.message));
-        sig.notified.stop=true;closeSignal(state,id,sig,result,cand.closeTime,{maxStage:stage,exitPrice:sig.stop,status:'STOP'});changed=true;closed=true;break;
+        if(!sig.notified.stop)await notifyOnce(sig,'stop',ev);
+        closeSignal(state,id,sig,result,cand.closeTime,{maxStage:stage,exitPrice:sig.stop,status:'STOP'});changed=true;closed=true;break;
       }
     }
 
