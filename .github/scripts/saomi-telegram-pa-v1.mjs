@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+// TELEGRAM_ROUTE_PREFLIGHT: verify delivery route before each all-futures scan.
 
 const BASE='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
 const FUTURES='https://www.binance.com';
