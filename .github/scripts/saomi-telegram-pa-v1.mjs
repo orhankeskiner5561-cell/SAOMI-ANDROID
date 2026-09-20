@@ -1,7 +1,9 @@
 import fs from 'node:fs';
 // TELEGRAM_ROUTE_PREFLIGHT: verify delivery route before each all-futures scan.
 
-const BASE='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
+const BASE='https://saomi-trade-ai.vercel.app';
+const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
+const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 const FUTURES='https://www.binance.com';
 const BASE_TFS=['1m','5m','15m','30m'];
 const FUTURES_BATCH_SIZE=40;
@@ -260,15 +262,46 @@ function activeSymbols(state){return [...new Set(Object.values(state.activeSigna
 function activeSignalForSymbol(state,symbol,tf){return Object.values(state.activeSignals||{}).find(x=>x?.symbol===symbol&&String(x.timeframe||'15m').toLowerCase()===String(tf).toLowerCase()&&!['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status))||null}
 async function shadowReanalysis(active){active.reanalysis=active.reanalysis||{max:REANALYSIS_MAX,snapshots:[],lastCandleCloseTime:0};active.reanalysis.snapshots=Array.isArray(active.reanalysis.snapshots)?active.reanalysis.snapshots:[];if(active.reanalysis.snapshots.length>=REANALYSIS_MAX)return false;const tf=String(active.timeframe||'15m').toLowerCase(),base=await candles(active.symbol,tf),last=base.at(-1),sent=Date.parse(active.sentAt||0);if(!last?.closeTime||last.closeTime<=sent||last.closeTime<=Number(active.reanalysis.lastCandleCloseTime||0))return false;const top=await buildTopDownContext(active.symbol),major=top.major,lower=fusionFrameContext(tf,base),lowerDir=lower.bias==='NEUTRAL'?'WAIT':lower.bias,verdict=major.direction!==active.direction?'TERS_MAJOR':lowerDir===active.direction?'AYNI_YON':lowerDir==='WAIT'?'BEKLE':'TERS_MINOR',snap={no:active.reanalysis.snapshots.length+1,checkedAt:new Date().toISOString(),candleCloseTime:last.closeTime,price:last.close,originalDirection:active.direction,majorDirection:major.direction,majorConviction:major.conviction,currentDirection:lowerDir,currentConfidence:lower.strength,lowerSupertrend:lower.supertrend,lowerTrend:lower.trend,lowerVolume:lower.volume,verdict,commentary:active.symbol+' '+tf+' recheck: major '+major.direction+' · minor '+lowerDir+' · '+major.summary};active.reanalysis.snapshots.push(snap);active.reanalysis.lastCandleCloseTime=last.closeTime;active.reanalysis.summary={same:active.reanalysis.snapshots.filter(x=>x.verdict==='AYNI_YON').length,wait:active.reanalysis.snapshots.filter(x=>x.verdict==='BEKLE').length,opposite:active.reanalysis.snapshots.filter(x=>x.verdict==='TERS_MAJOR'||x.verdict==='TERS_MINOR').length,total:active.reanalysis.snapshots.length};signalState.activeSignals[active.signalId]=active;saveSignalState(signalState);console.log(active.symbol,'INDICATOR FUSION RECHECK',snap.no+'/'+REANALYSIS_MAX,verdict);return true}
 
-async function telegram(setup,commentaryText,provider){const r=await fetch(BASE+'/api/telegram',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setup,commentary:commentaryText,provider,riskReward:setup.riskReward,mode:'github-pa-v1',signalId:setup.signalId})}),j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||'Telegram HTTP '+r.status);return j}
+function tgEsc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function tgNum(v){const n=Number(v);if(!Number.isFinite(n))return '—';const a=Math.abs(n),d=a>=1000?1:a>=100?2:a>=1?4:a>=0.01?5:7;return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function tgText(setup,commentaryText){
+ const rr=Number(setup.riskReward),conf=Number.isFinite(Number(setup.confidence))?'%'+Math.round(Number(setup.confidence)):'—';
+ return '<b>'+tgEsc(setup.symbol)+' — '+tgEsc(setup.direction)+'</b>\n'
+  +'Zaman: <b>'+tgEsc(setup.timeframe)+'</b> · Piyasa: FUTURES\n'
+  +'Güven: <b>'+conf+'</b>'+(Number.isFinite(rr)?' · R/R: <b>'+rr.toFixed(2)+'</b>':'')+'\n\n'
+  +'Giriş: <b>'+tgNum(setup.entry)+'</b>\nStop: <b>'+tgNum(setup.stop)+'</b>\n'
+  +'TP1: '+tgNum(setup.tp1)+'\nTP2: '+tgNum(setup.tp2)+'\nTP3: '+tgNum(setup.tp3)+'\n\n'
+  +tgEsc(String(commentaryText||'ŞAOMİ TRADE AI teknik analiz sinyali.')).slice(0,900)
+  +'\n\n<i>Olasılık analizidir; yatırım tavsiyesi değildir.</i>'
+}
+async function telegram(setup,commentaryText,provider){
+ if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
+   const r=await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage',{
+     method:'POST',headers:{'content-type':'application/json'},
+     body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:tgText(setup,commentaryText),parse_mode:'HTML',disable_web_page_preview:true}),
+     signal:AbortSignal.timeout(15000)
+   });
+   const j=await r.json().catch(()=>({}));
+   if(!r.ok||!j.ok)throw new Error(j.description||('Telegram direct HTTP '+r.status));
+   return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
+ }
+ const r=await fetch(BASE+'/api/telegram',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setup,commentary:commentaryText,provider,riskReward:setup.riskReward,mode:'github-pa-v1',signalId:setup.signalId})});
+ const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
+ if(!r.ok||!j.ok)throw new Error(j.error||('Telegram fallback HTTP '+r.status+' '+raw.slice(0,120)));
+ return j
+}
 async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf);if(base.length<200)return rejectReason('SETUP_LT_200_BARS');const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return rejectReason('SETUP_STALE_CANDLE');const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return rejectReason('SETUP_MAJOR_DIRECTION_MISMATCH');const signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|SWEEP:'+plan.entryTrigger.sweep.time+'|BREAK:'+plan.entryTrigger.break.time+'|RETEST:'+plan.entryTrigger.retest.time;return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'INDICATOR_FUSION'}}}
 
 let sent=0;
 {
- const health=await fetch(BASE+'/api/telegram');
- const healthText=await health.text();
- if(!health.ok)throw new Error('Telegram route health HTTP '+health.status);
- console.log('TELEGRAM_ROUTE_HEALTH',health.status,healthText.slice(0,240));
+ if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
+   console.log('TELEGRAM_ROUTE_HEALTH direct=true');
+ }else{
+   const health=await fetch(BASE+'/api/telegram');
+   const raw=await health.text();let j={};try{j=JSON.parse(raw)}catch{}
+   if(!health.ok||typeof j!=='object'||Array.isArray(j))throw new Error('Telegram fallback health invalid HTTP '+health.status);
+   console.log('TELEGRAM_ROUTE_HEALTH direct=false fallback='+health.status+' configured='+Boolean(j.configured)+' allowedSymbols='+(Array.isArray(j.allowedSymbols)?j.allowedSymbols.length:'n/a'));
+ }
 }
 const universe=await loadFuturesUniverse();
 const rotationBatch=chooseRotatingBatch(universe,signalState);
