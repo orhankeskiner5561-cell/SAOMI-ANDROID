@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 // TELEGRAM_ROUTE_PREFLIGHT: verify delivery route before each all-futures scan.
 // DIRECT_TELEGRAM_V2
+// RC5.35_RECONNECT_TRIGGER
 
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
 const TELEGRAM_CARRIER_SYMBOL='BTCUSDT';
