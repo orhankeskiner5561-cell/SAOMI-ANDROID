@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
-const TELEGRAM_CARRIER_SYMBOL='BTCUSDT';
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 const FUTURES='https://www.binance.com';
@@ -194,43 +193,53 @@ async function notify(sig,event){
   const setup=eventSetup(sig,event);
   if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
     const r=await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage',{
-      method:'POST',headers:{'content-type':'application/json'},
-      body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:lifecycleText(sig,event),parse_mode:'HTML',disable_web_page_preview:true}),
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({
+        chat_id:TELEGRAM_CHAT_ID,
+        text:lifecycleText(sig,event),
+        parse_mode:'HTML',
+        disable_web_page_preview:true
+      }),
       signal:AbortSignal.timeout(15000)
     });
     const j=await r.json().catch(()=>({}));
     if(!r.ok||!j.ok)throw new Error(j.description||('Telegram lifecycle direct HTTP '+r.status));
     return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
   }
-  const transportSetup={
-    ...setup,
-    symbol:TELEGRAM_CARRIER_SYMBOL,
-    direction:'AKTARIM',
-    price:null,entry:null,stop:null,tp1:null,tp2:null,tp3:null,
-    confidence:null,riskReward:null,
-    signalId:'RELAY|'+setup.signalId
-  };
-  const commentary=
-    'GERÇEK SİNYAL TAKİBİ: '+sig.symbol+' — '+sig.direction+'\n'
-    +'Zaman: '+String(sig.timeframe||'15m')+'\n'
-    +levelsText(sig)+'\n\n'
-    +'TAKİP — AYNI SİNYAL · '+event.text+htfSummaryText(sig);
   const r=await fetch(TELEGRAM_PUBLIC+'/api/telegram',{
     method:'POST',
     headers:{'content-type':'application/json'},
     body:JSON.stringify({
-      setup:transportSetup,
-      commentary,
+      setup,
+      commentary:`TAKİP — AYNI SİNYAL · ${event.text}${htfSummaryText(sig)}`.trim(),
       provider:'ŞAOMİ TAKİP',
-      riskReward:null,
+      riskReward:sig.riskReward??3,
       mode:'github-lifecycle',
-      signalId:transportSetup.signalId
+      signalId:setup.signalId
     }),
     signal:AbortSignal.timeout(15000)
   });
   const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
-  if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram lifecycle carrier HTTP '+r.status+' '+raw.slice(0,180)));
-  return {...j,mode:'carrier-all-futures',actualSymbol:sig.symbol}
+  if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram lifecycle HTTP '+r.status+' '+raw.slice(0,180)));
+  return {...j,mode:'vercel'}
+}
+async function notifyOnce(sig,key,event){
+  if(key&&sig.notified?.[key])return true;
+  try{
+    await notify(sig,event);
+    if(key)sig.notified[key]=true;
+    sig.lastDeliveryError=null;
+    return true
+  }catch(e){
+    sig.lastDeliveryError={
+      at:new Date().toISOString(),
+      event:event?.type||key||'UNKNOWN',
+      message:String(e?.message||e).slice(0,220)
+    };
+    console.error(sig.symbol,event?.type||key||'telegram','delivery failed:',e?.message||e);
+    return false
+  }
 }
 function closeSignal(state,id,sig,result,closedAt,extra={}){
   state.history.push({
@@ -296,7 +305,7 @@ for(const [id,sig] of entries){
     sig.entry=Number(sig.entry);sig.stop=Number(sig.stop);sig.tp1=Number(sig.tp1);sig.tp2=Number(sig.tp2);sig.tp3=Number(sig.tp3);
     sig.stage=Number(sig.stage||0);
     sig.status=sig.status||'WAIT_ENTRY';
-    sig.notified=sig.notified||{entry:true,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false};
+    sig.notified=sig.notified||{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false};
 
     const sentMs=Date.parse(sig.sentAt||0);
     if(!Number.isFinite(sentMs)){console.log(sig.symbol,'sentAt geçersiz');continue}
@@ -320,7 +329,7 @@ for(const [id,sig] of entries){
         if(Date.now()>pendingDeadline){
           sig.status='EXPIRED';
           const ev={type:'EXPIRED',time:pendingDeadline,price:sig.entry,text:`⌛ ${sig.symbol} ${sig.timeframe||'15m'} sinyali girişe temas etmeden süresi doldu. İşlem alınmadı; doğruluk/başarı hesabına dahil edilmedi.`};
-          await notify(sig,ev).catch(e=>console.error(sig.symbol,'expiry telegram',e.message));
+          await notifyOnce(sig,null,ev);
           closeSignal(state,id,sig,'EXPIRED',pendingDeadline,{maxStage:0,expiryKind:'NO_ENTRY_TIMEOUT',status:'EXPIRED'});
           changed=true;
         }else console.log(sig.symbol,'giriş bekliyor');
@@ -330,7 +339,7 @@ for(const [id,sig] of entries){
       sig.status='ACTIVE';sig.enteredAt=iso(entryResolved.entryTime);sig.entryCandleOpenTime=candles[entryIndex].openTime;changed=true;
       if(!sig.notified.entry){
         const ev={type:'ENTRY',time:entryResolved.entryTime,price:sig.entry,text:`🟢 ${sig.symbol} ${sig.timeframe||'15m'} GİRİŞ AKTİF. ${sig.direction} · ${levelsText(sig)}.`};
-        await notify(sig,ev).catch(e=>console.error(sig.symbol,'entry telegram',e.message));sig.notified.entry=true;
+        await notifyOnce(sig,'entry',ev);
       }
       console.log(sig.symbol,'GİRİŞ AKTİF',sig.enteredAt);
 
@@ -413,7 +422,7 @@ for(const [id,sig] of entries){
         const stage=sig.stage||0,hours=Math.round(activeExpiryMs(sig.timeframe)/3600000),before=sig.status;
         sig.status='EXPIRED';
         const ev={type:'EXPIRED',time:activeDeadline,price:sig.entry,text:`⌛ ${sig.symbol} ${sig.timeframe||'15m'} aktif işleminin süresi ${hours} saatte doldu — ${stageText(stage)}. TP3/STOP oluşmadığı için performans başarı/zarar hesabına dahil edilmedi.`};
-        await notify(sig,ev).catch(e=>console.error(sig.symbol,'active expiry telegram',e.message));
+        await notifyOnce(sig,null,ev);
         closeSignal(state,id,sig,'EXPIRED',activeDeadline,{maxStage:stage,expiryKind:'ACTIVE_TIMEOUT',preExpiryStatus:before,status:'EXPIRED'});
         changed=true;
       }else state.activeSignals[id]=sig;
