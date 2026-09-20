@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 
-const BASE='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
+const BASE='https://saomi-trade-ai.vercel.app';
+const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
+const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 const FUTURES='https://www.binance.com';
 const STATE_PATH='.github/state/saomi-telegram-state.json';
 const TRACKED_TFS=['1m','5m','15m','30m','1h','4h'];
@@ -178,8 +180,27 @@ function eventSetup(sig,event){
     signalId:`${sig.signalId}|${event.type}|${event.time}`
   }
 }
+function tgEsc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function lifecycleText(sig,event){
+  const conf=finite(sig.confidence)?'%'+Math.round(Number(sig.confidence)):'—';
+  return '<b>'+tgEsc(sig.symbol)+' — '+tgEsc(sig.direction)+'</b>\n'
+    +'Zaman: <b>'+tgEsc(sig.timeframe||'15m')+'</b> · TAKİP\n'
+    +'Güven: <b>'+conf+'</b>\n\n'
+    +tgEsc(('TAKİP — AYNI SİNYAL · '+event.text+htfSummaryText(sig)).trim())+'\n\n'
+    +tgEsc(levelsText(sig));
+}
 async function notify(sig,event){
   const setup=eventSetup(sig,event);
+  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
+    const r=await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage',{
+      method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:lifecycleText(sig,event),parse_mode:'HTML',disable_web_page_preview:true}),
+      signal:AbortSignal.timeout(15000)
+    });
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.ok)throw new Error(j.description||('Telegram lifecycle direct HTTP '+r.status));
+    return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
+  }
   const r=await fetch(`${BASE}/api/telegram`,{
     method:'POST',
     headers:{'content-type':'application/json'},
@@ -192,8 +213,8 @@ async function notify(sig,event){
       signalId:setup.signalId
     })
   });
-  const j=await r.json().catch(()=>({}));
-  if(!r.ok||!j.ok)throw new Error(j.error||`Telegram lifecycle HTTP ${r.status}`);
+  const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
+  if(!r.ok||!j.ok)throw new Error(j.error||`Telegram lifecycle fallback HTTP ${r.status} ${raw.slice(0,120)}`);
   return j
 }
 function closeSignal(state,id,sig,result,closedAt,extra={}){
