@@ -4,10 +4,11 @@ const BASE='https://saomi-trade-ai.vercel.app';
 const FUTURES='https://www.binance.com';
 const BASE_TFS=['1m','5m','15m','30m'];
 const FUTURES_BATCH_SIZE=40;
+const HOT_LANE_SIZE=24;
 const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.32_ALL_FUTURES_ROTATION';
+const ANALYSIS_VERSION='RC5.33_SIGNAL_FLOW_FIX';
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
 const MAX_SIGNALS=8;
@@ -103,29 +104,75 @@ async function buildTopDownContext(symbol){const frames=[];for(const tf of HTF_O
 function topDownDecision(direction,ctx){const major=ctx.major||majorFusionDecision(ctx.frames||[]),allowed=direction===major.direction;return{allowed,direction,majorDirection:major.direction,alignedScore:direction==='LONG'?major.longScore:major.shortScore,oppositeScore:direction==='LONG'?major.shortScore:major.longScore,summary:major.summary,conviction:major.conviction,blockers:allowed?[]:['Minor yon '+direction+', major yon '+major.direction+' ile ters'],warnings:major.warnings||[],supports:major.supports||[]}}
 
 function zoneCandidates(s,event,dir,av){const up=dir==='LONG',tol=av*.24,out=[{type:'BREAK_RETEST',low:event.price-tol,high:event.price+tol,level:event.price}];for(const f of (s.fvgs||[]).filter(x=>x.time>=event.time&&(up?x.side==='BULL':x.side==='BEAR')).slice(-4))out.push({type:'FVG_RETEST',low:Math.min(f.from,f.to),high:Math.max(f.from,f.to),level:(f.from+f.to)/2,time:f.time});for(const ob of (s.orderBlocks||[]).filter(x=>(up?x.side==='BULL':x.side==='BEAR')&&x.time>=event.time-1).slice(-4))out.push({type:'OB_RETEST',low:ob.low,high:ob.high,level:(ob.low+ob.high)/2,time:ob.time});return out}
-function findRetest(c,s,event,dir,av){const idx=finite(event.index)?event.index:c.findIndex(x=>x.time===event.time),lastI=c.length-1;if(idx<0)return null;let best=null;for(let i=idx+1;i<c.length;i++){const k=c[i];for(const z of zoneCandidates(s,event,dir,av)){if(k.low>z.high||k.high<z.low)continue;const held=dir==='LONG'?k.close>=z.low-av*.08:k.close<=z.high+av*.08;if(!held)continue;const age=lastI-i;if(age>3)continue;const dist=Math.abs(c.at(-1).close-z.level)/Math.max(av,1e-12);if(dist>.8)continue;const row={...z,time:k.time,index:i,ageBars:age,distanceAtr:Number(dist.toFixed(2)),candle:{open:k.open,high:k.high,low:k.low,close:k.close}};if(!best||row.ageBars<best.ageBars||row.ageBars===best.ageBars&&row.distanceAtr<best.distanceAtr)best=row}}return best}
-function liquidityEntrySequence(c,direction){
+function findRetest(c,s,event,dir,av,tf='15m'){
+ const idx=finite(event.index)?event.index:c.findIndex(x=>x.time===event.time),lastI=c.length-1;if(idx<0)return null;
+ const maxAge=String(tf)==='1m'?8:String(tf)==='5m'?6:String(tf)==='15m'?5:4;
+ let best=null;
+ for(let i=idx+1;i<c.length;i++){
+  const k=c[i];
+  for(const z of zoneCandidates(s,event,dir,av)){
+   if(k.low>z.high||k.high<z.low)continue;
+   const held=dir==='LONG'?k.close>=z.low-av*.08:k.close<=z.high+av*.08;
+   if(!held)continue;
+   const age=lastI-i;if(age>maxAge)continue;
+   const dist=Math.abs(c.at(-1).close-z.level)/Math.max(av,1e-12);if(dist>.8)continue;
+   const row={...z,time:k.time,index:i,ageBars:age,distanceAtr:Number(dist.toFixed(2)),candle:{open:k.open,high:k.high,low:k.low,close:k.close}};
+   if(!best||row.ageBars<best.ageBars||row.ageBars===best.ageBars&&row.distanceAtr<best.distanceAtr)best=row
+  }
+ }
+ return best
+}
+function liquidityEntrySequence(c,direction,tf='15m'){
  const s=detectStructure(c),av=atr(c,14).at(-1)||Math.max(c.at(-1).close*.004,1e-8),wantSweep=direction==='LONG'?'LOW':'HIGH',wantBreak=direction==='LONG'?'UP':'DOWN';
  const sweeps=(s.sweeps||[]).filter(x=>x.side===wantSweep).slice().reverse();
  if(!sweeps.length)return rejectReason('SEQ_NO_DIRECTIONAL_SWEEP');
- let sawValidSweep=false,sawBreak=false,sawRetest=false;
- for(const sweep of sweeps){
-   const after=c.slice(sweep.index+1),invalid=direction==='LONG'?after.some(k=>k.low<sweep.extreme):after.some(k=>k.high>sweep.extreme);
-   if(invalid)continue;
-   sawValidSweep=true;
-   const event=(s.events||[]).find(e=>e.side===wantBreak&&e.time>sweep.time);
+ let sawBreak=false,sawRetest=false,sawIntegrity=false;
+ for(const rawSweep of sweeps){
+   // Liquidity raid can print several wicks before structure actually flips.
+   // Treat them as one raid and use the final/extreme wick as stop reference.
+   let event=(s.events||[]).find(e=>e.side===wantBreak&&e.time>rawSweep.time);
+   if(!event){
+     const anchor=direction==='LONG'
+       ? [...(s.pivots?.highs||[])].reverse().find(p=>p.i<rawSweep.index&&rawSweep.index-p.i<=40)
+       : [...(s.pivots?.lows||[])].reverse().find(p=>p.i<rawSweep.index&&rawSweep.index-p.i<=40);
+     if(anchor){
+       for(let j=rawSweep.index+1;j<c.length;j++){
+         const crossed=direction==='LONG'?c[j].close>anchor.price:c[j].close<anchor.price;
+         if(crossed){event={type:'MICRO_CHOCH',side:wantBreak,time:c[j].time,price:anchor.price,index:j,breakClose:c[j].close};break}
+       }
+     }
+   }
    if(!event)continue;
    sawBreak=true;
-   const retest=findRetest(c,s,event,direction,av);
+   const eventIndex=finite(event.index)?Number(event.index):c.findIndex(x=>x.time===event.time);
+   if(eventIndex<=rawSweep.index)continue;
+   const raidCandles=c.slice(rawSweep.index,eventIndex+1);
+   const effectiveExtreme=direction==='LONG'
+     ? Math.min(...raidCandles.map(k=>k.low))
+     : Math.max(...raidCandles.map(k=>k.high));
+   const extremeIndex=direction==='LONG'
+     ? rawSweep.index+raidCandles.findIndex(k=>k.low===effectiveExtreme)
+     : rawSweep.index+raidCandles.findIndex(k=>k.high===effectiveExtreme);
+   const sweep={...rawSweep,extreme:effectiveExtreme,index:extremeIndex,time:c[extremeIndex]?.time??rawSweep.time,clustered:true};
+   // After the structure break, a CLOSE beyond the raid extreme invalidates it.
+   const postBreak=c.slice(eventIndex+1);
+   const closeInvalid=direction==='LONG'
+     ? postBreak.some(k=>k.close<effectiveExtreme-av*.05)
+     : postBreak.some(k=>k.close>effectiveExtreme+av*.05);
+   if(closeInvalid)continue;
+   sawIntegrity=true;
+   const retest=findRetest(c,s,event,direction,av,tf);
    if(!retest)continue;
    sawRetest=true;
    if(!(sweep.time<event.time&&event.time<retest.time))continue;
-   if(direction==='LONG'&&retest.candle.low<sweep.extreme)continue;
-   if(direction==='SHORT'&&retest.candle.high>sweep.extreme)continue;
+   const closeHeld=direction==='LONG'
+     ? retest.candle.close>=effectiveExtreme-av*.05
+     : retest.candle.close<=effectiveExtreme+av*.05;
+   if(!closeHeld)continue;
    return{sweep,event,retest,structure:s,atr:av}
  }
- if(!sawValidSweep)return rejectReason('SEQ_SWEEP_INVALIDATED');
  if(!sawBreak)return rejectReason('SEQ_NO_POST_SWEEP_BREAK');
+ if(!sawIntegrity)return rejectReason('SEQ_POST_BREAK_CLOSE_INVALID');
  if(!sawRetest)return rejectReason('SEQ_NO_RECENT_RETEST');
  return rejectReason('SEQ_ORDER_OR_SWEEP_INTEGRITY')
 }
@@ -133,9 +180,9 @@ function nearestMajorObstacle(frames,direction,entry){const rows=[];for(const f 
 function nearestForward(ctx,direction,entry,frames){
  const rows=[];if(direction==='LONG'){for(const x of ctx.supportResistance?.resistances||[])if(x.price>entry)rows.push({price:x.price,source:'LOCAL_RESISTANCE',timeframe:ctx.timeframe});for(const x of ctx.liquidity?.untakenHighs||[])if(x.price>entry)rows.push({price:x.price,source:'LOCAL_LIQUIDITY',timeframe:ctx.timeframe});for(const x of ctx.fibonacci?.extensions||[])if(x.price>entry)rows.push({price:x.price,source:'FIB_EXTENSION',timeframe:ctx.timeframe})}else{for(const x of ctx.supportResistance?.supports||[])if(x.price<entry)rows.push({price:x.price,source:'LOCAL_SUPPORT',timeframe:ctx.timeframe});for(const x of ctx.liquidity?.untakenLows||[])if(x.price<entry)rows.push({price:x.price,source:'LOCAL_LIQUIDITY',timeframe:ctx.timeframe});for(const x of ctx.fibonacci?.extensions||[])if(x.price<entry)rows.push({price:x.price,source:'FIB_EXTENSION',timeframe:ctx.timeframe})}const major=nearestMajorObstacle(frames,direction,entry);if(major)rows.push(major);return rows.sort((a,b)=>Math.abs(a.price-entry)-Math.abs(b.price-entry))[0]||null}
 function buildCanonicalTradePlan(symbol,tf,c,major){
- const direction=major.direction,sequence=liquidityEntrySequence(c,direction);if(!sequence)return null;const ctx=fusionFrameContext(tf,c),entry=c.at(-1).close,av=sequence.atr,up=direction==='LONG',aligned=ctx.supertrend?.direction===direction||ctx.trend?.alignment===direction||ctx.smartMoney?.bias===direction;if(!aligned)return rejectReason('PLAN_NO_INDICATOR_ALIGNMENT');
+ const direction=major.direction,sequence=liquidityEntrySequence(c,direction,tf);if(!sequence)return null;const ctx=fusionFrameContext(tf,c),entry=c.at(-1).close,av=sequence.atr,up=direction==='LONG',aligned=ctx.supertrend?.direction===direction||ctx.trend?.alignment===direction||ctx.smartMoney?.bias===direction;if(!aligned)return rejectReason('PLAN_NO_INDICATOR_ALIGNMENT');
  const hostile=ctx.supertrend?.direction&&ctx.supertrend.direction!==direction&&ctx.trend?.alignment&&ctx.trend.alignment!==direction;if(hostile)return rejectReason('PLAN_HOSTILE_ST_AND_TREND');const volHostile=ctx.volume?.deltaPct!=null&&(up?ctx.volume.deltaPct<-28:ctx.volume.deltaPct>28)&&ctx.volume.rvol>1.15;if(volHostile)return rejectReason('PLAN_HOSTILE_VOLUME');
- const buffer=Math.max(av*.20,Math.abs(entry)*.00025),stop=up?sequence.sweep.extreme-buffer:sequence.sweep.extreme+buffer;if(up&&!(stop<entry)||!up&&!(stop>entry))return rejectReason('PLAN_STOP_GEOMETRY');const risk=Math.abs(entry-stop),riskAtr=risk/Math.max(av,1e-12);if(riskAtr<.45||riskAtr>2.8)return rejectReason('PLAN_RISK_ATR');
+ const buffer=Math.max(av*.20,Math.abs(entry)*.00025),stop=up?sequence.sweep.extreme-buffer:sequence.sweep.extreme+buffer;if(up&&!(stop<entry)||!up&&!(stop>entry))return rejectReason('PLAN_STOP_GEOMETRY');const risk=Math.abs(entry-stop),riskAtr=risk/Math.max(av,1e-12);if(riskAtr<.35||riskAtr>3.0)return rejectReason('PLAN_RISK_ATR');
  const obstacle=nearestForward(ctx,direction,entry,major.frames),roomR=obstacle?Math.abs(obstacle.price-entry)/risk:Infinity;if(roomR<MIN_RR)return rejectReason('PLAN_TARGET_ROOM_LT_2R');const sgn=up?1:-1;let tp1=entry+sgn*risk*1.25,tp2=entry+sgn*risk*2,tp3=entry+sgn*risk*3;if(roomR<3.15){const safe=Math.abs(obstacle.price-entry)*.90;tp3=entry+sgn*safe;tp2=entry+sgn*Math.min(risk*2,safe*.70);tp1=entry+sgn*Math.min(risk*1.25,safe*.42)}const rr=Math.abs(tp3-entry)/risk;if(rr<MIN_RR)return rejectReason('PLAN_FINAL_RR_LT_2');
  let conf=0;if(ctx.supertrend?.direction===direction)conf+=2;if(ctx.trend?.alignment===direction)conf+=2;if(ctx.smartMoney?.bias===direction)conf+=1.5;if(ctx.volume?.bias===direction)conf+=1;if(ctx.fibonacci?.bias===direction)conf+=.5;const confidence=clamp(Math.round(68+conf*3+major.conviction*.09-Math.max(0,sequence.retest.ageBars-1)*2),74,95);if(confidence<MIN_CONFIDENCE)return rejectReason('PLAN_CONFIDENCE');
  const entryTrigger={order:['LIQUIDITY_SWEEP','BOS_CHOCH','RETEST','ENTRY'],sweep:{side:sequence.sweep.side,time:sequence.sweep.time,price:sequence.sweep.price,extreme:sequence.sweep.extreme},break:{type:sequence.event.type,side:sequence.event.side,time:sequence.event.time,price:sequence.event.price},retest:{type:sequence.retest.type,time:sequence.retest.time,level:sequence.retest.level,ageBars:sequence.retest.ageBars},stopBasis:{type:'SWEEP_EXTREME_ATR_BUFFER',buffer,riskAtr:Number(riskAtr.toFixed(2))},nearestForward:obstacle};
@@ -164,6 +211,16 @@ async function loadFuturesUniverse(){
     .filter(x=>x?.status==='TRADING'&&x?.contractType==='PERPETUAL'&&x?.symbol)
     .map(x=>String(x.symbol).toUpperCase())
     .sort((a,b)=>a.localeCompare(b))
+}
+async function loadHotLane(universe){
+  const allowed=new Set(universe||[]);
+  const r=await futuresFetch(FUTURES+'/fapi/v1/ticker/24hr','ticker24h'),d=await r.json();
+  return (Array.isArray(d)?d:[])
+    .filter(x=>allowed.has(String(x.symbol||'').toUpperCase()))
+    .map(x=>({symbol:String(x.symbol).toUpperCase(),quoteVolume:Number(x.quoteVolume)||0}))
+    .sort((a,b)=>b.quoteVolume-a.quoteVolume)
+    .slice(0,HOT_LANE_SIZE)
+    .map(x=>x.symbol)
 }
 async function candles(symbol,tf){
   const key=symbol+'|'+tf;if(cache.has(key))return cache.get(key);
@@ -208,9 +265,11 @@ async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf)
 let sent=0;
 const universe=await loadFuturesUniverse();
 const rotationBatch=chooseRotatingBatch(universe,signalState);
+const hotLane=await loadHotLane(universe);
 const actives=activeSymbols(signalState);
-const scanSymbols=[...new Set([...actives,...rotationBatch])];
-console.log('SAOMI '+ANALYSIS_VERSION+' scan '+new Date().toISOString()+' · FUTURES universe='+universe.length+' · rotating batch='+rotationBatch.length+' · active extras='+actives.length+' · SIGNAL TF='+BASE_TFS.join(',')+' · HTF='+HTF_ORDER.join('→'));
+const scanSymbols=[...new Set([...actives,...hotLane,...rotationBatch])];
+console.log('SAOMI '+ANALYSIS_VERSION+' scan '+new Date().toISOString()+' · FUTURES universe='+universe.length+' · hotLane='+hotLane.length+' · rotating batch='+rotationBatch.length+' · active extras='+actives.length+' · SIGNAL TF='+BASE_TFS.join(',')+' · HTF='+HTF_ORDER.join('→'));
+console.log('HOT',hotLane.join(','));
 console.log('BATCH',rotationBatch.join(','));
 scanLoop:
 for(const symbol of scanSymbols){
@@ -230,7 +289,7 @@ for(const symbol of scanSymbols){
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
     console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
-    const meta={provider:'SAOMI RC5.32 ALL FUTURES INDICATOR FUSION',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
+    const meta={provider:'SAOMI RC5.33 SIGNAL FLOW FIX',commentary:commentary(setup)},tg=await telegram(setup,meta.commentary,meta.provider);
     rememberSignal(signalState,setup,tg,meta);
     sent++;
     console.log('SENT',symbol,tf,tg);
