@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const TELEGRAM_BRIDGE='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
+const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 const FUTURES='https://www.binance.com';
@@ -189,28 +189,6 @@ function lifecycleText(sig,event){
     +tgEsc(('TAKİP — AYNI SİNYAL · '+event.text+htfSummaryText(sig)).trim())+'\n\n'
     +tgEsc(levelsText(sig));
 }
-function bridgeAnalysis(sig,event){
-  return {
-    symbol:String(sig.symbol||''),
-    market:'futures',
-    plan:{
-      direction:String(sig.direction||'WAIT'),
-      confidence:finite(sig.confidence)?Math.round(Number(sig.confidence)):0,
-      quality:'TAKİP',
-      entryLow:finite(sig.entry)?Number(sig.entry):null,
-      entryHigh:finite(sig.entry)?Number(sig.entry):null,
-      stop:finite(sig.stop)?Number(sig.stop):null,
-      targets:[sig.tp1,sig.tp2,sig.tp3].map(x=>finite(x)?Number(x):null),
-      riskReward:finite(sig.riskReward)?Number(sig.riskReward):3,
-      reasons:[
-        'TF '+String(sig.timeframe||'15m').toUpperCase(),
-        ('TAKİP — '+String(event.text||'')),
-        htfSummaryText(sig).trim(),
-        levelsText(sig)
-      ].filter(Boolean).slice(0,5)
-    }
-  }
-}
 async function notify(sig,event){
   const setup=eventSetup(sig,event);
   if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
@@ -223,15 +201,22 @@ async function notify(sig,event){
     if(!r.ok||!j.ok)throw new Error(j.description||('Telegram lifecycle direct HTTP '+r.status));
     return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
   }
-  const r=await fetch(TELEGRAM_BRIDGE+'/api/telegram',{
+  const r=await fetch(TELEGRAM_PUBLIC+'/api/telegram',{
     method:'POST',
     headers:{'content-type':'application/json'},
-    body:JSON.stringify({analysis:bridgeAnalysis(sig,event)}),
+    body:JSON.stringify({
+      setup,
+      commentary:`TAKİP — AYNI SİNYAL · ${event.text}${htfSummaryText(sig)}`.trim(),
+      provider:'ŞAOMİ TAKİP',
+      riskReward:sig.riskReward??3,
+      mode:'github-lifecycle',
+      signalId:setup.signalId
+    }),
     signal:AbortSignal.timeout(15000)
   });
   const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
-  if(!r.ok||!j.ok)throw new Error(j.error||('Telegram lifecycle bridge HTTP '+r.status+' '+raw.slice(0,180)));
-  return {...j,mode:'legacy-unrestricted-bridge'}
+  if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram lifecycle public HTTP '+r.status+' '+raw.slice(0,180)));
+  return {...j,mode:'public-fallback'}
 }
 function closeSignal(state,id,sig,result,closedAt,extra={}){
   state.history.push({
