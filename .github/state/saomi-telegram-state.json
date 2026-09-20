@@ -8948,10 +8948,11 @@
     "historyPreserved": true
   },
   "telegramTransport": {
-    "mode": "public-fallback",
+    "mode": "restricted-fallback",
+    "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": false,
     "validated": true,
-    "validatedAt": "2026-09-20T16:08:08.098Z",
+    "validatedAt": "2026-09-20T16:10:56.183Z",
     "allowedSymbols": [
       "BTCUSDT",
       "ETHUSDT",
