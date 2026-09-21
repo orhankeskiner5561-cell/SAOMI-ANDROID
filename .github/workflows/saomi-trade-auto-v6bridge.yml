@@ -2,6 +2,7 @@ name: SAOMI Trade AI All Futures Scanner
 
 on:
   schedule:
+    # RC5.40 cron heartbeat: scheduled scanner actively re-enabled.
     # GitHub Actions minimum guvenli siklik: her 5 dakikada bir.
     # Binance USD-M TRADING/PERPETUAL evrenini döner gruplarla tarar; 1W, 1D, 4H, 1H majör yön + 1m, 5m, 15m, 30m giriş arar.
     - cron: '*/5 * * * *'
