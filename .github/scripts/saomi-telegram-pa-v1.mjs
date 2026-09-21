@@ -12,7 +12,7 @@ const HOT_LANE_SIZE=24;
 const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.39_ROOT_CLEAN_TELEGRAM';
+const ANALYSIS_VERSION='RC5.41_CLEAN_TREND_EMA200_PA';
 const LEGACY_TELEGRAM_SYMBOLS=new Set(['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT']);
 const TELEGRAM_SYMBOL_POLICY='binance-usdm-trading-perpetual';
 // Production delivery stays fail-closed until a live non-legacy USD-M perpetual symbol passes the root-clean endpoint contract.
@@ -92,24 +92,57 @@ function fibonacciIndicator(c,s){
  return{direction,low:{time:low.time,price:lo,index:low.i},high:{time:high.time,price:hi,index:high.i},range,levels,extensions,golden:{low:lo+range*.5,high:lo+range*.618},bias}
 }
 function smartMoneyIndicator(c,s){const ev=lastRecent(s.events,c,100),sw=lastRecent(s.sweeps,c,90),ob=(s.orderBlocks||[]).at(-1)||null,fvg=(s.fvgs||[]).at(-1)||null;let long=0,short=0;if(s.trend==='UP')long+=2;else if(s.trend==='DOWN')short+=2;if(ev?.side==='UP')long+=2;else if(ev?.side==='DOWN')short+=2;if(sw?.side==='LOW')long+=1.25;else if(sw?.side==='HIGH')short+=1.25;return{trend:s.trend,lastEvent:ev,lastSweep:sw,lastOrderBlock:ob,lastFvg:fvg,bias:Math.abs(long-short)<1?'NEUTRAL':long>short?'LONG':'SHORT',longScore:long,shortScore:short}}
-function fusionFrameContext(tf,c){
- if(!c?.length)return{timeframe:tf,bias:'NEUTRAL',strength:0,error:'veri yok'};const s=detectStructure(c),st=supertrend(c),trend=trendIndicator(c),volume=volumeIndicator(c),sr=supportResistanceIndicator(c,s),liquidity=liquidityIndicator(c,s),fib=fibonacciIndicator(c,s),smc=smartMoneyIndicator(c,s),price=c.at(-1).close,av=atr(c,14).at(-1)||Math.max(price*.004,1e-8);let long=0,short=0,reasons=[];
- if(st.direction==='LONG'){long+=3;reasons.push('SuperTrend LONG')}else if(st.direction==='SHORT'){short+=3;reasons.push('SuperTrend SHORT')}
- long+=trend.longScore*.75;short+=trend.shortScore*.75;if(trend.alignment!=='NEUTRAL')reasons.push('Trend/kesisim '+trend.alignment);
- long+=smc.longScore*.65;short+=smc.shortScore*.65;if(smc.lastEvent)reasons.push(smc.lastEvent.type+' '+smc.lastEvent.side);if(smc.lastSweep)reasons.push('Likidite sweep '+smc.lastSweep.side);
- long+=volume.longScore*.45;short+=volume.shortScore*.45;if(volume.rvol>=1.15)reasons.push('Hacim '+volume.rvol+'x');if(fib?.bias==='LONG')long+=.8;else if(fib?.bias==='SHORT')short+=.8;
- const edge=Math.abs(long-short),bias=edge<1.5?'NEUTRAL':long>short?'LONG':'SHORT',strength=clamp(Math.round(52+edge*6),52,95);
- return{timeframe:tf,bias,strength,price,atr:av,supertrend:st,trend,volume,supportResistance:sr,liquidity,fibonacci:fib,smartMoney:{trend:smc.trend,lastEvent:smc.lastEvent,lastSweep:smc.lastSweep,lastOrderBlock:smc.lastOrderBlock,lastFvg:smc.lastFvg,bias:smc.bias},reasons:[...new Set(reasons)].slice(0,8)}
+
+function simpleStructure(c){
+ const p=pivots(c),hs=p.highs.slice(-12),ls=p.lows.slice(-12),events=[];let trend='RANGE';
+ if(hs.length>=2&&ls.length>=2){
+  const hh=hs.at(-1).price>hs.at(-2).price,hl=ls.at(-1).price>ls.at(-2).price,lh=hs.at(-1).price<hs.at(-2).price,ll=ls.at(-1).price<ls.at(-2).price;
+  if(hh&&hl)trend='UP';else if(lh&&ll)trend='DOWN';
+ }
+ for(let i=Math.max(1,c.length-100);i<c.length;i++){
+  const prevH=hs.filter(x=>x.i<i).at(-1),prevL=ls.filter(x=>x.i<i).at(-1);
+  if(prevH&&c[i].close>prevH.price&&c[i-1].close<=prevH.price)events.push({type:'TREND_BREAK',side:'UP',time:c[i].time,price:prevH.price,index:i,breakClose:c[i].close});
+  if(prevL&&c[i].close<prevL.price&&c[i-1].close>=prevL.price)events.push({type:'TREND_BREAK',side:'DOWN',time:c[i].time,price:prevL.price,index:i,breakClose:c[i].close});
+ }
+ return{trend,pivots:p,events:events.slice(-20)}
 }
+function fusionFrameContext(tf,c){
+ if(!c?.length)return{timeframe:tf,bias:'NEUTRAL',strength:0,error:'veri yok'};
+ const s=simpleStructure(c),close=c.map(x=>x.close),e200=ema(close,200),i=c.length-1,price=c[i].close,ema200=e200[i],cross=lastCross(close,e200,c,40),lastBreak=(s.events||[]).at(-1)||null;
+ const breakAge=lastBreak?i-Number(lastBreak.index):Infinity,crossAge=cross?i-Number(cross.index):Infinity,emaSide=finite(ema200)?(price>ema200?'LONG':price<ema200?'SHORT':'NEUTRAL'):'NEUTRAL';
+ let long=0,short=0;
+ if(s.trend==='UP')long+=3;else if(s.trend==='DOWN')short+=3;
+ if(emaSide==='LONG')long+=3;else if(emaSide==='SHORT')short+=3;
+ if(lastBreak&&breakAge<=20){if(lastBreak.side==='UP')long+=3;else short+=3}
+ if(cross&&crossAge<=24){if(cross.side==='UP')long+=3;else short+=3}
+ const edge=Math.abs(long-short),bias=edge<2?'NEUTRAL':long>short?'LONG':'SHORT',strength=clamp(Math.round(55+edge*4),55,92);
+ return{
+  timeframe:tf,bias,strength,price,atr:atr(c,14).at(-1)||Math.max(price*.004,1e-8),
+  trend:{ema200,alignment:bias,structure:s.trend,ema200Side:emaSide,ema200Cross:cross?{...cross,ageBars:crossAge}:null,lastBreak:lastBreak?{...lastBreak,ageBars:breakAge}:null},
+  priceAction:{structureTrend:s.trend,lastBreak:lastBreak?{...lastBreak,ageBars:breakAge}:null},
+  supertrend:null,volume:null,supportResistance:null,liquidity:null,fibonacci:null,smartMoney:null,
+  reasons:[
+   'Trend '+s.trend,
+   'EMA200 '+emaSide,
+   lastBreak&&breakAge<=20?'Trend kirilimi '+lastBreak.side:null,
+   cross&&crossAge<=24?'EMA200 kirilimi '+cross.side:null
+  ].filter(Boolean)
+ }
+}
+
 function majorFusionDecision(frames){
  const map=Object.fromEntries((frames||[]).map(x=>[x.timeframe,x]));let long=0,short=0;
- for(const f of frames||[]){const w=HTF_WEIGHT[f.timeframe]||1;if(f.bias==='LONG')long+=w*(.65+.35*(f.strength||50)/100);else if(f.bias==='SHORT')short+=w*(.65+.35*(f.strength||50)/100);else{if(f.supertrend?.direction==='LONG')long+=w*.3;if(f.supertrend?.direction==='SHORT')short+=w*.3;if(f.trend?.alignment==='LONG')long+=w*.2;if(f.trend?.alignment==='SHORT')short+=w*.2}}
- const fallback=[map['4h'],map['1h'],map['1d'],map['1w']].find(x=>x?.bias&&x.bias!=='NEUTRAL'),direction=long===short?(fallback?.bias||'LONG'):long>short?'LONG':'SHORT',total=Math.max(1,long+short),edge=Math.abs(long-short),conviction=clamp(Math.round(55+(edge/total)*40),55,95),warnings=[],supports=[];
- for(const f of frames||[]){const obs=direction==='LONG'?f.supportResistance?.nearestResistance:f.supportResistance?.nearestSupport;if(obs?.distanceAtr<=.45)warnings.push(f.timeframe.toUpperCase()+' '+(direction==='LONG'?'direnc':'destek')+' cok yakin · '+obs.distanceAtr+' ATR');const liq=direction==='LONG'?f.liquidity?.untakenHighs?.[0]:f.liquidity?.untakenLows?.[0];if(liq)supports.push(f.timeframe.toUpperCase()+' hedef likidite · '+liq.distanceAtr+' ATR')}
- const arrow=f=>!f?'—':f.bias==='LONG'?'↑':f.bias==='SHORT'?'↓':'↔';return{direction,longScore:Number(long.toFixed(2)),shortScore:Number(short.toFixed(2)),conviction,summary:'1W '+arrow(map['1w'])+' · 1D '+arrow(map['1d'])+' · 4H '+arrow(map['4h'])+' · 1H '+arrow(map['1h']),warnings:[...new Set(warnings)],supports:[...new Set(supports)]}
+ for(const f of frames||[]){
+  const w=HTF_WEIGHT[f.timeframe]||1;
+  if(f.bias==='LONG')long+=w;
+  else if(f.bias==='SHORT')short+=w;
+ }
+ const edge=Math.abs(long-short),direction=edge<1?'NEUTRAL':long>short?'LONG':'SHORT',total=Math.max(1,long+short),conviction=clamp(Math.round(55+(edge/total)*35),55,90);
+ const arrow=f=>!f?'—':f.bias==='LONG'?'↑':f.bias==='SHORT'?'↓':'↔';
+ return{direction,longScore:long,shortScore:short,conviction,summary:'1W '+arrow(map['1w'])+' · 1D '+arrow(map['1d'])+' · 4H '+arrow(map['4h'])+' · 1H '+arrow(map['1h']),warnings:[],supports:[]}
 }
 async function buildTopDownContext(symbol){const frames=[];for(const tf of HTF_ORDER)frames.push(fusionFrameContext(tf,await candles(symbol,tf)));const major=majorFusionDecision(frames);return{version:ANALYSIS_VERSION,order:[...HTF_ORDER],builtAt:new Date().toISOString(),frames,major}}
-function topDownDecision(direction,ctx){const major=ctx.major||majorFusionDecision(ctx.frames||[]),allowed=direction===major.direction;return{allowed,direction,majorDirection:major.direction,alignedScore:direction==='LONG'?major.longScore:major.shortScore,oppositeScore:direction==='LONG'?major.shortScore:major.longScore,summary:major.summary,conviction:major.conviction,blockers:allowed?[]:['Minor yon '+direction+', major yon '+major.direction+' ile ters'],warnings:major.warnings||[],supports:major.supports||[]}}
+function topDownDecision(direction,ctx){const major=ctx.major||majorFusionDecision(ctx.frames||[]),allowed=major.direction==='NEUTRAL'||direction===major.direction,majorDirection=major.direction==='NEUTRAL'?direction:major.direction;return{allowed,direction,majorDirection,alignedScore:direction==='LONG'?major.longScore:major.shortScore,oppositeScore:direction==='LONG'?major.shortScore:major.longScore,summary:major.summary,conviction:major.conviction,blockers:allowed?[]:['Minor yon '+direction+', major yon '+major.direction+' ile ters'],warnings:[],supports:[]}}
 
 function zoneCandidates(s,event,dir,av){const up=dir==='LONG',tol=av*.24,out=[{type:'BREAK_RETEST',low:event.price-tol,high:event.price+tol,level:event.price}];for(const f of (s.fvgs||[]).filter(x=>x.time>=event.time&&(up?x.side==='BULL':x.side==='BEAR')).slice(-4))out.push({type:'FVG_RETEST',low:Math.min(f.from,f.to),high:Math.max(f.from,f.to),level:(f.from+f.to)/2,time:f.time});for(const ob of (s.orderBlocks||[]).filter(x=>(up?x.side==='BULL':x.side==='BEAR')&&x.time>=event.time-1).slice(-4))out.push({type:'OB_RETEST',low:ob.low,high:ob.high,level:(ob.low+ob.high)/2,time:ob.time});return out}
 function findRetest(c,s,event,dir,av,tf='15m'){
@@ -187,19 +220,65 @@ function liquidityEntrySequence(c,direction,tf='15m'){
 function nearestMajorObstacle(frames,direction,entry){const rows=[];for(const f of frames||[]){const x=direction==='LONG'?f.supportResistance?.nearestResistance:f.supportResistance?.nearestSupport;if(!x||!finite(x.price))continue;if(direction==='LONG'&&x.price>entry||direction==='SHORT'&&x.price<entry)rows.push({price:Number(x.price),source:'HTF_'+(direction==='LONG'?'RESISTANCE':'SUPPORT'),timeframe:f.timeframe})}return rows.sort((a,b)=>Math.abs(a.price-entry)-Math.abs(b.price-entry))[0]||null}
 function nearestForward(ctx,direction,entry,frames){
  const rows=[];if(direction==='LONG'){for(const x of ctx.supportResistance?.resistances||[])if(x.price>entry)rows.push({price:x.price,source:'LOCAL_RESISTANCE',timeframe:ctx.timeframe});for(const x of ctx.liquidity?.untakenHighs||[])if(x.price>entry)rows.push({price:x.price,source:'LOCAL_LIQUIDITY',timeframe:ctx.timeframe});for(const x of ctx.fibonacci?.extensions||[])if(x.price>entry)rows.push({price:x.price,source:'FIB_EXTENSION',timeframe:ctx.timeframe})}else{for(const x of ctx.supportResistance?.supports||[])if(x.price<entry)rows.push({price:x.price,source:'LOCAL_SUPPORT',timeframe:ctx.timeframe});for(const x of ctx.liquidity?.untakenLows||[])if(x.price<entry)rows.push({price:x.price,source:'LOCAL_LIQUIDITY',timeframe:ctx.timeframe});for(const x of ctx.fibonacci?.extensions||[])if(x.price<entry)rows.push({price:x.price,source:'FIB_EXTENSION',timeframe:ctx.timeframe})}const major=nearestMajorObstacle(frames,direction,entry);if(major)rows.push(major);return rows.sort((a,b)=>Math.abs(a.price-entry)-Math.abs(b.price-entry))[0]||null}
+
 function buildCanonicalTradePlan(symbol,tf,c,major){
- const direction=major.direction,sequence=liquidityEntrySequence(c,direction,tf);if(!sequence)return null;const ctx=fusionFrameContext(tf,c),entry=c.at(-1).close,av=sequence.atr,up=direction==='LONG',aligned=ctx.supertrend?.direction===direction||ctx.trend?.alignment===direction||ctx.smartMoney?.bias===direction;if(!aligned)return rejectReason('PLAN_NO_INDICATOR_ALIGNMENT');
- const hostile=ctx.supertrend?.direction&&ctx.supertrend.direction!==direction&&ctx.trend?.alignment&&ctx.trend.alignment!==direction;if(hostile)return rejectReason('PLAN_HOSTILE_ST_AND_TREND');const volHostile=ctx.volume?.deltaPct!=null&&(up?ctx.volume.deltaPct<-28:ctx.volume.deltaPct>28)&&ctx.volume.rvol>1.15;if(volHostile)return rejectReason('PLAN_HOSTILE_VOLUME');
- const buffer=Math.max(av*.20,Math.abs(entry)*.00025),stop=up?sequence.sweep.extreme-buffer:sequence.sweep.extreme+buffer;if(up&&!(stop<entry)||!up&&!(stop>entry))return rejectReason('PLAN_STOP_GEOMETRY');const risk=Math.abs(entry-stop),riskAtr=risk/Math.max(av,1e-12);if(riskAtr<.35||riskAtr>3.0)return rejectReason('PLAN_RISK_ATR');
- const obstacle=nearestForward(ctx,direction,entry,major.frames),roomR=obstacle?Math.abs(obstacle.price-entry)/risk:Infinity;if(roomR<MIN_RR)return rejectReason('PLAN_TARGET_ROOM_LT_2R');const sgn=up?1:-1;let tp1=entry+sgn*risk*1.25,tp2=entry+sgn*risk*2,tp3=entry+sgn*risk*3;if(roomR<3.15){const safe=Math.abs(obstacle.price-entry)*.90;tp3=entry+sgn*safe;tp2=entry+sgn*Math.min(risk*2,safe*.70);tp1=entry+sgn*Math.min(risk*1.25,safe*.42)}const rr=Math.abs(tp3-entry)/risk;if(rr<MIN_RR)return rejectReason('PLAN_FINAL_RR_LT_2');
- let conf=0;if(ctx.supertrend?.direction===direction)conf+=2;if(ctx.trend?.alignment===direction)conf+=2;if(ctx.smartMoney?.bias===direction)conf+=1.5;if(ctx.volume?.bias===direction)conf+=1;if(ctx.fibonacci?.bias===direction)conf+=.5;const confidence=clamp(Math.round(68+conf*3+major.conviction*.09-Math.max(0,sequence.retest.ageBars-1)*2),74,95);if(confidence<MIN_CONFIDENCE)return rejectReason('PLAN_CONFIDENCE');
- const entryTrigger={order:['LIQUIDITY_SWEEP','BOS_CHOCH','RETEST','ENTRY'],sweep:{side:sequence.sweep.side,time:sequence.sweep.time,price:sequence.sweep.price,extreme:sequence.sweep.extreme},break:{type:sequence.event.type,side:sequence.event.side,time:sequence.event.time,price:sequence.event.price},retest:{type:sequence.retest.type,time:sequence.retest.time,level:sequence.retest.level,ageBars:sequence.retest.ageBars},stopBasis:{type:'SWEEP_EXTREME_ATR_BUFFER',buffer,riskAtr:Number(riskAtr.toFixed(2))},nearestForward:obstacle};
- const liquidityEvidence={sweep:{side:sequence.sweep.side,time:sequence.sweep.time,level:sequence.sweep.price,extreme:sequence.sweep.extreme},postSweepBreak:{type:sequence.event.type,side:sequence.event.side,time:sequence.event.time,price:sequence.event.price},retest:{type:sequence.retest.type,time:sequence.retest.time,level:sequence.retest.level,ageBars:sequence.retest.ageBars},source:'INDICATOR_FUSION_SEQUENCE'};
- return{symbol,timeframe:tf,direction,price:entry,entry,stop,tp1,tp2,tp3,riskReward:Number(rr.toFixed(2)),confidence,quality:confidence>=84?'GUCLU':'SECICI',indicatorContext:ctx,entryTrigger,entrySequence:entryTrigger,liquidityEvidence,majorObstacle:obstacle,riskAtr:Number(riskAtr.toFixed(2)),reasons:['Major '+direction+' · '+major.summary,'SuperTrend '+(ctx.supertrend?.direction||'—'),'Trend/kesisim '+(ctx.trend?.alignment||'NEUTRAL'),sequence.sweep.side+' likidite sweep','Sweep sonrasi '+sequence.event.type+' '+sequence.event.side,sequence.retest.type,'Hacim '+(ctx.volume?.rvol??'—')+'x',obstacle?'On hedef '+obstacle.source:'On hedef alani acik'],invalidation:up?'Sweep dibinin alti / major yon bozulmasi':'Sweep tepesinin ustu / major yon bozulmasi'}
+ const ctx=fusionFrameContext(tf,c),i=c.length-1,entry=c.at(-1).close,ema200=ctx.trend?.ema200,breakEvent=ctx.priceAction?.lastBreak,cross=ctx.trend?.ema200Cross;
+ if(!finite(ema200))return rejectReason('CLEAN_EMA200_UNAVAILABLE');
+ const breakFresh=breakEvent&&Number(breakEvent.ageBars)<=18,crossFresh=cross&&Number(cross.ageBars)<=24;
+ let direction=null,triggerType=null,triggerTime=0;
+ const candidates=[];
+ if(breakFresh&&breakEvent.side==='UP'&&entry>ema200)candidates.push({direction:'LONG',type:'TREND_BREAK',time:breakEvent.time,index:breakEvent.index});
+ if(breakFresh&&breakEvent.side==='DOWN'&&entry<ema200)candidates.push({direction:'SHORT',type:'TREND_BREAK',time:breakEvent.time,index:breakEvent.index});
+ if(crossFresh&&cross.side==='UP'&&ctx.priceAction?.structureTrend!=='DOWN')candidates.push({direction:'LONG',type:'EMA200_BREAK',time:cross.time,index:cross.index});
+ if(crossFresh&&cross.side==='DOWN'&&ctx.priceAction?.structureTrend!=='UP')candidates.push({direction:'SHORT',type:'EMA200_BREAK',time:cross.time,index:cross.index});
+ if(!candidates.length)return rejectReason('CLEAN_NO_TREND_OR_EMA200_BREAK');
+ candidates.sort((a,b)=>(b.index??0)-(a.index??0));({direction, type:triggerType, time:triggerTime}=candidates[0]);
+ if(major.direction!=='NEUTRAL'&&major.direction!==direction)return rejectReason('CLEAN_MAJOR_DIRECTION_MISMATCH');
+ const up=direction==='LONG',s=simpleStructure(c),av=ctx.atr||Math.max(entry*.004,1e-8);
+ const pivot=up?[...(s.pivots?.lows||[])].reverse().find(x=>x.i<i):[...(s.pivots?.highs||[])].reverse().find(x=>x.i<i);
+ const recent=c.slice(Math.max(0,c.length-14));
+ const fallback=up?Math.min(...recent.map(x=>x.low)):Math.max(...recent.map(x=>x.high));
+ const anchor=finite(pivot?.price)?Number(pivot.price):fallback,buffer=Math.max(Math.abs(entry)*.0003,av*.08);
+ let stop=up?anchor-buffer:anchor+buffer;
+ if(up&&!(stop<entry))stop=entry-Math.max(av*.7,Math.abs(entry)*.002);
+ if(!up&&!(stop>entry))stop=entry+Math.max(av*.7,Math.abs(entry)*.002);
+ const risk=Math.abs(entry-stop);if(!(risk>0))return rejectReason('CLEAN_STOP_GEOMETRY');
+ const sgn=up?1:-1,tp1=entry+sgn*risk*1.25,tp2=entry+sgn*risk*2,tp3=entry+sgn*risk*3,rr=3;
+ let confidence=72;
+ if(triggerType==='TREND_BREAK')confidence+=8;
+ if(triggerType==='EMA200_BREAK')confidence+=8;
+ if(breakFresh&&crossFresh&&breakEvent.side===cross.side)confidence+=5;
+ if(ctx.priceAction?.structureTrend===(up?'UP':'DOWN'))confidence+=5;
+ if(major.direction===direction)confidence+=5;
+ confidence=clamp(confidence,72,94);
+ const entryTrigger={
+  order:['TREND','EMA200','PRICE_ACTION','ENTRY'],
+  type:triggerType,time:triggerTime,
+  break:breakEvent?{type:'TREND_BREAK',side:breakEvent.side,time:breakEvent.time,price:breakEvent.price,ageBars:breakEvent.ageBars}:null,
+  ema200Cross:cross?{side:cross.side,time:cross.time,ageBars:cross.ageBars}:null,
+  structureTrend:ctx.priceAction?.structureTrend||'RANGE',
+  ema200,ema200Side:ctx.trend?.ema200Side,
+  stopBasis:{type:'RECENT_SWING_BUFFER',anchor,buffer}
+ };
+ return{
+  symbol,timeframe:tf,direction,price:entry,entry,stop,tp1,tp2,tp3,riskReward:rr,confidence,
+  quality:confidence>=84?'GUCLU':'TEMIZ',
+  indicatorContext:ctx,entryTrigger,entrySequence:entryTrigger,liquidityEvidence:null,majorObstacle:null,
+  riskAtr:Number((risk/Math.max(av,1e-12)).toFixed(2)),
+  reasons:['Major '+(major.direction==='NEUTRAL'?'SERBEST':major.direction)+' · '+major.summary,'Trend '+ctx.priceAction?.structureTrend,'EMA200 '+ctx.trend?.ema200Side,triggerType+' '+direction,'Saf Price Action'],
+  invalidation:up?'Son swing dibinin alti / EMA200 ve trend yapisi bozulmasi':'Son swing tepesinin ustu / EMA200 ve trend yapisi bozulmasi'
+ }
 }
 function fmtNum(v){if(v===null||v===undefined||v==='')return'—';const x=Number(v);if(!Number.isFinite(x))return'—';const a=Math.abs(x),d=a>=1000?1:a>=100?2:a>=1?4:a>=.1?5:7;return x.toFixed(d).replace(/0+$/,'').replace(/\.$/,'')}
-function commentary(setup){const td=setup.topDownContext,d=td.decision,ctx=setup.indicatorContext,tr=setup.entryTrigger;const frames=(td.frames||[]).map(f=>f.timeframe.toUpperCase()+': ST '+(f.supertrend?.direction||'—')+' / Trend '+(f.trend?.alignment||'—')+' / Hacim '+(f.volume?.rvol??'—')+'x').join(' · ');return 'Major '+d.majorDirection+' · '+d.summary+' · guc %'+d.conviction+'. '+frames+'. Kucuk '+setup.timeframe.toUpperCase()+': ST '+(ctx.supertrend?.direction||'—')+', Trend '+(ctx.trend?.alignment||'—')+', Hacim '+(ctx.volume?.rvol??'—')+'x. '+tr.sweep.side+' sweep '+fmtNum(tr.sweep.extreme)+' → '+tr.break.type+' '+tr.break.side+' → '+tr.retest.type+' → '+setup.direction+' giris '+fmtNum(setup.entry)+'. STOP '+fmtNum(setup.stop)+' · TP1 '+fmtNum(setup.tp1)+' · TP2 '+fmtNum(setup.tp2)+' · TP3 '+fmtNum(setup.tp3)+'.'}
 
+function commentary(setup){
+ const d=setup.topDownContext?.decision||{},ctx=setup.indicatorContext||{},tr=setup.entryTrigger||{};
+ const cross=tr.ema200Cross?('EMA200 '+tr.ema200Cross.side+' kirilimi'):'EMA200 taraf '+(ctx.trend?.ema200Side||'—');
+ const br=tr.break?('Trend kirilimi '+tr.break.side):'Trend '+(ctx.priceAction?.structureTrend||'RANGE');
+ return 'Saf trend + EMA200 + Price Action. Major '+(d.majorDirection||setup.direction)+' · '+(d.summary||'')+'. '+br+' · '+cross+'. '+setup.direction+' giris '+fmtNum(setup.entry)+'. STOP '+fmtNum(setup.stop)+' · TP1 '+fmtNum(setup.tp1)+' · TP2 '+fmtNum(setup.tp2)+' · TP3 '+fmtNum(setup.tp3)+'. SuperTrend/Fibonacci/MACD/RSI/hacim/SMC/sweep-retest sinyal kapisi degildir.'
+}
+
+const cache=new Map();
 const cache=new Map();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function futuresFetch(url,label,attempt=0){
@@ -247,7 +326,11 @@ function loadSignalState(){
  return state
 }
 function saveSignalState(state){fs.mkdirSync('.github/state',{recursive:true});fs.writeFileSync(STATE_PATH,JSON.stringify(state,null,2)+'\n')}
-function structuralFingerprint(setup){const t=setup.entryTrigger||{},d=setup.topDownContext?.decision||{};return[setup.symbol,'futures',setup.timeframe,setup.direction,d.majorDirection||setup.direction,t.sweep?.side||'',t.sweep?.time||0,t.break?.type||'',t.break?.side||'',t.break?.time||0,t.retest?.type||'',t.retest?.time||0,setup.indicatorContext?.supertrend?.direction||'',setup.indicatorContext?.trend?.alignment||''].join('|')}
+
+function structuralFingerprint(setup){
+ const t=setup.entryTrigger||{},d=setup.topDownContext?.decision||{};
+ return[setup.symbol,'futures',setup.timeframe,setup.direction,d.majorDirection||setup.direction,t.type||'',t.time||0,t.break?.side||'',t.break?.time||0,t.ema200Cross?.side||'',t.ema200Cross?.time||0,t.structureTrend||'',t.ema200Side||''].join('|')
+}
 function duplicateReason(state,setup){const tf=String(setup.timeframe||'15m').toLowerCase(),now=Date.now(),active=Object.values(state.activeSignals||{}).find(x=>x?.symbol===setup.symbol&&String(x.timeframe||'15m').toLowerCase()===tf&&!['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status));if(active)return'ayni timeframe aktif sinyal var';const fp=structuralFingerprint(setup),recent=(state.history||[]).filter(x=>x?.symbol===setup.symbol&&String(x.timeframe||'15m').toLowerCase()===tf&&x.direction===setup.direction).sort((a,b)=>(Date.parse(b.closedAt||0)||0)-(Date.parse(a.closedAt||0)||0))[0];if(recent){const t=Date.parse(recent.closedAt||0),age=Number.isFinite(t)?now-t:Infinity;if(age<terminalReentryMs(tf))return'terminal sonrasi yeniden giris bekleme suresi';if((recent.fingerprint||recent.structureKey)===fp&&age<dupTtlMs(tf))return'ayni yapi terminal sonrasi tekrar etti'}const prev=state.signals?.[signalStateKey(setup.symbol,tf)];if(!prev)return null;const t=Date.parse(prev.sentAt||0),age=Number.isFinite(t)?now-t:Infinity;if(age<cooldownMs(tf))return'timeframe cooldown';if((prev.fingerprint||prev.structureKey)===fp&&age<dupTtlMs(tf))return'ayni yapisal setup';return null}
 function rememberSignal(state,setup,tg,meta){state.version=8;const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup),base={fingerprint,structureKey:fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:tg?.messageId??null,analysisVersion:ANALYSIS_VERSION,topDownContext:setup.topDownContext,lowerFrameContext:setup.lowerFrameContext,indicatorContext:setup.indicatorContext,entryTrigger:setup.entryTrigger,entrySequence:setup.entrySequence,liquidityEvidence:setup.liquidityEvidence,majorObstacle:setup.majorObstacle,riskAtr:setup.riskAtr,commentary:String(meta.commentary||''),commentaryProvider:String(meta.provider||'')};state.signals[signalStateKey(setup.symbol,setup.timeframe)]=base;state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};saveSignalState(state)}
 
@@ -265,8 +348,21 @@ function chooseRotatingBatch(universe,state){
 }
 function activeSymbols(state){return [...new Set(Object.values(state.activeSignals||{}).filter(x=>x&&!['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status)).map(x=>String(x.symbol||'').toUpperCase()).filter(Boolean))]}
 function activeSignalForSymbol(state,symbol,tf){return Object.values(state.activeSignals||{}).find(x=>x?.symbol===symbol&&String(x.timeframe||'15m').toLowerCase()===String(tf).toLowerCase()&&!['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status))||null}
-async function shadowReanalysis(active){active.reanalysis=active.reanalysis||{max:REANALYSIS_MAX,snapshots:[],lastCandleCloseTime:0};active.reanalysis.snapshots=Array.isArray(active.reanalysis.snapshots)?active.reanalysis.snapshots:[];if(active.reanalysis.snapshots.length>=REANALYSIS_MAX)return false;const tf=String(active.timeframe||'15m').toLowerCase(),base=await candles(active.symbol,tf),last=base.at(-1),sent=Date.parse(active.sentAt||0);if(!last?.closeTime||last.closeTime<=sent||last.closeTime<=Number(active.reanalysis.lastCandleCloseTime||0))return false;const top=await buildTopDownContext(active.symbol),major=top.major,lower=fusionFrameContext(tf,base),lowerDir=lower.bias==='NEUTRAL'?'WAIT':lower.bias,verdict=major.direction!==active.direction?'TERS_MAJOR':lowerDir===active.direction?'AYNI_YON':lowerDir==='WAIT'?'BEKLE':'TERS_MINOR',snap={no:active.reanalysis.snapshots.length+1,checkedAt:new Date().toISOString(),candleCloseTime:last.closeTime,price:last.close,originalDirection:active.direction,majorDirection:major.direction,majorConviction:major.conviction,currentDirection:lowerDir,currentConfidence:lower.strength,lowerSupertrend:lower.supertrend,lowerTrend:lower.trend,lowerVolume:lower.volume,verdict,commentary:active.symbol+' '+tf+' recheck: major '+major.direction+' · minor '+lowerDir+' · '+major.summary};active.reanalysis.snapshots.push(snap);active.reanalysis.lastCandleCloseTime=last.closeTime;active.reanalysis.summary={same:active.reanalysis.snapshots.filter(x=>x.verdict==='AYNI_YON').length,wait:active.reanalysis.snapshots.filter(x=>x.verdict==='BEKLE').length,opposite:active.reanalysis.snapshots.filter(x=>x.verdict==='TERS_MAJOR'||x.verdict==='TERS_MINOR').length,total:active.reanalysis.snapshots.length};signalState.activeSignals[active.signalId]=active;saveSignalState(signalState);console.log(active.symbol,'INDICATOR FUSION RECHECK',snap.no+'/'+REANALYSIS_MAX,verdict);return true}
 
+async function shadowReanalysis(active){
+ active.reanalysis=active.reanalysis||{max:REANALYSIS_MAX,snapshots:[],lastCandleCloseTime:0};
+ active.reanalysis.snapshots=Array.isArray(active.reanalysis.snapshots)?active.reanalysis.snapshots:[];
+ if(active.reanalysis.snapshots.length>=REANALYSIS_MAX)return false;
+ const tf=String(active.timeframe||'15m').toLowerCase(),base=await candles(active.symbol,tf),last=base.at(-1),sent=Date.parse(active.sentAt||0);
+ if(!last?.closeTime||last.closeTime<=sent||last.closeTime<=Number(active.reanalysis.lastCandleCloseTime||0))return false;
+ const top=await buildTopDownContext(active.symbol),major=top.major,lower=fusionFrameContext(tf,base),lowerDir=lower.bias==='NEUTRAL'?'WAIT':lower.bias;
+ const verdict=major.direction!=='NEUTRAL'&&major.direction!==active.direction?'TERS_MAJOR':lowerDir===active.direction?'AYNI_YON':lowerDir==='WAIT'?'BEKLE':'TERS_MINOR';
+ const snap={no:active.reanalysis.snapshots.length+1,checkedAt:new Date().toISOString(),candleCloseTime:last.closeTime,price:last.close,originalDirection:active.direction,majorDirection:major.direction,majorConviction:major.conviction,currentDirection:lowerDir,currentConfidence:lower.strength,lowerTrend:lower.trend,lowerPriceAction:lower.priceAction,verdict,commentary:active.symbol+' '+tf+' recheck: major '+major.direction+' · trend/EMA200/PA '+lowerDir+' · '+major.summary};
+ active.reanalysis.snapshots.push(snap);active.reanalysis.lastCandleCloseTime=last.closeTime;
+ active.reanalysis.summary={same:active.reanalysis.snapshots.filter(x=>x.verdict==='AYNI_YON').length,wait:active.reanalysis.snapshots.filter(x=>x.verdict==='BEKLE').length,opposite:active.reanalysis.snapshots.filter(x=>x.verdict==='TERS_MAJOR'||x.verdict==='TERS_MINOR').length,total:active.reanalysis.snapshots.length};
+ signalState.activeSignals[active.signalId]=active;saveSignalState(signalState);
+ console.log(active.symbol,'CLEAN TREND EMA200 PA RECHECK',snap.no+'/'+REANALYSIS_MAX,verdict);return true
+}
 function tgEsc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function tgNum(v){if(v===null||v===undefined||v==='')return '—';const n=Number(v);if(!Number.isFinite(n))return '—';const a=Math.abs(n),d=a>=1000?1:a>=100?2:a>=1?4:a>=0.01?5:7;return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
 function tgText(setup,commentaryText){
@@ -357,8 +453,17 @@ async function validateTelegramTransport(state,universe){
  console.error('TELEGRAM_TRANSPORT root-clean probe failed',failures.join(' | '));
  return false
 }
-async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf);if(base.length<200)return rejectReason('SETUP_LT_200_BARS');const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return rejectReason('SETUP_STALE_CANDLE');const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return rejectReason('SETUP_MAJOR_DIRECTION_MISMATCH');const signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|SWEEP:'+plan.entryTrigger.sweep.time+'|BREAK:'+plan.entryTrigger.break.time+'|RETEST:'+plan.entryTrigger.retest.time;return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'INDICATOR_FUSION'}}}
 
+async function buildSetup(symbol,tf,topDown){
+ const base=await candles(symbol,tf);if(base.length<220)return rejectReason('SETUP_LT_220_BARS');
+ const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return rejectReason('SETUP_STALE_CANDLE');
+ const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;
+ const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return rejectReason('SETUP_MAJOR_DIRECTION_MISMATCH');
+ const trigger=plan.entryTrigger||{},signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|'+(trigger.type||'PA')+':'+(trigger.time||last.time);
+ return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'TREND_EMA200_PRICE_ACTION'}}
+}
+
+let sent=0;
 let sent=0;
 const universe=await loadFuturesUniverse();
 const telegramReady=await validateTelegramTransport(signalState,universe);
@@ -393,8 +498,8 @@ for(const symbol of scanSymbols){
     }
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
-    console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
-    const meta={provider:'SAOMI RC5.39 ROOT CLEAN TELEGRAM',commentary:commentary(setup)};
+    console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,trend:setup.indicatorContext?.priceAction?.structureTrend,ema200:setup.indicatorContext?.trend?.ema200Side,trigger:setup.entryTrigger?.type});
+    const meta={provider:'SAOMI RC5.41 CLEAN TREND EMA200 PRICE ACTION',commentary:commentary(setup)};
     if(!telegramReady){
       console.log('SIGNAL_READY_TELEGRAM_BLOCKED',symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward});
       continue
