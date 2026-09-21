@@ -1,11 +1,12 @@
 import {NextRequest,NextResponse} from 'next/server';
+import {makeSignalId,makeTrackerRecord,storeSignal} from '../../lib/tracker';
 
 export const dynamic='force-dynamic';
 export const runtime='nodejs';
 
 const BINANCE_EXCHANGE_INFO='https://www.binance.com/fapi/v1/exchangeInfo';
 const SYMBOL_POLICY='binance-usdm-trading-perpetual';
-const PAYLOAD_VERSION='RC5.39_ROOT_CLEAN_V1';
+const PAYLOAD_VERSION='RC5.40_TRACKER_BLOB_V1';
 const ALLOWED_MODES=new Set(['github-pa-v1','github-lifecycle','approved','auto','server-auto']);
 const ALLOWED_TFS=new Set(['1m','5m','15m','30m','1h','4h']);
 const EXCHANGE_INFO_TTL_MS=5*60*1000;
@@ -78,6 +79,7 @@ export async function POST(req:NextRequest){
   const body=await req.json();
   if(String(body?.mode||'').toLowerCase().includes('system')||String(body?.setup?.symbol||'').toUpperCase().includes('SAOMI_SYSTEM'))throw new Error('Sistem mesajları trade endpointine gönderilemez');
   const setup=validateSetup(body);
+  const signalId=makeSignalId(body,setup);
   const symbols=await validSymbols();
   if(!symbols.has(setup.symbol))throw new Error(`${setup.symbol} Binance USD-M TRADING/PERPETUAL değil`);
   const{token,chatId}=creds();const caption=tradeText(body,setup);let r:Response;
@@ -88,7 +90,9 @@ export async function POST(req:NextRequest){
   }
   const raw=await r.text();if(!r.ok){console.error('Telegram HTTP error',r.status,raw);return NextResponse.json({ok:false,error:`Telegram HTTP ${r.status}`,detail:raw.slice(0,500)},{status:502})}
   let j:any={};try{j=JSON.parse(raw)}catch{}
-  console.info('Telegram trade sent',{symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,mode:body.mode,messageId:j?.result?.message_id});
-  return NextResponse.json({ok:true,messageId:j?.result?.message_id,mode:body.imageDataUrl?'photo':'text',symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,signalId:body?.signalId??setup?.signalId??null,payloadVersion:PAYLOAD_VERSION});
+  const record=makeTrackerRecord(body,setup,j?.result?.message_id,signalId);
+  await storeSignal(record);
+  console.info('Telegram trade sent + tracker stored',{signalId,symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,mode:body.mode,messageId:j?.result?.message_id});
+  return NextResponse.json({ok:true,trackerStored:true,messageId:j?.result?.message_id,mode:body.imageDataUrl?'photo':'text',symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,signalId,payloadVersion:PAYLOAD_VERSION});
  }catch(e){const m=e instanceof Error?e.message:'Telegram gönderimi başarısız';console.error('Telegram trade rejected',m);const status=m.includes('ayarları eksik')?400:/Geçersiz|sahte|yalnız|olmalı|sıralaması|değil|Sistem mesajları/i.test(m)?422:502;return NextResponse.json({ok:false,error:m,payloadVersion:PAYLOAD_VERSION},{status})}
 }
