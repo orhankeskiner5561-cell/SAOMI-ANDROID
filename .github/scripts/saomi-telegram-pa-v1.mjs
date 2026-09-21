@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
+const TELEGRAM_CLEAN='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
+const TELEGRAM_ENDPOINT_CANDIDATES=[TELEGRAM_PUBLIC,TELEGRAM_CLEAN];
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 let TELEGRAM_SELECTED_ENDPOINT=TELEGRAM_PUBLIC;
@@ -11,7 +13,7 @@ const HOT_LANE_SIZE=24;
 const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.36_CLEAN_TELEGRAM_TRANSPORT';
+const ANALYSIS_VERSION='RC5.37_REAL_SYMBOL_TELEGRAM';
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
 const MAX_SIGNALS=8;
@@ -25,7 +27,7 @@ const cooldownMs=tf=>TF_COOLDOWN_MS[String(tf||'15m').toLowerCase()]||30*60*1000
 const dupTtlMs=tf=>TF_DUP_TTL_MS[String(tf||'15m').toLowerCase()]||12*60*60*1000;
 const signalStateKey=(symbol,tf)=>String(symbol||'').toUpperCase()+'|'+String(tf||'15m').toLowerCase();
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const finite=x=>Number.isFinite(Number(x));
+const finite=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
 const tfMs=tf=>{const n=parseInt(tf,10);if(tf.endsWith('m'))return n*60000;if(tf.endsWith('h'))return n*3600000;if(tf.endsWith('d'))return n*86400000;if(tf.endsWith('w'))return n*604800000;return 60000};
 const rejectStats={};
 const rejectReason=reason=>{rejectStats[reason]=(rejectStats[reason]||0)+1;return null};
@@ -192,7 +194,7 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
  const liquidityEvidence={sweep:{side:sequence.sweep.side,time:sequence.sweep.time,level:sequence.sweep.price,extreme:sequence.sweep.extreme},postSweepBreak:{type:sequence.event.type,side:sequence.event.side,time:sequence.event.time,price:sequence.event.price},retest:{type:sequence.retest.type,time:sequence.retest.time,level:sequence.retest.level,ageBars:sequence.retest.ageBars},source:'INDICATOR_FUSION_SEQUENCE'};
  return{symbol,timeframe:tf,direction,price:entry,entry,stop,tp1,tp2,tp3,riskReward:Number(rr.toFixed(2)),confidence,quality:confidence>=84?'GUCLU':'SECICI',indicatorContext:ctx,entryTrigger,entrySequence:entryTrigger,liquidityEvidence,majorObstacle:obstacle,riskAtr:Number(riskAtr.toFixed(2)),reasons:['Major '+direction+' · '+major.summary,'SuperTrend '+(ctx.supertrend?.direction||'—'),'Trend/kesisim '+(ctx.trend?.alignment||'NEUTRAL'),sequence.sweep.side+' likidite sweep','Sweep sonrasi '+sequence.event.type+' '+sequence.event.side,sequence.retest.type,'Hacim '+(ctx.volume?.rvol??'—')+'x',obstacle?'On hedef '+obstacle.source:'On hedef alani acik'],invalidation:up?'Sweep dibinin alti / major yon bozulmasi':'Sweep tepesinin ustu / major yon bozulmasi'}
 }
-function fmtNum(v){const x=Number(v);if(!Number.isFinite(x))return'—';const a=Math.abs(x),d=a>=1000?1:a>=100?2:a>=1?4:a>=.1?5:7;return x.toFixed(d).replace(/0+$/,'').replace(/\.$/,'')}
+function fmtNum(v){if(v===null||v===undefined||v==='')return'—';const x=Number(v);if(!Number.isFinite(x))return'—';const a=Math.abs(x),d=a>=1000?1:a>=100?2:a>=1?4:a>=.1?5:7;return x.toFixed(d).replace(/0+$/,'').replace(/\.$/,'')}
 function commentary(setup){const td=setup.topDownContext,d=td.decision,ctx=setup.indicatorContext,tr=setup.entryTrigger;const frames=(td.frames||[]).map(f=>f.timeframe.toUpperCase()+': ST '+(f.supertrend?.direction||'—')+' / Trend '+(f.trend?.alignment||'—')+' / Hacim '+(f.volume?.rvol??'—')+'x').join(' · ');return 'Major '+d.majorDirection+' · '+d.summary+' · guc %'+d.conviction+'. '+frames+'. Kucuk '+setup.timeframe.toUpperCase()+': ST '+(ctx.supertrend?.direction||'—')+', Trend '+(ctx.trend?.alignment||'—')+', Hacim '+(ctx.volume?.rvol??'—')+'x. '+tr.sweep.side+' sweep '+fmtNum(tr.sweep.extreme)+' → '+tr.break.type+' '+tr.break.side+' → '+tr.retest.type+' → '+setup.direction+' giris '+fmtNum(setup.entry)+'. STOP '+fmtNum(setup.stop)+' · TP1 '+fmtNum(setup.tp1)+' · TP2 '+fmtNum(setup.tp2)+' · TP3 '+fmtNum(setup.tp3)+'.'}
 
 const cache=new Map();
@@ -263,9 +265,9 @@ function activeSignalForSymbol(state,symbol,tf){return Object.values(state.activ
 async function shadowReanalysis(active){active.reanalysis=active.reanalysis||{max:REANALYSIS_MAX,snapshots:[],lastCandleCloseTime:0};active.reanalysis.snapshots=Array.isArray(active.reanalysis.snapshots)?active.reanalysis.snapshots:[];if(active.reanalysis.snapshots.length>=REANALYSIS_MAX)return false;const tf=String(active.timeframe||'15m').toLowerCase(),base=await candles(active.symbol,tf),last=base.at(-1),sent=Date.parse(active.sentAt||0);if(!last?.closeTime||last.closeTime<=sent||last.closeTime<=Number(active.reanalysis.lastCandleCloseTime||0))return false;const top=await buildTopDownContext(active.symbol),major=top.major,lower=fusionFrameContext(tf,base),lowerDir=lower.bias==='NEUTRAL'?'WAIT':lower.bias,verdict=major.direction!==active.direction?'TERS_MAJOR':lowerDir===active.direction?'AYNI_YON':lowerDir==='WAIT'?'BEKLE':'TERS_MINOR',snap={no:active.reanalysis.snapshots.length+1,checkedAt:new Date().toISOString(),candleCloseTime:last.closeTime,price:last.close,originalDirection:active.direction,majorDirection:major.direction,majorConviction:major.conviction,currentDirection:lowerDir,currentConfidence:lower.strength,lowerSupertrend:lower.supertrend,lowerTrend:lower.trend,lowerVolume:lower.volume,verdict,commentary:active.symbol+' '+tf+' recheck: major '+major.direction+' · minor '+lowerDir+' · '+major.summary};active.reanalysis.snapshots.push(snap);active.reanalysis.lastCandleCloseTime=last.closeTime;active.reanalysis.summary={same:active.reanalysis.snapshots.filter(x=>x.verdict==='AYNI_YON').length,wait:active.reanalysis.snapshots.filter(x=>x.verdict==='BEKLE').length,opposite:active.reanalysis.snapshots.filter(x=>x.verdict==='TERS_MAJOR'||x.verdict==='TERS_MINOR').length,total:active.reanalysis.snapshots.length};signalState.activeSignals[active.signalId]=active;saveSignalState(signalState);console.log(active.symbol,'INDICATOR FUSION RECHECK',snap.no+'/'+REANALYSIS_MAX,verdict);return true}
 
 function tgEsc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function tgNum(v){const n=Number(v);if(!Number.isFinite(n))return '—';const a=Math.abs(n),d=a>=1000?1:a>=100?2:a>=1?4:a>=0.01?5:7;return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
+function tgNum(v){if(v===null||v===undefined||v==='')return '—';const n=Number(v);if(!Number.isFinite(n))return '—';const a=Math.abs(n),d=a>=1000?1:a>=100?2:a>=1?4:a>=0.01?5:7;return n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})}
 function tgText(setup,commentaryText){
- const rr=Number(setup.riskReward),conf=Number.isFinite(Number(setup.confidence))?'%'+Math.round(Number(setup.confidence)):'—';
+ const rr=finite(setup.riskReward)?Number(setup.riskReward):null,conf=finite(setup.confidence)?'%'+Math.round(Number(setup.confidence)):'—';
  return '<b>'+tgEsc(setup.symbol)+' — '+tgEsc(setup.direction)+'</b>\n'
   +'Zaman: <b>'+tgEsc(setup.timeframe)+'</b> · Piyasa: FUTURES\n'
   +'Güven: <b>'+conf+'</b>'+(Number.isFinite(rr)?' · R/R: <b>'+rr.toFixed(2)+'</b>':'')+'\n\n'
@@ -318,44 +320,34 @@ async function validateTelegramTransport(state){
    console.log('TELEGRAM_TRANSPORT direct-github allFutures=true');
    return true
  }
- try{
-   const r=await fetch(TELEGRAM_PUBLIC+'/api/telegram',{cache:'no-store',signal:AbortSignal.timeout(8000)});
-   const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
-   if(!r.ok||!j||typeof j!=='object'||Array.isArray(j)||j.configured!==true){
-     TELEGRAM_READY=false;
-     state.telegramTransport={mode:'unavailable',endpoint:TELEGRAM_PUBLIC,allFutures:false,validated:false,validatedAt:now,httpStatus:r.status};
-     saveSignalState(state);
-     console.error('TELEGRAM_TRANSPORT unavailable http='+r.status);
-     return false
+ const failures=[];
+ for(const base of TELEGRAM_ENDPOINT_CANDIDATES){
+   try{
+     const r=await fetch(base+'/api/telegram',{cache:'no-store',redirect:'manual',signal:AbortSignal.timeout(8000)});
+     const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
+     const configured=r.ok&&j&&typeof j==='object'&&!Array.isArray(j)&&j.configured===true;
+     const allowed=Array.isArray(j.allowedSymbols)?j.allowedSymbols.map(x=>String(x).toUpperCase()):null;
+     const unrestricted=configured&&(!allowed||allowed.length===0);
+     console.log('TELEGRAM_ENDPOINT_PROBE',base,'http='+r.status,'configured='+configured,'allowed='+(allowed?allowed.length:'none'));
+     if(unrestricted){
+       TELEGRAM_READY=true;
+       TELEGRAM_SELECTED_ENDPOINT=base;
+       state.telegramTransport={mode:'vercel-all-futures',endpoint:base,allFutures:true,validated:true,validatedAt:now};
+       saveSignalState(state);
+       console.log('TELEGRAM_TRANSPORT vercel-all-futures endpoint='+base);
+       return true
+     }
+     failures.push(base+':'+(configured?(allowed?.length?'restricted-'+allowed.length:'invalid-config'):'not-configured'));
+   }catch(e){
+     failures.push(base+':'+String(e?.message||e).slice(0,120));
+     console.log('TELEGRAM_ENDPOINT_PROBE_FAIL',base,String(e?.message||e).slice(0,140));
    }
-   const allowed=Array.isArray(j.allowedSymbols)?j.allowedSymbols.map(x=>String(x).toUpperCase()):null;
-   if(allowed&&allowed.length){
-     TELEGRAM_READY=false;
-     state.telegramTransport={
-       mode:'restricted-server',
-       endpoint:TELEGRAM_PUBLIC,
-       allFutures:false,
-       validated:true,
-       validatedAt:now,
-       allowedSymbols:allowed
-     };
-     saveSignalState(state);
-     console.error('TELEGRAM_TRANSPORT restricted allowedSymbols='+allowed.length+'; bogus carrier disabled');
-     return false
-   }
-   TELEGRAM_READY=true;
-   TELEGRAM_SELECTED_ENDPOINT=TELEGRAM_PUBLIC;
-   state.telegramTransport={mode:'vercel-all-futures',endpoint:TELEGRAM_PUBLIC,allFutures:true,validated:true,validatedAt:now};
-   saveSignalState(state);
-   console.log('TELEGRAM_TRANSPORT vercel-all-futures');
-   return true
- }catch(e){
-   TELEGRAM_READY=false;
-   state.telegramTransport={mode:'unavailable',endpoint:TELEGRAM_PUBLIC,allFutures:false,validated:false,validatedAt:now,error:String(e?.message||e).slice(0,180)};
-   saveSignalState(state);
-   console.error('TELEGRAM_TRANSPORT probe failed',e?.message||e);
-   return false
  }
+ TELEGRAM_READY=false;
+ state.telegramTransport={mode:'unavailable',endpoint:null,allFutures:false,validated:false,validatedAt:now,error:failures.join(' | ').slice(0,500)};
+ saveSignalState(state);
+ console.error('TELEGRAM_TRANSPORT no unrestricted endpoint',failures.join(' | '));
+ return false
 }
 async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf);if(base.length<200)return rejectReason('SETUP_LT_200_BARS');const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return rejectReason('SETUP_STALE_CANDLE');const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return rejectReason('SETUP_MAJOR_DIRECTION_MISMATCH');const signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|SWEEP:'+plan.entryTrigger.sweep.time+'|BREAK:'+plan.entryTrigger.break.time+'|RETEST:'+plan.entryTrigger.retest.time;return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'INDICATOR_FUSION'}}}
 
@@ -387,7 +379,7 @@ for(const symbol of scanSymbols){
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
     console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
-    const meta={provider:'SAOMI RC5.36 CLEAN TELEGRAM TRANSPORT',commentary:commentary(setup)};
+    const meta={provider:'SAOMI RC5.37 REAL SYMBOL TELEGRAM',commentary:commentary(setup)};
     if(!telegramReady){
       console.log('SIGNAL_READY_TELEGRAM_BLOCKED',symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward});
       continue
