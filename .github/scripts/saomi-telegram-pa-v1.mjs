@@ -13,8 +13,9 @@ const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
 const ANALYSIS_VERSION='RC5.39_ROOT_CLEAN_TELEGRAM';
-const TELEGRAM_PROBE_SYMBOL='ARBUSDT';
+const LEGACY_TELEGRAM_SYMBOLS=new Set(['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT']);
 const TELEGRAM_SYMBOL_POLICY='binance-usdm-trading-perpetual';
+const pickTelegramProbeSymbol=universe=>(universe||[]).find(x=>!LEGACY_TELEGRAM_SYMBOLS.has(String(x).toUpperCase()))||null;
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
 const MAX_SIGNALS=8;
@@ -312,8 +313,10 @@ async function telegram(setup,commentaryText,provider){
  if(!r.ok||!j.ok)throw new Error((typeof j.error==='string'?j.error:JSON.stringify(j.error))||('Telegram HTTP '+r.status+' '+raw.slice(0,240)));
  return {...j,mode:'vercel-all-futures',endpoint:TELEGRAM_SELECTED_ENDPOINT}
 }
-async function validateTelegramTransport(state){
+async function validateTelegramTransport(state,universe){
  const now=new Date().toISOString();
+ const probeSymbol=pickTelegramProbeSymbol(universe);
+ if(!probeSymbol){state.telegramTransport={mode:'unavailable',endpoint:null,allFutures:false,validated:false,validatedAt:now,error:'No non-legacy Binance USD-M probe symbol'};saveSignalState(state);return false}
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
    TELEGRAM_READY=true;
    state.telegramTransport={mode:'direct-github',allFutures:true,validated:true,validatedAt:now,symbolPolicy:TELEGRAM_SYMBOL_POLICY};
@@ -324,21 +327,21 @@ async function validateTelegramTransport(state){
  const failures=[];
  for(const base of TELEGRAM_ENDPOINT_CANDIDATES){
    try{
-     const probeUrl=base+'/api/telegram?symbol='+encodeURIComponent(TELEGRAM_PROBE_SYMBOL);
+     const probeUrl=base+'/api/telegram?symbol='+encodeURIComponent(probeSymbol);
      const r=await fetch(probeUrl,{cache:'no-store',redirect:'manual',signal:AbortSignal.timeout(10000)});
      const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
      const configured=r.ok&&j&&typeof j==='object'&&!Array.isArray(j)&&j.configured===true;
      const legacyWhitelist=Array.isArray(j.allowedSymbols);
      const policyOk=j?.symbolPolicy===TELEGRAM_SYMBOL_POLICY;
-     const probeOk=String(j?.probeSymbol||'').toUpperCase()===TELEGRAM_PROBE_SYMBOL&&j?.symbolAccepted===true;
+     const probeOk=String(j?.probeSymbol||'').toUpperCase()===probeSymbol&&j?.symbolAccepted===true;
      const rootClean=configured&&!legacyWhitelist&&policyOk&&probeOk;
      console.log('TELEGRAM_ENDPOINT_PROBE',base,'http='+r.status,'configured='+configured,'policy='+String(j?.symbolPolicy||'missing'),'probe='+String(j?.probeSymbol||'missing'),'accepted='+String(j?.symbolAccepted),'legacyWhitelist='+legacyWhitelist);
      if(rootClean){
        TELEGRAM_READY=true;
        TELEGRAM_SELECTED_ENDPOINT=base;
-       state.telegramTransport={mode:'vercel-binance-usdm-perpetual',endpoint:base,allFutures:true,validated:true,validatedAt:now,symbolPolicy:TELEGRAM_SYMBOL_POLICY,probeSymbol:TELEGRAM_PROBE_SYMBOL};
+       state.telegramTransport={mode:'vercel-binance-usdm-perpetual',endpoint:base,allFutures:true,validated:true,validatedAt:now,symbolPolicy:TELEGRAM_SYMBOL_POLICY,probeSymbol:probeSymbol};
        saveSignalState(state);
-       console.log('TELEGRAM_TRANSPORT root-clean endpoint='+base+' probe='+TELEGRAM_PROBE_SYMBOL);
+       console.log('TELEGRAM_TRANSPORT root-clean endpoint='+base+' probe='+probeSymbol);
        return true
      }
      failures.push(base+':'+(!configured?'not-configured':legacyWhitelist?'legacy-whitelist':!policyOk?'wrong-policy':!probeOk?'probe-rejected':'invalid-config'));
@@ -348,7 +351,7 @@ async function validateTelegramTransport(state){
    }
  }
  TELEGRAM_READY=false;
- state.telegramTransport={mode:'unavailable',endpoint:null,allFutures:false,validated:false,validatedAt:now,symbolPolicy:TELEGRAM_SYMBOL_POLICY,probeSymbol:TELEGRAM_PROBE_SYMBOL,error:failures.join(' | ').slice(0,500)};
+ state.telegramTransport={mode:'unavailable',endpoint:null,allFutures:false,validated:false,validatedAt:now,symbolPolicy:TELEGRAM_SYMBOL_POLICY,probeSymbol:probeSymbol,error:failures.join(' | ').slice(0,500)};
  saveSignalState(state);
  console.error('TELEGRAM_TRANSPORT root-clean probe failed',failures.join(' | '));
  return false
@@ -356,8 +359,8 @@ async function validateTelegramTransport(state){
 async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf);if(base.length<200)return rejectReason('SETUP_LT_200_BARS');const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return rejectReason('SETUP_STALE_CANDLE');const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return rejectReason('SETUP_MAJOR_DIRECTION_MISMATCH');const signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|SWEEP:'+plan.entryTrigger.sweep.time+'|BREAK:'+plan.entryTrigger.break.time+'|RETEST:'+plan.entryTrigger.retest.time;return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'INDICATOR_FUSION'}}}
 
 let sent=0;
-const telegramReady=await validateTelegramTransport(signalState);
 const universe=await loadFuturesUniverse();
+const telegramReady=await validateTelegramTransport(signalState,universe);
 const universeSet=new Set(universe);
 const rotationBatch=chooseRotatingBatch(universe,signalState);
 const hotLane=await loadHotLane(universe);
