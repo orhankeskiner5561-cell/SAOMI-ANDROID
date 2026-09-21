@@ -18,6 +18,9 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+    env:
+      VERCEL_ORG_ID: team_OWYSOUWdGTE02gR0o9SiBRgz
+      VERCEL_PROJECT_ID: prj_2iMHZEAZb0XdpRFAGMQSE7TU8uoX
 
     steps:
       - name: Checkout
@@ -63,32 +66,15 @@ jobs:
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
           echo "VERCEL_DEPLOY_AUTH PRESENT"
 
-      - name: Prepare Vercel project link
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p server/saomi-trade-ai/.vercel
-          cat > server/saomi-trade-ai/.vercel/project.json <<'JSON'
-          {"orgId":"team_OWYSOUWdGTE02gR0o9SiBRgz","projectId":"prj_2iMHZEAZb0XdpRFAGMQSE7TU8uoX"}
-          JSON
-
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Pull production environment
-        shell: bash
-        run: vercel pull --yes --environment=production --token="${{ steps.auth.outputs.token }}" --cwd server/saomi-trade-ai
-
-      - name: Build production artifact
-        shell: bash
-        run: vercel build --prod --token="${{ steps.auth.outputs.token }}" --cwd server/saomi-trade-ai
-
-      - name: Deploy production
+      - name: Deploy production directly
         id: deploy
         shell: bash
         run: |
           set -euo pipefail
-          URL="$(vercel deploy --prebuilt --prod --yes --token="${{ steps.auth.outputs.token }}" --cwd server/saomi-trade-ai)"
+          URL="$(vercel deploy --prod --yes             --token="${{ steps.auth.outputs.token }}"             --scope="orhankeskiner5561-cells-projects"             --project="$VERCEL_PROJECT_ID"             --cwd server/saomi-trade-ai)"
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "PRODUCTION_DEPLOY $URL"
 
