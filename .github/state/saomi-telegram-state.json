@@ -18733,14 +18733,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "BTCUSDC 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↔ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-21T20:50:45.115Z",
+            "candleCloseTime": 1790022599999,
+            "price": 87239.8,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 81121.65161036183,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790017200000,
+                "price": 86300,
+                "index": 496,
+                "breakClose": 86324.2,
+                "ageBars": 2
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790017200000,
+                "price": 86300,
+                "index": 496,
+                "breakClose": 86324.2,
+                "ageBars": 2
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "BTCUSDC 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↔ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790015399999,
+        "lastCandleCloseTime": 1790022599999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       },
       "entryCandleOpenTime": 1789995600000,
@@ -19232,14 +19273,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "ETHUSDC 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↔ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-21T20:50:47.556Z",
+            "candleCloseTime": 1790023499999,
+            "price": 2780.37,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 2664.5946520073453,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790020800000,
+                "price": 2768.44,
+                "index": 496,
+                "breakClose": 2770.04,
+                "ageBars": 2
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790020800000,
+                "price": 2768.44,
+                "index": 496,
+                "breakClose": 2770.04,
+                "ageBars": 2
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "ETHUSDC 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↔ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790015399999,
+        "lastCandleCloseTime": 1790023499999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       },
       "entryCandleOpenTime": 1789995600000,
@@ -19731,14 +19813,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "ETHUSDC 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↔ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-21T20:50:47.910Z",
+            "candleCloseTime": 1790022599999,
+            "price": 2803.17,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 2614.7254398139576,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790020800000,
+                "price": 2768.44,
+                "index": 498,
+                "breakClose": 2803.17,
+                "ageBars": 0
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790020800000,
+                "price": 2768.44,
+                "index": 498,
+                "breakClose": 2803.17,
+                "ageBars": 0
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "ETHUSDC 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↔ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790015399999,
+        "lastCandleCloseTime": 1790022599999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       },
       "entryCandleOpenTime": 1789995600000,
@@ -20192,14 +20315,55 @@
             },
             "verdict": "BEKLE",
             "commentary": "COWUSDT 30m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-21T20:50:49.732Z",
+            "candleCloseTime": 1790022599999,
+            "price": 0.1577,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 62,
+            "currentDirection": "SHORT",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 0.1504798503117306,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790011800000,
+                "price": 0.1555,
+                "index": 493,
+                "breakClose": 0.1552,
+                "ageBars": 5
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790011800000,
+                "price": 0.1555,
+                "index": 493,
+                "breakClose": 0.1552,
+                "ageBars": 5
+              }
+            },
+            "verdict": "TERS_MINOR",
+            "commentary": "COWUSDT 30m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790015399999,
+        "lastCandleCloseTime": 1790022599999,
         "summary": {
           "same": 0,
           "wait": 1,
-          "opposite": 0,
-          "total": 1
+          "opposite": 1,
+          "total": 2
         }
       },
       "initialStop": 0.15388161081638838
@@ -20623,7 +20787,60 @@
         "event": "ENTRY",
         "message": "Telegram HTTP 429"
       },
-      "initialStop": 1.990158245491603
+      "initialStop": 1.990158245491603,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-21T20:50:51.976Z",
+            "candleCloseTime": 1790022599999,
+            "price": 2.091,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 69,
+            "currentDirection": "LONG",
+            "currentConfidence": 79,
+            "lowerTrend": {
+              "ema200": 1.9849438768713392,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790020800000,
+                "price": 2.076,
+                "index": 498,
+                "breakClose": 2.091,
+                "ageBars": 0
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790020800000,
+                "price": 2.076,
+                "index": 498,
+                "breakClose": 2.091,
+                "ageBars": 0
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "CVXUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↓ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790022599999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
+      }
     }
   },
   "history": [
@@ -44022,51 +44239,51 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 309,
+    "cursor": 349,
     "total": 571,
-    "lastRefreshAt": "2026-09-21T20:37:31.420Z",
-    "lastBatchAt": "2026-09-21T20:37:31.420Z",
+    "lastRefreshAt": "2026-09-21T20:50:38.852Z",
+    "lastBatchAt": "2026-09-21T20:50:38.852Z",
     "lastBatch": [
-      "IOSTUSDT",
-      "IOTAUSDT",
-      "IOTXUSDT",
-      "IOUSDT",
-      "IRYSUSDT",
-      "JASMYUSDT",
-      "JCTUSDT",
-      "JELLYJELLYUSDT",
-      "JOEUSDT",
-      "JSTUSDT",
-      "JTOUSDT",
-      "JUPUSDT",
-      "KAIAUSDT",
-      "KAITOUSDC",
-      "KAITOUSDT",
-      "KASUSDT",
-      "KATUSDT",
-      "KAVAUSDT",
-      "KERNELUSDT",
-      "KGENUSDT",
-      "KITEUSDT",
-      "KMNOUSDT",
-      "KNCUSDT",
-      "KOMAUSDT",
-      "KSMUSDT",
-      "LABUSDT",
-      "LAUSDT",
-      "LAYERUSDT",
-      "LDOUSDT",
-      "LIGHTUSDT",
-      "LINEAUSDT",
-      "LINKUSDC",
-      "LINKUSDT",
-      "LISTAUSDT",
-      "LITUSDT",
-      "LPTUSDT",
-      "LQTYUSDT",
-      "LSKUSDT",
-      "LTCUSDC",
-      "LTCUSDT"
+      "LUMIAUSDT",
+      "LUNA2USDT",
+      "LYNUSDT",
+      "MAGICUSDT",
+      "MAGMAUSDT",
+      "MANAUSDT",
+      "MANTAUSDT",
+      "MANTRAUSDT",
+      "MARSCOINUSDT",
+      "MASKUSDT",
+      "MAVIAUSDT",
+      "MAVUSDT",
+      "MEGAUSDT",
+      "MELANIAUSDT",
+      "MEMEUSDT",
+      "MERLUSDT",
+      "METISUSDT",
+      "METUSDT",
+      "MEUSDT",
+      "MEWUSDT",
+      "MINAUSDT",
+      "MIRAUSDT",
+      "MITOUSDT",
+      "MMTUSDT",
+      "MOCAUSDT",
+      "MONUSDT",
+      "MOODENGUSDT",
+      "MORPHOUSDT",
+      "MOVEUSDT",
+      "MOVRUSDT",
+      "MTLUSDT",
+      "MUBARAKUSDT",
+      "MUSDT",
+      "MYXUSDT",
+      "NAORISUSDT",
+      "NEARUSDC",
+      "NEARUSDT",
+      "NEIROUSDT",
+      "NEOUSDC",
+      "NEOUSDT"
     ],
     "batchSize": 40,
     "cyclesCompleted": 1
@@ -44083,7 +44300,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-09-21T20:37:30.401Z",
+    "validatedAt": "2026-09-21T20:50:37.677Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
