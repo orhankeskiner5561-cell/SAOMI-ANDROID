@@ -3554,18 +3554,20 @@
       "riskAtr": 8.2,
       "commentary": "Saf trend + EMA200 + Price Action. Major LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑. Trend kirilimi UP · EMA200 taraf LONG. LONG giris 84560.1. STOP 84092 · TP1 85145.2 · TP2 85496.2 · TP3 85964.3. SuperTrend/Fibonacci/MACD/RSI/hacim/SMC/sweep-retest sinyal kapisi degildir.",
       "commentaryProvider": "SAOMI RC5.41 CLEAN TREND EMA200 PRICE ACTION",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-21T11:15:38.299Z",
       "lastCheckedAt": "2026-09-21T11:15:38.146Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789989300000,
+      "lastDeliveryError": null
     },
     "BTCUSDT|futures|15m|LONG|TREND_BREAK:1789977600000": {
       "fingerprint": "BTCUSDT|futures|15m|LONG|LONG|TREND_BREAK|1789977600000|UP|1789977600000||0|UP|LONG",
@@ -3962,18 +3964,20 @@
       "riskAtr": 7.28,
       "commentary": "Saf trend + EMA200 + Price Action. Major LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑. Trend kirilimi UP · EMA200 taraf LONG. LONG giris 84560.1. STOP 81320.4 · TP1 88609.7 · TP2 91039.5 · TP3 94279.2. SuperTrend/Fibonacci/MACD/RSI/hacim/SMC/sweep-retest sinyal kapisi degildir.",
       "commentaryProvider": "SAOMI RC5.41 CLEAN TREND EMA200 PRICE ACTION",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-21T11:15:39.350Z",
       "lastCheckedAt": "2026-09-21T11:15:38.924Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789989300000,
+      "lastDeliveryError": null
     },
     "BTCUSDT|futures|30m|LONG|TREND_BREAK:1789977600000": {
       "fingerprint": "BTCUSDT|futures|30m|LONG|LONG|TREND_BREAK|1789977600000|UP|1789977600000||0|RANGE|LONG",
@@ -4778,18 +4782,20 @@
       "riskAtr": 4.47,
       "commentary": "Saf trend + EMA200 + Price Action. Major LONG · 1W ↑ · 1D ↔ · 4H ↑ · 1H ↑. Trend kirilimi UP · EMA200 taraf LONG. LONG giris 2719.8. STOP 2711.4 · TP1 2730.4 · TP2 2736.7 · TP3 2745.1. SuperTrend/Fibonacci/MACD/RSI/hacim/SMC/sweep-retest sinyal kapisi degildir.",
       "commentaryProvider": "SAOMI RC5.41 CLEAN TREND EMA200 PRICE ACTION",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-21T11:15:42.052Z",
       "lastCheckedAt": "2026-09-21T11:15:41.740Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789989300000,
+      "lastDeliveryError": null
     },
     "ETHUSDT|futures|15m|LONG|TREND_BREAK:1789978500000": {
       "fingerprint": "ETHUSDT|futures|15m|LONG|LONG|TREND_BREAK|1789978500000|UP|1789978500000||0|RANGE|LONG",
@@ -5186,18 +5192,20 @@
       "riskAtr": 5.01,
       "commentary": "Saf trend + EMA200 + Price Action. Major LONG · 1W ↑ · 1D ↔ · 4H ↑ · 1H ↑. Trend kirilimi UP · EMA200 taraf LONG. LONG giris 2719.8. STOP 2644.2 · TP1 2814.4 · TP2 2871.1 · TP3 2946.7. SuperTrend/Fibonacci/MACD/RSI/hacim/SMC/sweep-retest sinyal kapisi degildir.",
       "commentaryProvider": "SAOMI RC5.41 CLEAN TREND EMA200 PRICE ACTION",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-21T11:15:42.779Z",
       "lastCheckedAt": "2026-09-21T11:15:42.729Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789989300000,
+      "lastDeliveryError": null
     },
     "ETHUSDT|futures|30m|LONG|TREND_BREAK:1789977600000": {
       "fingerprint": "ETHUSDT|futures|30m|LONG|LONG|TREND_BREAK|1789977600000|UP|1789977600000||0|DOWN|LONG",
@@ -5594,18 +5602,20 @@
       "riskAtr": 3.39,
       "commentary": "Saf trend + EMA200 + Price Action. Major LONG · 1W ↑ · 1D ↔ · 4H ↑ · 1H ↑. Trend kirilimi UP · EMA200 taraf LONG. LONG giris 2714.7. STOP 2643.7 · TP1 2803.5 · TP2 2856.8 · TP3 2927.9. SuperTrend/Fibonacci/MACD/RSI/hacim/SMC/sweep-retest sinyal kapisi degildir.",
       "commentaryProvider": "SAOMI RC5.41 CLEAN TREND EMA200 PRICE ACTION",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-21T11:18:39.172Z",
       "lastCheckedAt": "2026-09-21T11:15:43.276Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789989480000,
+      "lastDeliveryError": null
     },
     "BTCUSDC|futures|1m|LONG|TREND_BREAK:1789989000000": {
       "fingerprint": "BTCUSDC|futures|1m|LONG|LONG|TREND_BREAK|1789989000000|UP|1789989000000||0|UP|LONG",
@@ -5996,18 +6006,20 @@
       "riskAtr": 8.25,
       "commentary": "Saf trend + EMA200 + Price Action. Major LONG · 1W ↔ · 1D ↑ · 4H ↑ · 1H ↑. Trend kirilimi UP · EMA200 taraf LONG. LONG giris 84541.9. STOP 84077.4 · TP1 85122.5 · TP2 85470.8 · TP3 85935.3. SuperTrend/Fibonacci/MACD/RSI/hacim/SMC/sweep-retest sinyal kapisi degildir.",
       "commentaryProvider": "SAOMI RC5.41 CLEAN TREND EMA200 PRICE ACTION",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-21T11:18:28.037Z",
       "lastCheckedAt": "2026-09-21T11:15:44.575Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789989480000,
+      "lastDeliveryError": null
     },
     "BTCUSDC|futures|15m|LONG|TREND_BREAK:1789978500000": {
       "fingerprint": "BTCUSDC|futures|15m|LONG|LONG|TREND_BREAK|1789978500000|UP|1789978500000||0|UP|LONG",
@@ -6398,18 +6410,20 @@
       "riskAtr": 7.19,
       "commentary": "Saf trend + EMA200 + Price Action. Major LONG · 1W ↔ · 1D ↑ · 4H ↑ · 1H ↑. Trend kirilimi UP · EMA200 taraf LONG. LONG giris 84541.9. STOP 81314.1 · TP1 88576.7 · TP2 90997.5 · TP3 94225.4. SuperTrend/Fibonacci/MACD/RSI/hacim/SMC/sweep-retest sinyal kapisi degildir.",
       "commentaryProvider": "SAOMI RC5.41 CLEAN TREND EMA200 PRICE ACTION",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-21T11:18:28.037Z",
       "lastCheckedAt": "2026-09-21T11:15:45.573Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "entryCandleOpenTime": 1789989480000,
+      "lastDeliveryError": null
     }
   },
   "history": [
@@ -15173,7 +15187,7 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-19T19:46:33.293Z",
+    "updatedAt": "2026-09-21T11:46:03.030Z",
     "scoredTrades": 12,
     "wins": 6,
     "losses": 6,
@@ -15187,9 +15201,9 @@
     "expired": 4,
     "expiredBeforeEntry": 2,
     "expiredAfterEntry": 2,
-    "active": 0,
-    "waitingEntry": 0,
-    "inTrade": 0,
+    "active": 8,
+    "waitingEntry": 1,
+    "inTrade": 7,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 3,
@@ -15205,9 +15219,9 @@
         "expired": 1,
         "expiredBeforeEntry": 1,
         "expiredAfterEntry": 0,
-        "active": 0,
+        "active": 3,
         "waitingEntry": 0,
-        "inTrade": 0
+        "inTrade": 3
       },
       "5m": {
         "scoredTrades": 3,
@@ -15241,9 +15255,9 @@
         "expired": 3,
         "expiredBeforeEntry": 1,
         "expiredAfterEntry": 2,
-        "active": 0,
+        "active": 3,
         "waitingEntry": 0,
-        "inTrade": 0
+        "inTrade": 3
       },
       "30m": {
         "scoredTrades": 0,
@@ -15259,9 +15273,9 @@
         "expired": 0,
         "expiredBeforeEntry": 0,
         "expiredAfterEntry": 0,
-        "active": 0,
-        "waitingEntry": 0,
-        "inTrade": 0
+        "active": 2,
+        "waitingEntry": 1,
+        "inTrade": 1
       },
       "1h": {
         "scoredTrades": 0,
