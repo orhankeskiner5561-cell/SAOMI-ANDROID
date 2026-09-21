@@ -1,0 +1,33 @@
+name: SAOMI Tracker Blob Setup
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/saomi-tracker-blob-setup.yml']
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --global vercel@latest
+      - name: Create private tracker blob store
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: prj_2iMHZEAZb0XdpRFAGMQSE7TU8uoX
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          vercel blob create-store saomi-trade-tracker             --access private             --region iad1             --environment production             --yes             --token="$VERCEL_TOKEN"             --scope="orhankeskiner5561-cells-projects"             --project="$VERCEL_PROJECT_ID"
+      - name: Confirm project got Blob credential name
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: prj_2iMHZEAZb0XdpRFAGMQSE7TU8uoX
+        run: |
+          set -euo pipefail
+          OUT="$(vercel env ls production --non-interactive --token="$VERCEL_TOKEN" --scope="orhankeskiner5561-cells-projects" --project="$VERCEL_PROJECT_ID" 2>&1)"
+          echo "$OUT" | grep -q 'BLOB_READ_WRITE_TOKEN'
+          echo "SAOMI_TRACKER_BLOB_CONNECTED"
