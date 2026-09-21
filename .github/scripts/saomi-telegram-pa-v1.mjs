@@ -12,7 +12,9 @@ const HOT_LANE_SIZE=24;
 const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.38_STRICT_TELEGRAM_GATE';
+const ANALYSIS_VERSION='RC5.39_ROOT_CLEAN_TELEGRAM';
+const TELEGRAM_PROBE_SYMBOL='ARBUSDT';
+const TELEGRAM_SYMBOL_POLICY='binance-usdm-trading-perpetual';
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
 const MAX_SIGNALS=8;
@@ -314,7 +316,7 @@ async function validateTelegramTransport(state){
  const now=new Date().toISOString();
  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
    TELEGRAM_READY=true;
-   state.telegramTransport={mode:'direct-github',allFutures:true,validated:true,validatedAt:now};
+   state.telegramTransport={mode:'direct-github',allFutures:true,validated:true,validatedAt:now,symbolPolicy:TELEGRAM_SYMBOL_POLICY};
    saveSignalState(state);
    console.log('TELEGRAM_TRANSPORT direct-github allFutures=true');
    return true
@@ -322,30 +324,33 @@ async function validateTelegramTransport(state){
  const failures=[];
  for(const base of TELEGRAM_ENDPOINT_CANDIDATES){
    try{
-     const r=await fetch(base+'/api/telegram',{cache:'no-store',redirect:'manual',signal:AbortSignal.timeout(8000)});
+     const probeUrl=base+'/api/telegram?symbol='+encodeURIComponent(TELEGRAM_PROBE_SYMBOL);
+     const r=await fetch(probeUrl,{cache:'no-store',redirect:'manual',signal:AbortSignal.timeout(10000)});
      const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
      const configured=r.ok&&j&&typeof j==='object'&&!Array.isArray(j)&&j.configured===true;
-     const allowed=Array.isArray(j.allowedSymbols)?j.allowedSymbols.map(x=>String(x).toUpperCase()):null;
-     const unrestricted=configured&&(!allowed||allowed.length===0);
-     console.log('TELEGRAM_ENDPOINT_PROBE',base,'http='+r.status,'configured='+configured,'allowed='+(allowed?allowed.length:'none'));
-     if(unrestricted){
+     const legacyWhitelist=Array.isArray(j.allowedSymbols);
+     const policyOk=j?.symbolPolicy===TELEGRAM_SYMBOL_POLICY;
+     const probeOk=String(j?.probeSymbol||'').toUpperCase()===TELEGRAM_PROBE_SYMBOL&&j?.symbolAccepted===true;
+     const rootClean=configured&&!legacyWhitelist&&policyOk&&probeOk;
+     console.log('TELEGRAM_ENDPOINT_PROBE',base,'http='+r.status,'configured='+configured,'policy='+String(j?.symbolPolicy||'missing'),'probe='+String(j?.probeSymbol||'missing'),'accepted='+String(j?.symbolAccepted),'legacyWhitelist='+legacyWhitelist);
+     if(rootClean){
        TELEGRAM_READY=true;
        TELEGRAM_SELECTED_ENDPOINT=base;
-       state.telegramTransport={mode:'vercel-all-futures',endpoint:base,allFutures:true,validated:true,validatedAt:now};
+       state.telegramTransport={mode:'vercel-binance-usdm-perpetual',endpoint:base,allFutures:true,validated:true,validatedAt:now,symbolPolicy:TELEGRAM_SYMBOL_POLICY,probeSymbol:TELEGRAM_PROBE_SYMBOL};
        saveSignalState(state);
-       console.log('TELEGRAM_TRANSPORT vercel-all-futures endpoint='+base);
+       console.log('TELEGRAM_TRANSPORT root-clean endpoint='+base+' probe='+TELEGRAM_PROBE_SYMBOL);
        return true
      }
-     failures.push(base+':'+(configured?(allowed?.length?'restricted-'+allowed.length:'invalid-config'):'not-configured'));
+     failures.push(base+':'+(!configured?'not-configured':legacyWhitelist?'legacy-whitelist':!policyOk?'wrong-policy':!probeOk?'probe-rejected':'invalid-config'));
    }catch(e){
      failures.push(base+':'+String(e?.message||e).slice(0,120));
      console.log('TELEGRAM_ENDPOINT_PROBE_FAIL',base,String(e?.message||e).slice(0,140));
    }
  }
  TELEGRAM_READY=false;
- state.telegramTransport={mode:'unavailable',endpoint:null,allFutures:false,validated:false,validatedAt:now,error:failures.join(' | ').slice(0,500)};
+ state.telegramTransport={mode:'unavailable',endpoint:null,allFutures:false,validated:false,validatedAt:now,symbolPolicy:TELEGRAM_SYMBOL_POLICY,probeSymbol:TELEGRAM_PROBE_SYMBOL,error:failures.join(' | ').slice(0,500)};
  saveSignalState(state);
- console.error('TELEGRAM_TRANSPORT no unrestricted endpoint',failures.join(' | '));
+ console.error('TELEGRAM_TRANSPORT root-clean probe failed',failures.join(' | '));
  return false
 }
 async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf);if(base.length<200)return rejectReason('SETUP_LT_200_BARS');const last=base.at(-1),age=Date.now()-last.closeTime,maxAge=tfMs(tf)*1.35+120000;if(age>maxAge)return rejectReason('SETUP_STALE_CANDLE');const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;const decision=topDownDecision(plan.direction,topDown);if(!decision.allowed)return rejectReason('SETUP_MAJOR_DIRECTION_MISMATCH');const signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|SWEEP:'+plan.entryTrigger.sweep.time+'|BREAK:'+plan.entryTrigger.break.time+'|RETEST:'+plan.entryTrigger.retest.time;return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'INDICATOR_FUSION'}}}
@@ -385,7 +390,7 @@ for(const symbol of scanSymbols){
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
     console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
-    const meta={provider:'SAOMI RC5.38 STRICT TELEGRAM GATE',commentary:commentary(setup)};
+    const meta={provider:'SAOMI RC5.39 ROOT CLEAN TELEGRAM',commentary:commentary(setup)};
     if(!telegramReady){
       console.log('SIGNAL_READY_TELEGRAM_BLOCKED',symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward});
       continue
@@ -401,4 +406,4 @@ for(const symbol of scanSymbols){
 }
 saveSignalState(signalState);
 console.log('SAOMI '+ANALYSIS_VERSION+' finished. Sent: '+sent+' · universe='+universe.length+' · nextCursor='+signalState.scannerUniverse.cursor+' · cycles='+signalState.scannerUniverse.cyclesCompleted);console.log('REJECT_STATS',JSON.stringify(Object.fromEntries(Object.entries(rejectStats).sort((a,b)=>b[1]-a[1]))));
-if(!telegramReady)throw new Error('TELEGRAM_TRANSPORT_NOT_READY: production /api/telegram is not unrestricted; scan completed but delivery gate failed');
+if(!telegramReady)throw new Error('TELEGRAM_TRANSPORT_NOT_READY: production /api/telegram did not pass Binance USD-M TRADING/PERPETUAL root-clean probe; scan completed but delivery gate failed');
