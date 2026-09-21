@@ -12,15 +12,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm install --global vercel@latest
+      - name: Link production project locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p server/saomi-trade-ai/.vercel
+          cat > server/saomi-trade-ai/.vercel/project.json <<'JSON'
+          {"orgId":"team_OWYSOUWdGTE02gR0o9SiBRgz","projectId":"prj_2iMHZEAZb0XdpRFAGMQSE7TU8uoX"}
+          JSON
       - name: Create private tracker blob store
         shell: bash
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: prj_2iMHZEAZb0XdpRFAGMQSE7TU8uoX
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN"
-          vercel blob create-store saomi-trade-tracker             --access private             --region iad1             --environment production             --yes             --token="$VERCEL_TOKEN"             --scope="orhankeskiner5561-cells-projects"             --project="$VERCEL_PROJECT_ID"
+          vercel blob create-store saomi-trade-tracker             --access private             --region iad1             --environment production             --yes             --token="$VERCEL_TOKEN"             --scope="orhankeskiner5561-cells-projects"             --cwd server/saomi-trade-ai
       - name: Confirm project got Blob credential name
         shell: bash
         env:
