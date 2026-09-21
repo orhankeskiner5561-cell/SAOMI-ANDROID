@@ -20356,14 +20356,55 @@
             },
             "verdict": "TERS_MINOR",
             "commentary": "COWUSDT 30m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-21T22:11:49.373Z",
+            "candleCloseTime": 1790027999999,
+            "price": 0.1567,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 62,
+            "currentDirection": "SHORT",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 0.15069134116294317,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790011800000,
+                "price": 0.1555,
+                "index": 490,
+                "breakClose": 0.1552,
+                "ageBars": 8
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790011800000,
+                "price": 0.1555,
+                "index": 490,
+                "breakClose": 0.1552,
+                "ageBars": 8
+              }
+            },
+            "verdict": "TERS_MINOR",
+            "commentary": "COWUSDT 30m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790022599999,
+        "lastCandleCloseTime": 1790027999999,
         "summary": {
           "same": 0,
           "wait": 1,
-          "opposite": 1,
-          "total": 2
+          "opposite": 2,
+          "total": 3
         }
       },
       "initialStop": 0.15388161081638838
@@ -20831,14 +20872,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "CVXUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↓ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-21T22:11:52.217Z",
+            "candleCloseTime": 1790027999999,
+            "price": 2.052,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 69,
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 1.9876696303382018,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790020800000,
+                "price": 2.076,
+                "index": 495,
+                "breakClose": 2.091,
+                "ageBars": 3
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790020800000,
+                "price": 2.076,
+                "index": 495,
+                "breakClose": 2.091,
+                "ageBars": 3
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "CVXUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↓ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790022599999,
+        "lastCandleCloseTime": 1790027999999,
         "summary": {
-          "same": 1,
+          "same": 2,
           "wait": 0,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
       }
     }
@@ -44239,51 +44321,51 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 349,
+    "cursor": 389,
     "total": 571,
-    "lastRefreshAt": "2026-09-21T20:50:38.852Z",
-    "lastBatchAt": "2026-09-21T20:50:38.852Z",
+    "lastRefreshAt": "2026-09-21T22:11:40.756Z",
+    "lastBatchAt": "2026-09-21T22:11:40.756Z",
     "lastBatch": [
-      "LUMIAUSDT",
-      "LUNA2USDT",
-      "LYNUSDT",
-      "MAGICUSDT",
-      "MAGMAUSDT",
-      "MANAUSDT",
-      "MANTAUSDT",
-      "MANTRAUSDT",
-      "MARSCOINUSDT",
-      "MASKUSDT",
-      "MAVIAUSDT",
-      "MAVUSDT",
-      "MEGAUSDT",
-      "MELANIAUSDT",
-      "MEMEUSDT",
-      "MERLUSDT",
-      "METISUSDT",
-      "METUSDT",
-      "MEUSDT",
-      "MEWUSDT",
-      "MINAUSDT",
-      "MIRAUSDT",
-      "MITOUSDT",
-      "MMTUSDT",
-      "MOCAUSDT",
-      "MONUSDT",
-      "MOODENGUSDT",
-      "MORPHOUSDT",
-      "MOVEUSDT",
-      "MOVRUSDT",
-      "MTLUSDT",
-      "MUBARAKUSDT",
-      "MUSDT",
-      "MYXUSDT",
-      "NAORISUSDT",
-      "NEARUSDC",
-      "NEARUSDT",
-      "NEIROUSDT",
-      "NEOUSDC",
-      "NEOUSDT"
+      "NEWTUSDT",
+      "NIGHTUSDT",
+      "NILUSDT",
+      "NMRUSDT",
+      "NOMUSDT",
+      "NOTUSDT",
+      "NXPCUSDT",
+      "OGNUSDT",
+      "OGUSDT",
+      "ONDOUSDT",
+      "ONEUSDT",
+      "ONGUSDT",
+      "ONTUSDT",
+      "ONUSDT",
+      "OPENUSDT",
+      "OPGUSDT",
+      "OPNUSDT",
+      "OPUSDT",
+      "ORCAUSDT",
+      "ORDERUSDT",
+      "ORDIUSDC",
+      "ORDIUSDT",
+      "OUSDT",
+      "PARTIUSDT",
+      "PAXGUSDT",
+      "PENDLEUSDT",
+      "PENGUUSDC",
+      "PENGUUSDT",
+      "PEOPLEUSDT",
+      "PHAROSUSDT",
+      "PHAUSDT",
+      "PIEVERSEUSDT",
+      "PIPPINUSDT",
+      "PIXELUSDT",
+      "PLAYUSDT",
+      "PLUMEUSDT",
+      "PNUTUSDC",
+      "PNUTUSDT",
+      "POLUSDT",
+      "POLYXUSDT"
     ],
     "batchSize": 40,
     "cyclesCompleted": 1
@@ -44300,7 +44382,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-09-21T20:50:37.677Z",
+    "validatedAt": "2026-09-21T22:11:39.317Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
