@@ -1,0 +1,24 @@
+name: SAOMI Vercel Storage Capability Check
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/saomi-vercel-storage-check.yml']
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --global vercel@latest
+      - name: List production environment variable names only
+        shell: bash
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: team_OWYSOUWdGTE02gR0o9SiBRgz
+          VERCEL_PROJECT_ID: prj_2iMHZEAZb0XdpRFAGMQSE7TU8uoX
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          vercel env ls production --yes --token="$VERCEL_TOKEN" --scope="orhankeskiner5561-cells-projects" --project="$VERCEL_PROJECT_ID" 2>&1 | sed -E 's/[A-Za-z0-9_\-]{20,}/[MASKED]/g'
