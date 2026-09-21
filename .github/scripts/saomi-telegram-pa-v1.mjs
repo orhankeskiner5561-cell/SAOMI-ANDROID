@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
-const TELEGRAM_CLEAN='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
-const TELEGRAM_ENDPOINT_CANDIDATES=[TELEGRAM_PUBLIC,TELEGRAM_CLEAN];
+const TELEGRAM_ENDPOINT_CANDIDATES=[TELEGRAM_PUBLIC];
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 let TELEGRAM_SELECTED_ENDPOINT=TELEGRAM_PUBLIC;
@@ -13,7 +12,7 @@ const HOT_LANE_SIZE=24;
 const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
-const ANALYSIS_VERSION='RC5.37_REAL_SYMBOL_TELEGRAM';
+const ANALYSIS_VERSION='RC5.38_STRICT_TELEGRAM_GATE';
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
 const MAX_SIGNALS=8;
@@ -354,6 +353,7 @@ async function buildSetup(symbol,tf,topDown){const base=await candles(symbol,tf)
 let sent=0;
 const telegramReady=await validateTelegramTransport(signalState);
 const universe=await loadFuturesUniverse();
+const universeSet=new Set(universe);
 const rotationBatch=chooseRotatingBatch(universe,signalState);
 const hotLane=await loadHotLane(universe);
 const actives=activeSymbols(signalState);
@@ -376,10 +376,16 @@ for(const symbol of scanSymbols){
     }
     const setup=await buildSetup(symbol,tf,topDown);
     if(!setup){console.log(symbol,tf,'WAIT / filter');continue}
+    const direction=String(setup.direction||'').toUpperCase();
+    const validLevels=[setup.entry,setup.stop,setup.tp1,setup.tp2,setup.tp3].every(finite);
+    if(!universeSet.has(String(setup.symbol||'').toUpperCase())||!['LONG','SHORT'].includes(direction)||!validLevels){
+      console.error('INVALID_TRADE_SETUP_REJECTED',symbol,tf,{symbol:setup.symbol,direction:setup.direction,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3});
+      continue
+    }
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
     console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,st:setup.indicatorContext?.supertrend?.direction,trend:setup.indicatorContext?.trend?.alignment,rvol:setup.indicatorContext?.volume?.rvol});
-    const meta={provider:'SAOMI RC5.37 REAL SYMBOL TELEGRAM',commentary:commentary(setup)};
+    const meta={provider:'SAOMI RC5.38 STRICT TELEGRAM GATE',commentary:commentary(setup)};
     if(!telegramReady){
       console.log('SIGNAL_READY_TELEGRAM_BLOCKED',symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward});
       continue
@@ -395,3 +401,4 @@ for(const symbol of scanSymbols){
 }
 saveSignalState(signalState);
 console.log('SAOMI '+ANALYSIS_VERSION+' finished. Sent: '+sent+' · universe='+universe.length+' · nextCursor='+signalState.scannerUniverse.cursor+' · cycles='+signalState.scannerUniverse.cyclesCompleted);console.log('REJECT_STATS',JSON.stringify(Object.fromEntries(Object.entries(rejectStats).sort((a,b)=>b[1]-a[1]))));
+if(!telegramReady)throw new Error('TELEGRAM_TRANSPORT_NOT_READY: production /api/telegram is not unrestricted; scan completed but delivery gate failed');
