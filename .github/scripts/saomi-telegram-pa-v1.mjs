@@ -329,6 +329,7 @@ function commentary(setup){
  const cross=tr.ema200Cross?('EMA200 '+tr.ema200Cross.side+' kirilimi'):'EMA200 taraf '+(ctx.trend?.ema200Side||'—');
  const br=tr.break?('Trend kirilimi '+tr.break.side):'Trend '+(ctx.priceAction?.structureTrend||'RANGE');
  return 'STRICT HTF + Price Action. '+(d.summary||'')+'. '+br+'. Retest + kapanmis onay mumu zorunlu. '+setup.direction+' giris '+fmtNum(setup.entry)+'. STOP '+fmtNum(setup.stop)+' ('+fmtNum(setup.riskAtr)+' ATR) · TP1 '+fmtNum(setup.tp1)+' · TP2 '+fmtNum(setup.tp2)+' · TP3 '+fmtNum(setup.tp3)+'. EMA200 sadece yon filtresidir; tek basina sinyal degildir.';
+}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function futuresFetch(url,label,attempt=0){
   const r=await fetch(url);
