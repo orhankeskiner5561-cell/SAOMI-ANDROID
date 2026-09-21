@@ -1,8 +1,7 @@
 import fs from 'node:fs';
 
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
-const TELEGRAM_CLEAN='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
-const TELEGRAM_ENDPOINT_CANDIDATES=[TELEGRAM_PUBLIC,TELEGRAM_CLEAN];
+const TELEGRAM_ENDPOINT_CANDIDATES=[TELEGRAM_PUBLIC];
 let TELEGRAM_SELECTED_ENDPOINT=TELEGRAM_PUBLIC;
 let TELEGRAM_READY=false;
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
