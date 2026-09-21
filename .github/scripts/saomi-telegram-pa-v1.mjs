@@ -462,7 +462,6 @@ async function buildSetup(symbol,tf,topDown){
 }
 
 let sent=0;
-let sent=0;
 const universe=await loadFuturesUniverse();
 const telegramReady=await validateTelegramTransport(signalState,universe);
 const universeSet=new Set(universe);
