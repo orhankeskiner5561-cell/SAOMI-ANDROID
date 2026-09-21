@@ -19,7 +19,8 @@ const TELEGRAM_SYMBOL_POLICY='binance-usdm-trading-perpetual';
 const pickTelegramProbeSymbol=universe=>(universe||[]).find(x=>!LEGACY_TELEGRAM_SYMBOLS.has(String(x).toUpperCase()))||null;
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
-const MAX_SIGNALS=8;
+const MAX_SIGNALS=12;
+const MAX_SIGNALS_PER_SYMBOL=1;
 const STATE_PATH='.github/state/saomi-telegram-state.json';
 const REANALYSIS_MAX=3;
 const TF_DUP_TTL_MS={'1m':30*60*1000,'5m':2*60*60*1000,'15m':6*60*60*1000,'30m':8*60*60*1000};
@@ -468,12 +469,13 @@ const universeSet=new Set(universe);
 const rotationBatch=chooseRotatingBatch(universe,signalState);
 const hotLane=await loadHotLane(universe);
 const actives=activeSymbols(signalState);
-const scanSymbols=[...new Set([...actives,...hotLane,...rotationBatch])];
+const scanSymbols=[...new Set([...actives,...rotationBatch,...hotLane])];
 console.log('SAOMI '+ANALYSIS_VERSION+' scan '+new Date().toISOString()+' · FUTURES universe='+universe.length+' · hotLane='+hotLane.length+' · rotating batch='+rotationBatch.length+' · active extras='+actives.length+' · SIGNAL TF='+BASE_TFS.join(',')+' · HTF='+HTF_ORDER.join('→'));
 console.log('HOT',hotLane.join(','));
 console.log('BATCH',rotationBatch.join(','));
 scanLoop:
 for(const symbol of scanSymbols){
+ let symbolSent=0;
  try{
   const topDown=await buildTopDownContext(symbol),major=topDown.major;
   console.log(symbol,'MAJOR',major.direction,major.summary,'strength',major.conviction);
@@ -504,8 +506,10 @@ for(const symbol of scanSymbols){
     const tg=await telegram(setup,meta.commentary,meta.provider);
     rememberSignal(signalState,setup,tg,meta);
     sent++;
-    console.log('SENT',symbol,tf,tg);
-    if(sent>=MAX_SIGNALS)break scanLoop
+    symbolSent++;
+    console.log('SENT',symbol,tf,tg,'symbolSent='+symbolSent,'totalSent='+sent);
+    if(sent>=MAX_SIGNALS)break scanLoop;
+    if(symbolSent>=MAX_SIGNALS_PER_SYMBOL){console.log(symbol,'FAIRNESS LIMIT · next symbol');break}
    }catch(e){console.error('ERROR '+symbol+' '+tf+':',e?.message||e)}
   }
  }catch(e){console.error('HTF ERROR '+symbol+':',e?.message||e)}
