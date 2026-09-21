@@ -57,7 +57,7 @@ jobs:
           node <<'NODE'
           const LEGACY=new Set(['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT']);
           const BASE='https://saomi-trade-ai.vercel.app';
-          const r=await fetch('https://fapi.binance.com/fapi/v1/exchangeInfo');
+          const r=await fetch('https://www.binance.com/fapi/v1/exchangeInfo');
           if(!r.ok) throw new Error('BINANCE_EXCHANGE_INFO HTTP '+r.status);
           const x=await r.json();
           const probe=(x.symbols||[])
