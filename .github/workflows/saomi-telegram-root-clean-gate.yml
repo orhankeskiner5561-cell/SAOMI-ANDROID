@@ -1,0 +1,83 @@
+name: SAOMI Telegram Root Clean Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'server/saomi-trade-ai/app/api/telegram/**'
+      - '.github/scripts/saomi-telegram-pa-v1.mjs'
+      - '.github/scripts/saomi-telegram-lifecycle.mjs'
+      - '.github/workflows/saomi-telegram-root-clean-gate.yml'
+  schedule:
+    - cron: '*/15 * * * *'
+
+concurrency:
+  group: saomi-telegram-root-clean-gate
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    permissions:
+      contents: read
+
+    steps:
+      - name: Repo kodunu al
+        uses: actions/checkout@v4
+
+      - name: Scanner ve lifecycle syntax
+        run: |
+          node --check .github/scripts/saomi-telegram-pa-v1.mjs
+          node --check .github/scripts/saomi-telegram-lifecycle.mjs
+
+      - name: Kök kaynak sözleşmesini doğrula
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const p='server/saomi-trade-ai/app/api/telegram/route.ts';
+          const s=fs.readFileSync(p,'utf8');
+          const required=[
+            "status==='TRADING'",
+            "contractType==='PERPETUAL'",
+            "const SYMBOL_POLICY='binance-usdm-trading-perpetual'",
+            "v!==null&&v!==undefined&&v!==''",
+            "Sistem mesajları trade endpointine gönderilemez"
+          ];
+          for(const x of required) if(!s.includes(x)) throw new Error('ROOT_SOURCE_CONTRACT_MISSING: '+x);
+          if(/allowedSymbols\s*=|ALLOWED_SYMBOLS|AKTARIM|carrier/i.test(s)) throw new Error('LEGACY_TELEGRAM_PATH_FOUND');
+          console.log('ROOT_SOURCE_CONTRACT PASS');
+          NODE
+
+      - name: Production non-legacy Binance Futures probe
+        shell: bash
+        run: |
+          node <<'NODE'
+          const LEGACY=new Set(['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT']);
+          const BASE='https://saomi-trade-ai.vercel.app';
+          const r=await fetch('https://fapi.binance.com/fapi/v1/exchangeInfo');
+          if(!r.ok) throw new Error('BINANCE_EXCHANGE_INFO HTTP '+r.status);
+          const x=await r.json();
+          const probe=(x.symbols||[])
+            .filter(s=>s?.status==='TRADING'&&s?.contractType==='PERPETUAL'&&s?.symbol)
+            .map(s=>String(s.symbol).toUpperCase())
+            .find(s=>!LEGACY.has(s));
+          if(!probe) throw new Error('NO_NON_LEGACY_PROBE_SYMBOL');
+
+          const pr=await fetch(BASE+'/api/telegram?symbol='+encodeURIComponent(probe),{cache:'no-store'});
+          const raw=await pr.text(); let j={}; try{j=JSON.parse(raw)}catch{}
+          console.log('PROBE',probe,'HTTP',pr.status,raw.slice(0,500));
+          if(!pr.ok) throw new Error('PRODUCTION_TELEGRAM HTTP '+pr.status);
+          if(j.configured!==true) throw new Error('PRODUCTION_TELEGRAM_NOT_CONFIGURED');
+          if(Object.prototype.hasOwnProperty.call(j,'allowedSymbols')) throw new Error('LEGACY_7_COIN_WHITELIST_STILL_PRESENT');
+          if(j.symbolPolicy!=='binance-usdm-trading-perpetual') throw new Error('WRONG_SYMBOL_POLICY');
+          if(String(j.probeSymbol||'').toUpperCase()!==probe||j.symbolAccepted!==true) throw new Error('NON_LEGACY_SYMBOL_REJECTED');
+
+          const fr=await fetch(BASE+'/api/telegram?symbol=SAOMI_SYSTEM',{cache:'no-store'});
+          const fraw=await fr.text(); let fj={}; try{fj=JSON.parse(fraw)}catch{}
+          if(!fr.ok) throw new Error('FAKE_SYMBOL_PROBE HTTP '+fr.status);
+          if(fj.symbolAccepted!==false) throw new Error('FAKE_SYMBOL_ACCEPTED');
+          console.log('PRODUCTION_ROOT_CLEAN PASS · nonLegacy='+probe);
+          NODE
