@@ -8942,8 +8942,8 @@
     "cyclesCompleted": 0
   },
   "telegramReset": {
-    "resetAt": "2026-09-20T17:54:12.350Z",
-    "reason": "RC5.35_USER_REQUEST_FULL_TELEGRAM_RECONNECT",
+    "resetAt": "2026-09-21T03:35:47.929Z",
+    "reason": "RC5.39_AUTHORITATIVE_TRACKER_CLEAN_RESET",
     "clearedSignalCache": 0,
     "cancelledActiveSignals": 0,
     "historyPreserved": true
@@ -8953,7 +8953,7 @@
     "endpoint": null,
     "allFutures": false,
     "validated": false,
-    "validatedAt": "2026-09-21T03:28:28.185Z",
-    "error": "https://saomi-trade-ai.vercel.app:restricted-7"
+    "validatedAt": "2026-09-21T03:35:47.933Z",
+    "error": "Awaiting unrestricted production /api/telegram"
   }
 }
