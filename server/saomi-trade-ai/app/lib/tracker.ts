@@ -67,7 +67,8 @@ export async function readTrackerState(max=80){
   const rows=(await Promise.all(blobs.map((b:any)=>readOne(b.pathname)))).filter(Boolean);
   const active=rows.filter((x:any)=>!TERMINAL.has(String(x.status||x.result||'').toUpperCase()));
   const history=rows.filter((x:any)=>TERMINAL.has(String(x.status||x.result||'').toUpperCase()));
-  const latest=(await readOne(LATEST))||active[0]||rows[0]||null;
+  const pointer=await readOne(LATEST);
+  const latest=pointer&&!TERMINAL.has(String(pointer.status||pointer.result||'').toUpperCase())?pointer:(active[0]||rows[0]||null);
   return {activeSignals:Object.fromEntries(active.map((x:any)=>[x.signalId,x])),history,latest,count:rows.length};
 }
 
