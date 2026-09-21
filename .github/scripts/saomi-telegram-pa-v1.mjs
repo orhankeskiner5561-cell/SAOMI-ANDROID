@@ -15,6 +15,7 @@ const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
 const ANALYSIS_VERSION='RC5.39_ROOT_CLEAN_TELEGRAM';
 const LEGACY_TELEGRAM_SYMBOLS=new Set(['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT']);
 const TELEGRAM_SYMBOL_POLICY='binance-usdm-trading-perpetual';
+// Production delivery stays fail-closed until a live non-legacy USD-M perpetual symbol passes the root-clean endpoint contract.
 const pickTelegramProbeSymbol=universe=>(universe||[]).find(x=>!LEGACY_TELEGRAM_SYMBOLS.has(String(x).toUpperCase()))||null;
 const MIN_CONFIDENCE=76;
 const MIN_RR=2;
