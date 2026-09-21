@@ -106,29 +106,6 @@ function saveState(state){
   fs.mkdirSync('.github/state',{recursive:true});
   fs.writeFileSync(STATE_PATH,JSON.stringify(state,null,2)+'\n');
 }
-function migrateLatestSignals(state){
-  let changed=false;
-  const closedIds=new Set((state.history||[]).map(x=>x.signalId));
-  for(const v of Object.values(state.signals||{})){
-    if(!v?.signalId||closedIds.has(v.signalId)||state.activeSignals[v.signalId])continue;
-    if(!finite(v.entry)||!finite(v.stop)||!finite(v.tp1)||!finite(v.tp2)||!finite(v.tp3))continue;
-    state.activeSignals[v.signalId]={
-      ...v,
-      symbol:v.symbol||String(v.signalId).split('|')[0],
-      market:v.market||'futures',
-      timeframe:v.timeframe||'15m',
-      confidence:v.confidence??null,
-      riskReward:v.riskReward??3,
-      status:'WAIT_ENTRY',
-      stage:0,
-      enteredAt:null,
-      notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false},
-      migrated:true
-    };
-    changed=true;
-  }
-  return changed
-}
 async function minuteCandles(symbol,startMs){
   const out=[];
   let cursor=Math.max(0,Math.floor(startMs)-60_000);
@@ -320,7 +297,7 @@ function performance(state){
 }
 
 const state=loadState();
-let changed=migrateLatestSignals(state);
+let changed=false;
 const entries=Object.entries(state.activeSignals||{});
 console.log(`ŞAOMİ lifecycle başladı. Aktif kayıt: ${entries.length}`);
 
