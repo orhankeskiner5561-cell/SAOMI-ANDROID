@@ -277,8 +277,6 @@ function commentary(setup){
  const br=tr.break?('Trend kirilimi '+tr.break.side):'Trend '+(ctx.priceAction?.structureTrend||'RANGE');
  return 'Saf trend + EMA200 + Price Action. Major '+(d.majorDirection||setup.direction)+' · '+(d.summary||'')+'. '+br+' · '+cross+'. '+setup.direction+' giris '+fmtNum(setup.entry)+'. STOP '+fmtNum(setup.stop)+' · TP1 '+fmtNum(setup.tp1)+' · TP2 '+fmtNum(setup.tp2)+' · TP3 '+fmtNum(setup.tp3)+'. SuperTrend/Fibonacci/MACD/RSI/hacim/SMC/sweep-retest sinyal kapisi degildir.'
 }
-
-const cache=new Map();
 const cache=new Map();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function futuresFetch(url,label,attempt=0){
