@@ -48,7 +48,13 @@ function stageAtPrice(sig,p){
   }
   return 0
 }
-function stopAtPrice(sig,p){return sig.direction==='LONG'?p<=sig.stop:p>=sig.stop}
+function protectiveStop(sig,stage=sig.stage||0){
+ const original=finite(sig.initialStop)?Number(sig.initialStop):Number(sig.stop);
+ if(Number(stage)>=2)return Number(sig.tp1);
+ if(Number(stage)>=1)return Number(sig.entry);
+ return original
+}
+function stopAtPrice(sig,p,stage=sig.stage||0){const stop=protectiveStop(sig,stage);return sig.direction==='LONG'?p<=stop:p>=stop}
 async function aggregateTrades(symbol,startMs,endMs){
   const rows=[];let first=true,fromId=null;
   for(let page=0;page<8;page++){
@@ -84,7 +90,7 @@ async function resolveSequence(sig,c,startMs,enteredInitially=false,stageInitial
       if(!entryFilledAtPrice(sig,t.price))continue;
       entered=true;entryTime=t.time;
     }
-    if(stopAtPrice(sig,t.price))return{entered,entryTime,stage,stageEvents,terminal:'STOP',time:t.time,price:t.price};
+    if(stopAtPrice(sig,t.price,stage))return{entered,entryTime,stage,stageEvents,terminal:'STOP',time:t.time,price:t.price,stopPrice:protectiveStop(sig,stage)};
     const ns=stageAtPrice(sig,t.price);
     if(ns>stage){
       for(let s=stage+1;s<=ns;s++)stageEvents.push({stage:s,time:t.time,price:s===1?sig.tp1:s===2?sig.tp2:sig.tp3});
@@ -143,7 +149,8 @@ function targetStage(sig,c){
   return 0
 }
 function stopHit(sig,c){
-  return sig.direction==='LONG'?c.low<=sig.stop:c.high>=sig.stop
+  const stop=protectiveStop(sig,sig.stage||0);
+  return sig.direction==='LONG'?c.low<=stop:c.high>=stop
 }
 function reanalysisSummaryText(sig){
   const s=sig?.reanalysis?.summary;
@@ -152,7 +159,7 @@ function reanalysisSummaryText(sig){
 }
 function htfSummaryText(sig){const s=sig?.topDownContext?.decision?.summary;return s?` HTF: ${s}.`:''}
 function stageText(stage){return stage>=2?'TP1 ve TP2 görüldü':stage===1?'TP1 görüldü':'hedef görülmedi'}
-function levelsText(sig){return `Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(sig.stop)} · TP1 ${fmtPrice(sig.tp1)} · TP2 ${fmtPrice(sig.tp2)} · TP3 ${fmtPrice(sig.tp3)}`}
+function levelsText(sig){return `Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(protectiveStop(sig,sig.stage||0))} · TP1 ${fmtPrice(sig.tp1)} · TP2 ${fmtPrice(sig.tp2)} · TP3 ${fmtPrice(sig.tp3)}`}
 function eventSetup(sig,event){
   return {
     symbol:sig.symbol,market:'futures',timeframe:sig.timeframe||'15m',
@@ -320,7 +327,7 @@ for(const [id,sig] of entries){
       console.log(id,'geçersiz kayıt, atlandı');
       continue;
     }
-    sig.entry=Number(sig.entry);sig.stop=Number(sig.stop);sig.tp1=Number(sig.tp1);sig.tp2=Number(sig.tp2);sig.tp3=Number(sig.tp3);
+    sig.entry=Number(sig.entry);sig.stop=Number(sig.stop);sig.tp1=Number(sig.tp1);sig.tp2=Number(sig.tp2);sig.tp3=Number(sig.tp3);if(!finite(sig.initialStop))sig.initialStop=sig.stop;
     sig.stage=Number(sig.stage||0);
     sig.status=sig.status||'WAIT_ENTRY';
     sig.notified=sig.notified||{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false};
@@ -372,9 +379,9 @@ for(const [id,sig] of entries){
       if(entryResolved.terminal==='STOP'){
         const stage=sig.stage||0,result=stage>=2?'STOP_AFTER_TP2':stage>=1?'STOP_AFTER_TP1':'STOP',note=stage>=2?'TP1 ve TP2 görüldükten sonra':stage>=1?'TP1 görüldükten sonra':'hedef görülmeden';
         sig.status='STOP';
-        const ev={type:'STOP',time:entryResolved.time,price:sig.stop,text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(sig.stop)}. ${reanalysisSummaryText(sig)}`};
+        const ev={type:'STOP',time:entryResolved.time,price:protectiveStop(sig,sig.stage||0),text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(protectiveStop(sig,sig.stage||0))}. ${reanalysisSummaryText(sig)}`};
         if(!sig.notified.stop)await notifyOnce(sig,'stop',ev);
-        closeSignal(state,id,sig,result,entryResolved.time,{maxStage:stage,exitPrice:sig.stop,status:'STOP'});changed=true;continue;
+        closeSignal(state,id,sig,result,entryResolved.time,{maxStage:stage,exitPrice:protectiveStop(sig,sig.stage||0),status:'STOP'});changed=true;continue;
       }
       if(entryResolved.terminal==='TP3'){
         sig.status='TP3';closeSignal(state,id,sig,'TP3',entryResolved.time,{maxStage:3,exitPrice:sig.tp3,status:'TP3'});changed=true;continue;
@@ -410,9 +417,9 @@ for(const [id,sig] of entries){
         }
         if(seq.terminal==='STOP'){
           const stage=sig.stage||0,result=stage>=2?'STOP_AFTER_TP2':stage>=1?'STOP_AFTER_TP1':'STOP',note=stage>=2?'TP1 ve TP2 görüldükten sonra':stage>=1?'TP1 görüldükten sonra':'hedef görülmeden';
-          sig.status='STOP';const ev={type:'STOP',time:seq.time,price:sig.stop,text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(sig.stop)}. ${reanalysisSummaryText(sig)}`};
+          sig.status='STOP';const ev={type:'STOP',time:seq.time,price:protectiveStop(sig,sig.stage||0),text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(protectiveStop(sig,sig.stage||0))}. ${reanalysisSummaryText(sig)}`};
           if(!sig.notified.stop)await notifyOnce(sig,'stop',ev);
-          closeSignal(state,id,sig,result,seq.time,{maxStage:stage,exitPrice:sig.stop,status:'STOP'});changed=true;closed=true;break;
+          closeSignal(state,id,sig,result,seq.time,{maxStage:stage,exitPrice:protectiveStop(sig,sig.stage||0),status:'STOP'});changed=true;closed=true;break;
         }
         if(seq.terminal==='TP3'){sig.status='TP3';closeSignal(state,id,sig,'TP3',seq.time,{maxStage:3,exitPrice:sig.tp3,status:'TP3'});changed=true;closed=true;break}
         continue;
@@ -429,9 +436,9 @@ for(const [id,sig] of entries){
 
       if(hitStop){
         const stage=sig.stage||0,result=stage>=2?'STOP_AFTER_TP2':stage>=1?'STOP_AFTER_TP1':'STOP',note=stage>=2?'TP1 ve TP2 görüldükten sonra':stage>=1?'TP1 görüldükten sonra':'hedef görülmeden';
-        sig.status='STOP';const ev={type:'STOP',time:cand.closeTime,price:sig.stop,text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(sig.stop)}. ${reanalysisSummaryText(sig)}`};
+        sig.status='STOP';const ev={type:'STOP',time:cand.closeTime,price:protectiveStop(sig,sig.stage||0),text:`🛑 ${sig.symbol} STOP OLDU — ${note}. Sinyal: ${sig.direction} ${sig.timeframe||'15m'}. Giriş ${fmtPrice(sig.entry)} · STOP ${fmtPrice(protectiveStop(sig,sig.stage||0))}. ${reanalysisSummaryText(sig)}`};
         if(!sig.notified.stop)await notifyOnce(sig,'stop',ev);
-        closeSignal(state,id,sig,result,cand.closeTime,{maxStage:stage,exitPrice:sig.stop,status:'STOP'});changed=true;closed=true;break;
+        closeSignal(state,id,sig,result,cand.closeTime,{maxStage:stage,exitPrice:protectiveStop(sig,sig.stage||0),status:'STOP'});changed=true;closed=true;break;
       }
     }
 
