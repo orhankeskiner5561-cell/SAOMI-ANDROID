@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
+const TELEGRAM_PROBE_SYMBOL='ARBUSDT';
+const TELEGRAM_SYMBOL_POLICY='binance-usdm-trading-perpetual';
 const TELEGRAM_ENDPOINT_CANDIDATES=[TELEGRAM_PUBLIC];
 let TELEGRAM_SELECTED_ENDPOINT=TELEGRAM_PUBLIC;
 let TELEGRAM_READY=false;
@@ -176,22 +178,24 @@ async function resolveTelegramEndpoint(){
   const failures=[];
   for(const base of TELEGRAM_ENDPOINT_CANDIDATES){
     try{
-      const r=await fetch(base+'/api/telegram',{cache:'no-store',redirect:'manual',signal:AbortSignal.timeout(8000)});
+      const r=await fetch(base+'/api/telegram?symbol='+encodeURIComponent(TELEGRAM_PROBE_SYMBOL),{cache:'no-store',redirect:'manual',signal:AbortSignal.timeout(10000)});
       const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
       const configured=r.ok&&j&&typeof j==='object'&&!Array.isArray(j)&&j.configured===true;
-      const allowed=Array.isArray(j.allowedSymbols)?j.allowedSymbols.map(x=>String(x).toUpperCase()):null;
-      if(configured&&(!allowed||allowed.length===0)){
+      const legacyWhitelist=Array.isArray(j.allowedSymbols);
+      const policyOk=j?.symbolPolicy===TELEGRAM_SYMBOL_POLICY;
+      const probeOk=String(j?.probeSymbol||'').toUpperCase()===TELEGRAM_PROBE_SYMBOL&&j?.symbolAccepted===true;
+      if(configured&&!legacyWhitelist&&policyOk&&probeOk){
         TELEGRAM_SELECTED_ENDPOINT=base;
         TELEGRAM_READY=true;
-        console.log('LIFECYCLE_TELEGRAM_TRANSPORT vercel-all-futures endpoint='+base);
+        console.log('LIFECYCLE_TELEGRAM_TRANSPORT root-clean endpoint='+base+' probe='+TELEGRAM_PROBE_SYMBOL);
         return base
       }
-      failures.push(base+':'+(configured?(allowed?.length?'restricted-'+allowed.length:'invalid-config'):'not-configured'));
+      failures.push(base+':'+(!configured?'not-configured':legacyWhitelist?'legacy-whitelist':!policyOk?'wrong-policy':!probeOk?'probe-rejected':'invalid-config'));
     }catch(e){
       failures.push(base+':'+String(e?.message||e).slice(0,120));
     }
   }
-  throw new Error('No unrestricted lifecycle Telegram endpoint: '+failures.join(' | '))
+  throw new Error('No root-clean Binance USD-M lifecycle Telegram endpoint: '+failures.join(' | '))
 }
 async function notify(sig,event){
   const setup=eventSetup(sig,event);
