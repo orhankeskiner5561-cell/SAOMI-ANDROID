@@ -2,6 +2,7 @@ name: SAOMI Telegram Signal Lifecycle
 
 on:
   schedule:
+    # RC5.41 lifecycle heartbeat: active signal tracking re-enabled.
     - cron: '*/5 * * * *'
   workflow_dispatch:
   push:
