@@ -1,6 +1,10 @@
 import fs from 'node:fs';
 
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
+const TELEGRAM_CLEAN='https://saomi-trade-45dv1fo8z-orhankeskiner5561-cells-projects.vercel.app';
+const TELEGRAM_ENDPOINT_CANDIDATES=[TELEGRAM_PUBLIC,TELEGRAM_CLEAN];
+let TELEGRAM_SELECTED_ENDPOINT=TELEGRAM_PUBLIC;
+let TELEGRAM_READY=false;
 const TELEGRAM_BOT_TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 const FUTURES='https://www.binance.com';
@@ -29,6 +33,7 @@ const MAX_HISTORY=500;
 function finite(v){return v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))}
 function iso(ms){return new Date(ms).toISOString()}
 function fmtPrice(v){
+  if(v===null||v===undefined||v==='')return'—';
   const n=Number(v);if(!Number.isFinite(n))return'—';
   const a=Math.abs(n),d=a>=1000?1:a>=100?2:a>=1?4:a>=.1?5:7;
   return n.toFixed(d).replace(/0+$/,'').replace(/\.$/,'')
@@ -189,6 +194,29 @@ function lifecycleText(sig,event){
     +tgEsc(('TAKİP — AYNI SİNYAL · '+event.text+htfSummaryText(sig)).trim())+'\n\n'
     +tgEsc(levelsText(sig));
 }
+async function resolveTelegramEndpoint(){
+  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID)return null;
+  if(TELEGRAM_READY)return TELEGRAM_SELECTED_ENDPOINT;
+  const failures=[];
+  for(const base of TELEGRAM_ENDPOINT_CANDIDATES){
+    try{
+      const r=await fetch(base+'/api/telegram',{cache:'no-store',redirect:'manual',signal:AbortSignal.timeout(8000)});
+      const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
+      const configured=r.ok&&j&&typeof j==='object'&&!Array.isArray(j)&&j.configured===true;
+      const allowed=Array.isArray(j.allowedSymbols)?j.allowedSymbols.map(x=>String(x).toUpperCase()):null;
+      if(configured&&(!allowed||allowed.length===0)){
+        TELEGRAM_SELECTED_ENDPOINT=base;
+        TELEGRAM_READY=true;
+        console.log('LIFECYCLE_TELEGRAM_TRANSPORT vercel-all-futures endpoint='+base);
+        return base
+      }
+      failures.push(base+':'+(configured?(allowed?.length?'restricted-'+allowed.length:'invalid-config'):'not-configured'));
+    }catch(e){
+      failures.push(base+':'+String(e?.message||e).slice(0,120));
+    }
+  }
+  throw new Error('No unrestricted lifecycle Telegram endpoint: '+failures.join(' | '))
+}
 async function notify(sig,event){
   const setup=eventSetup(sig,event);
   if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
@@ -207,7 +235,8 @@ async function notify(sig,event){
     if(!r.ok||!j.ok)throw new Error(j.description||('Telegram lifecycle direct HTTP '+r.status));
     return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
   }
-  const r=await fetch(TELEGRAM_PUBLIC+'/api/telegram',{
+  const endpoint=await resolveTelegramEndpoint();
+  const r=await fetch(endpoint+'/api/telegram',{
     method:'POST',
     headers:{'content-type':'application/json'},
     body:JSON.stringify({
