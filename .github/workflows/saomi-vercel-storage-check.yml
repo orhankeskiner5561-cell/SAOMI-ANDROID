@@ -21,4 +21,4 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN"
-          vercel env ls production --yes --token="$VERCEL_TOKEN" --scope="orhankeskiner5561-cells-projects" --project="$VERCEL_PROJECT_ID" 2>&1 | sed -E 's/[A-Za-z0-9_\-]{20,}/[MASKED]/g'
+          vercel env ls production --non-interactive --token="$VERCEL_TOKEN" --scope="orhankeskiner5561-cells-projects" --project="$VERCEL_PROJECT_ID" 2>&1 | sed -E 's/[A-Za-z0-9_\-]{20,}/[MASKED]/g'
