@@ -3,7 +3,7 @@ import {NextRequest,NextResponse} from 'next/server';
 export const dynamic='force-dynamic';
 export const runtime='nodejs';
 
-const BINANCE_EXCHANGE_INFO='https://fapi.binance.com/fapi/v1/exchangeInfo';
+const BINANCE_EXCHANGE_INFO='https://www.binance.com/fapi/v1/exchangeInfo';
 const SYMBOL_POLICY='binance-usdm-trading-perpetual';
 const PAYLOAD_VERSION='RC5.39_ROOT_CLEAN_V1';
 const ALLOWED_MODES=new Set(['github-pa-v1','github-lifecycle','approved','auto','server-auto']);
