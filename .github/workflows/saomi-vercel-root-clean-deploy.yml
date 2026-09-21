@@ -1,0 +1,125 @@
+name: SAOMI Vercel Root Clean Production Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'server/saomi-trade-ai/**'
+      - '.github/workflows/saomi-vercel-root-clean-deploy.yml'
+
+concurrency:
+  group: saomi-vercel-root-clean-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Root-clean source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROUTE=server/saomi-trade-ai/app/api/telegram/route.ts
+          SYSTEM=server/saomi-trade-ai/app/api/telegram/system/route.ts
+          test -f "$ROUTE"
+          test -f "$SYSTEM"
+          grep -q "status==='TRADING'" "$ROUTE"
+          grep -q "contractType==='PERPETUAL'" "$ROUTE"
+          grep -q "binance-usdm-trading-perpetual" "$ROUTE"
+          grep -q "SAOMI_SYSTEM" "$ROUTE"
+          ! grep -q "ALLOWED_SYMBOLS" "$ROUTE"
+          ! grep -q "allowedSymbols" "$ROUTE"
+          ! grep -q "AKTARIM" "$ROUTE"
+          ! grep -qi "carrier" "$ROUTE"
+          echo "ROOT_CLEAN_SOURCE_CONTRACT PASS"
+
+      - name: Resolve Vercel token
+        id: auth
+        shell: bash
+        env:
+          TOKEN_A: ${{ secrets.VERCEL_TOKEN }}
+          TOKEN_B: ${{ secrets.VERCEL_ACCESS_TOKEN }}
+          TOKEN_C: ${{ secrets.VERCEL_DEPLOY_TOKEN }}
+          TOKEN_D: ${{ secrets.ZEIT_TOKEN }}
+        run: |
+          set -euo pipefail
+          TOKEN="${TOKEN_A:-}"
+          [ -n "$TOKEN" ] || TOKEN="${TOKEN_B:-}"
+          [ -n "$TOKEN" ] || TOKEN="${TOKEN_C:-}"
+          [ -n "$TOKEN" ] || TOKEN="${TOKEN_D:-}"
+          if [ -z "$TOKEN" ]; then
+            echo "VERCEL_DEPLOY_AUTH MISSING"
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+          echo "VERCEL_DEPLOY_AUTH PRESENT"
+
+      - name: Prepare Vercel project link
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p server/saomi-trade-ai/.vercel
+          cat > server/saomi-trade-ai/.vercel/project.json <<'JSON'
+          {"orgId":"team_OWYSOUWdGTE02gR0o9SiBRgz","projectId":"prj_2iMHZEAZb0XdpRFAGMQSE7TU8uoX"}
+          JSON
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull production environment
+        shell: bash
+        run: vercel pull --yes --environment=production --token="${{ steps.auth.outputs.token }}" --cwd server/saomi-trade-ai
+
+      - name: Build production artifact
+        shell: bash
+        run: vercel build --prod --token="${{ steps.auth.outputs.token }}" --cwd server/saomi-trade-ai
+
+      - name: Deploy production
+        id: deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="$(vercel deploy --prebuilt --prod --yes --token="${{ steps.auth.outputs.token }}" --cwd server/saomi-trade-ai)"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "PRODUCTION_DEPLOY $URL"
+
+      - name: Verify production root-clean Telegram route
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROD='https://saomi-trade-ai.vercel.app'
+
+          for i in {1..24}; do
+            BODY="$(curl -fsS "$PROD/api/telegram?symbol=BCHUSDT" || true)"
+            if echo "$BODY" | grep -q '"symbolPolicy":"binance-usdm-trading-perpetual"' &&                echo "$BODY" | grep -q '"probeSymbol":"BCHUSDT"' &&                echo "$BODY" | grep -q '"symbolAccepted":true'; then
+              break
+            fi
+            sleep 5
+          done
+
+          BODY="$(curl -fsS "$PROD/api/telegram?symbol=BCHUSDT")"
+          echo "BCHUSDT_PROBE $BODY"
+          echo "$BODY" | grep -q '"configured":true'
+          echo "$BODY" | grep -q '"symbolPolicy":"binance-usdm-trading-perpetual"'
+          echo "$BODY" | grep -q '"probeSymbol":"BCHUSDT"'
+          echo "$BODY" | grep -q '"symbolAccepted":true'
+          ! echo "$BODY" | grep -q '"allowedSymbols"'
+
+          FAKE="$(curl -fsS "$PROD/api/telegram?symbol=SAOMI_SYSTEM")"
+          echo "SAOMI_SYSTEM_PROBE $FAKE"
+          echo "$FAKE" | grep -q '"probeSymbol":"SAOMI_SYSTEM"'
+          echo "$FAKE" | grep -q '"symbolAccepted":false'
+
+          AI_STATUS="$(curl -sS -o /dev/null -w '%{http_code}' "$PROD/api/ai")"
+          test "$AI_STATUS" = "405"
+
+          echo "PRODUCTION_ROOT_CLEAN PASS"
