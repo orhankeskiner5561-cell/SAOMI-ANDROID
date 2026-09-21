@@ -3,6 +3,7 @@ import {randomUUID} from 'node:crypto';
 
 const PREFIX='saomi/tracker/signals/';
 const LATEST='saomi/tracker/latest.json';
+const INDEX='saomi/tracker/index.json';
 const TERMINAL=new Set(['TP3','STOP','AMBIGUOUS','EXPIRED','CANCELLED','EXPIRED-CANCELLED']);
 
 function blobToken(){
@@ -51,23 +52,33 @@ async function readOne(pathname:string){
 }
 
 export async function storeSignal(record:any){
+  const current=await readOne(INDEX),rows=Array.isArray(current)?current.filter((x:any)=>x?.signalId!==record.signalId):[];
+  const nextIndex=[record,...rows].slice(0,100);
   await Promise.all([
     write(PREFIX+encodeURIComponent(record.signalId)+'.json',record),
-    write(LATEST,record)
+    write(LATEST,record),
+    write(INDEX,nextIndex)
   ]);
   return record;
 }
 
 export async function readTrackerState(max=80){
   const n=Math.max(1,Math.min(100,Number(max)||80));
-  const page=await list({prefix:PREFIX,limit:100,token:blobToken()});
+  const [page,indexRows,pointer]=await Promise.all([
+    list({prefix:PREFIX,limit:100,token:blobToken()}),
+    readOne(INDEX),
+    readOne(LATEST)
+  ]);
   const blobs=[...(page.blobs||[])]
     .sort((a:any,b:any)=>Date.parse(String(b.uploadedAt||0))-Date.parse(String(a.uploadedAt||0)))
     .slice(0,n);
-  const rows=(await Promise.all(blobs.map((b:any)=>readOne(b.pathname)))).filter(Boolean);
+  const listed=(await Promise.all(blobs.map((b:any)=>readOne(b.pathname)))).filter(Boolean);
+  const merged=new Map<string,any>();
+  for(const row of [...(Array.isArray(indexRows)?indexRows:[]),...listed]) if(row?.signalId&&!merged.has(row.signalId)) merged.set(row.signalId,row);
+  if(pointer?.signalId&&!merged.has(pointer.signalId)) merged.set(pointer.signalId,pointer);
+  const rows=[...merged.values()].sort((a:any,b:any)=>(Date.parse(b.sentAt||b.createdAt||0)||0)-(Date.parse(a.sentAt||a.createdAt||0)||0)).slice(0,n);
   const active=rows.filter((x:any)=>!TERMINAL.has(String(x.status||x.result||'').toUpperCase()));
   const history=rows.filter((x:any)=>TERMINAL.has(String(x.status||x.result||'').toUpperCase()));
-  const pointer=await readOne(LATEST);
   const latest=pointer&&!TERMINAL.has(String(pointer.status||pointer.result||'').toUpperCase())?pointer:(active[0]||rows[0]||null);
   return {activeSignals:Object.fromEntries(active.map((x:any)=>[x.signalId,x])),history,latest,count:rows.length};
 }
@@ -78,7 +89,11 @@ export async function updateSignal(signalId:string,patch:any){
   if(!old) throw new Error('Tracker signalId bulunamadı');
   const next={...old,...patch,signalId:old.signalId,updatedAt:new Date().toISOString()};
   await write(path,next);
-  const latest=await readOne(LATEST);
+  const [latest,current]=await Promise.all([readOne(LATEST),readOne(INDEX)]);
   if(latest?.signalId===signalId) await write(LATEST,next);
+  if(Array.isArray(current)){
+    const nextIndex=current.map((x:any)=>x?.signalId===signalId?next:x);
+    await write(INDEX,nextIndex);
+  }
   return next;
 }
