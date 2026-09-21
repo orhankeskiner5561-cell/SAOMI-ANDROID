@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 const TELEGRAM_PUBLIC='https://saomi-trade-ai.vercel.app';
-const TELEGRAM_PROBE_SYMBOL='ARBUSDT';
+const LEGACY_TELEGRAM_SYMBOLS=new Set(['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT']);
 const TELEGRAM_SYMBOL_POLICY='binance-usdm-trading-perpetual';
 const TELEGRAM_ENDPOINT_CANDIDATES=[TELEGRAM_PUBLIC];
 let TELEGRAM_SELECTED_ENDPOINT=TELEGRAM_PUBLIC;
@@ -172,22 +172,31 @@ function lifecycleText(sig,event){
     +tgEsc(('TAKİP — AYNI SİNYAL · '+event.text+htfSummaryText(sig)).trim())+'\n\n'
     +tgEsc(levelsText(sig));
 }
+async function liveNonLegacyProbeSymbol(){
+  const r=await fetch(FUTURES+'/fapi/v1/exchangeInfo',{cache:'no-store',signal:AbortSignal.timeout(10000)});
+  if(!r.ok)throw new Error('Binance exchangeInfo probe HTTP '+r.status);
+  const j=await r.json();
+  const symbol=(j.symbols||[]).filter(x=>x?.status==='TRADING'&&x?.contractType==='PERPETUAL'&&x?.symbol).map(x=>String(x.symbol).toUpperCase()).find(x=>!LEGACY_TELEGRAM_SYMBOLS.has(x));
+  if(!symbol)throw new Error('No non-legacy Binance USD-M probe symbol');
+  return symbol
+}
 async function resolveTelegramEndpoint(){
   if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID)return null;
+  const probeSymbol=await liveNonLegacyProbeSymbol();
   if(TELEGRAM_READY)return TELEGRAM_SELECTED_ENDPOINT;
   const failures=[];
   for(const base of TELEGRAM_ENDPOINT_CANDIDATES){
     try{
-      const r=await fetch(base+'/api/telegram?symbol='+encodeURIComponent(TELEGRAM_PROBE_SYMBOL),{cache:'no-store',redirect:'manual',signal:AbortSignal.timeout(10000)});
+      const r=await fetch(base+'/api/telegram?symbol='+encodeURIComponent(probeSymbol),{cache:'no-store',redirect:'manual',signal:AbortSignal.timeout(10000)});
       const raw=await r.text();let j={};try{j=JSON.parse(raw)}catch{}
       const configured=r.ok&&j&&typeof j==='object'&&!Array.isArray(j)&&j.configured===true;
       const legacyWhitelist=Array.isArray(j.allowedSymbols);
       const policyOk=j?.symbolPolicy===TELEGRAM_SYMBOL_POLICY;
-      const probeOk=String(j?.probeSymbol||'').toUpperCase()===TELEGRAM_PROBE_SYMBOL&&j?.symbolAccepted===true;
+      const probeOk=String(j?.probeSymbol||'').toUpperCase()===probeSymbol&&j?.symbolAccepted===true;
       if(configured&&!legacyWhitelist&&policyOk&&probeOk){
         TELEGRAM_SELECTED_ENDPOINT=base;
         TELEGRAM_READY=true;
-        console.log('LIFECYCLE_TELEGRAM_TRANSPORT root-clean endpoint='+base+' probe='+TELEGRAM_PROBE_SYMBOL);
+        console.log('LIFECYCLE_TELEGRAM_TRANSPORT root-clean endpoint='+base+' probe='+probeSymbol);
         return base
       }
       failures.push(base+':'+(!configured?'not-configured':legacyWhitelist?'legacy-whitelist':!policyOk?'wrong-policy':!probeOk?'probe-rejected':'invalid-config'));
