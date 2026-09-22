@@ -465,22 +465,6 @@ function tgText(setup,commentaryText){
   +'\n\n<i>Olasılık analizidir; yatırım tavsiyesi değildir.</i>'
 }
 async function telegram(setup,commentaryText,provider){
- if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
-   const r=await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage',{
-     method:'POST',
-     headers:{'content-type':'application/json'},
-     body:JSON.stringify({
-       chat_id:TELEGRAM_CHAT_ID,
-       text:tgText(setup,commentaryText),
-       parse_mode:'HTML',
-       disable_web_page_preview:true
-     }),
-     signal:AbortSignal.timeout(15000)
-   });
-   const j=await r.json().catch(()=>({}));
-   if(!r.ok||!j.ok)throw new Error(j.description||('Telegram direct HTTP '+r.status));
-   return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
- }
  if(!TELEGRAM_READY)throw new Error('Telegram all-Futures transport is not ready');
  const r=await fetch(TELEGRAM_SELECTED_ENDPOINT+'/api/telegram',{
    method:'POST',
@@ -503,13 +487,6 @@ async function validateTelegramTransport(state,universe){
  const now=new Date().toISOString();
  const probeSymbol=pickTelegramProbeSymbol(universe);
  if(!probeSymbol){state.telegramTransport={mode:'unavailable',endpoint:null,allFutures:false,validated:false,validatedAt:now,error:'No non-legacy Binance USD-M probe symbol'};saveSignalState(state);return false}
- if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
-   TELEGRAM_READY=true;
-   state.telegramTransport={mode:'direct-github',allFutures:true,validated:true,validatedAt:now,symbolPolicy:TELEGRAM_SYMBOL_POLICY};
-   saveSignalState(state);
-   console.log('TELEGRAM_TRANSPORT direct-github allFutures=true');
-   return true
- }
  const failures=[];
  for(const base of TELEGRAM_ENDPOINT_CANDIDATES){
    try{
