@@ -269,6 +269,13 @@ async function syncTrackerRecord(sig,statusOverride=null){
   const body={
     mode:'github-lifecycle',
     signalId:sig.signalId,
+    signal:{
+      ...sig,
+      signalId:sig.signalId,
+      market:'futures',
+      status:rawStatus,
+      stage:Number(sig.maxStage??sig.finalStage??sig.stage??0)||0
+    },
     status,
     stage:Number(sig.maxStage??sig.finalStage??sig.stage??0)||0,
     result:terminal.has(status)?String(sig.result||status):null,
