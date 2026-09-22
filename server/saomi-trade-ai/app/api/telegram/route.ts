@@ -1,5 +1,5 @@
 import {NextRequest,NextResponse} from 'next/server';
-import {makeSignalId,makeTrackerRecord,storeSignal,updateSignal} from '../../lib/tracker';
+import {makeSignalId,makeTrackerRecord,storeSignal,upsertSignal} from '../../lib/tracker';
 
 export const dynamic='force-dynamic';
 export const runtime='nodejs';
@@ -95,13 +95,14 @@ export async function POST(req:NextRequest){
     const allowed=new Set(['ACTIVE','TP1','TP2','TP3','STOP','AMBIGUOUS','EXPIRED','CANCELLED']);
     const status=String(lc.status||'').toUpperCase();
     if(!allowed.has(status))throw new Error('Geçersiz lifecycle status');
-    const patch:any={status,telegramMessageId:j?.result?.message_id??null};
+    const patch:any={status,lastTelegramMessageId:j?.result?.message_id??null};
     if(Number.isFinite(Number(lc.stage)))patch.stage=Math.max(0,Math.min(3,Number(lc.stage)));
     if(lc.result)patch.result=String(lc.result).toUpperCase();
     if(lc.enteredAt)patch.enteredAt=lc.enteredAt;
     if(lc.closedAt)patch.closedAt=lc.closedAt;
     if(Number.isFinite(Number(lc.currentPrice)))patch.currentPrice=Number(lc.currentPrice);
-    await updateSignal(signalId,patch);
+    const seed=makeTrackerRecord(body,setup,j?.result?.message_id,signalId);
+    await upsertSignal(signalId,seed,patch);
     console.info('Telegram lifecycle sent + canonical tracker updated',{signalId,status,stage:patch.stage,messageId:j?.result?.message_id});
     return NextResponse.json({ok:true,trackerUpdated:true,messageId:j?.result?.message_id,mode:'text',symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,signalId,status,payloadVersion:PAYLOAD_VERSION});
   }
