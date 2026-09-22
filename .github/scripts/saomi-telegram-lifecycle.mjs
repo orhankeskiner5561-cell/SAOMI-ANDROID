@@ -309,8 +309,8 @@ async function syncTrackerRecord(sig,statusOverride=null){
   }
 }
 async function reconcileTrackerFromState(state){
-  const active=Object.values(state?.activeSignals||{}).filter(Boolean);
-  const history=Array.isArray(state?.history)?state.history.slice(-160):[];
+  const active=Object.values(state?.activeSignals||{}).filter(x=>x&&isOrhanSignal(x));
+  const history=(Array.isArray(state?.history)?state.history:[]).filter(isOrhanSignal).slice(-160);
   let ok=0,fail=0;
   for(const sig of active){
     if(await syncTrackerRecord(sig,sig.status))ok++;else fail++;
@@ -358,8 +358,8 @@ function statsForRows(historyRows,activeRows){
   }
 }
 function performance(state){
-  const h=state.history||[];
-  const active=Object.values(state.activeSignals||{});
+  const h=(state.history||[]).filter(isOrhanSignal);
+  const active=Object.values(state.activeSignals||{}).filter(isOrhanSignal);
   const all=statsForRows(h,active);
   const byTimeframe={};
   for(const tf of TRACKED_TFS){
