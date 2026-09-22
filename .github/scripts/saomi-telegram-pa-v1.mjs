@@ -557,6 +557,10 @@ for(const symbol of scanSymbols){
     const setup=await buildSetup(symbol,tf,topDown);
     if(!setup){console.log(symbol,tf,'WAIT / filter');continue}
     const direction=String(setup.direction||'').toUpperCase();
+    if(String(setup.analysisVersion||'')!==ANALYSIS_VERSION || !String(setup.signalId||'').includes('|ORHAN_SR_BREAKOUT_CONFIRM:')){
+      console.error('NON_ORHAN_SETUP_BLOCKED',symbol,tf,setup.signalId,setup.analysisVersion);
+      continue;
+    }
     const validLevels=[setup.entry,setup.stop,setup.tp1,setup.tp2,setup.tp3].every(finite);
     if(!universeSet.has(String(setup.symbol||'').toUpperCase())||!['LONG','SHORT'].includes(direction)||!validLevels){
       console.error('INVALID_TRADE_SETUP_REJECTED',symbol,tf,{symbol:setup.symbol,direction:setup.direction,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3});
