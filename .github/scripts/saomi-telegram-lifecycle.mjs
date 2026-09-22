@@ -11,6 +11,12 @@ const TELEGRAM_CHAT_ID=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEG
 const FUTURES='https://www.binance.com';
 const STATE_PATH='.github/state/saomi-telegram-state.json';
 const TRACKED_TFS=['1m','5m','15m','30m','1h','4h'];
+const ORHAN_ANALYSIS_VERSION='RC5.48_ORHAN_SR_BREAKOUT_CONFIRM';
+const ORHAN_SIGNAL_TAG='ORHAN_SR_BREAKOUT_CONFIRM';
+function isOrhanSignal(sig){
+  return String(sig?.analysisVersion||'')===ORHAN_ANALYSIS_VERSION &&
+    String(sig?.signalId||'').includes('|'+ORHAN_SIGNAL_TAG+':');
+}
 const PENDING_EXPIRY_BY_TF={
   '1m':20*60*1000,
   '5m':60*60*1000,
@@ -367,6 +373,24 @@ function performance(state){
 
 const state=loadState();
 let changed=false;
+
+// SOURCE GATE: old/legacy setup records are retired silently.
+// They must never produce ENTRY/TP/STOP/EXPIRED Telegram events after Orhan setup activation.
+for(const [legacyId,legacySig] of Object.entries(state.activeSignals||{})){
+  if(isOrhanSignal(legacySig)) continue;
+  state.history.push({
+    ...legacySig,
+    status:'CANCELLED',
+    result:'CANCELLED',
+    closedAt:new Date().toISOString(),
+    expiryKind:'LEGACY_SETUP_RETIRED',
+    retiredBy:'RC5.54_ORHAN_ONLY_SOURCE_GATE'
+  });
+  delete state.activeSignals[legacyId];
+  changed=true;
+  console.log('LEGACY_SETUP_RETIRED',legacySig?.symbol,legacySig?.timeframe,legacySig?.signalId,legacySig?.analysisVersion);
+}
+if(state.history.length>MAX_HISTORY) state.history=state.history.slice(-MAX_HISTORY);
 const entries=Object.entries(state.activeSignals||{});
 console.log(`ŞAOMİ lifecycle başladı. Aktif kayıt: ${entries.length}`);
 
