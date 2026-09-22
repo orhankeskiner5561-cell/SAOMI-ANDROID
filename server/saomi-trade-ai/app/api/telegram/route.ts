@@ -6,7 +6,9 @@ export const runtime='nodejs';
 
 const BINANCE_EXCHANGE_INFO='https://www.binance.com/fapi/v1/exchangeInfo';
 const SYMBOL_POLICY='binance-usdm-trading-perpetual';
-const PAYLOAD_VERSION='RC5.40_TRACKER_BLOB_V1';
+const PAYLOAD_VERSION='RC5.54_ORHAN_ONLY_V1';
+const ORHAN_ANALYSIS_VERSION='RC5.48_ORHAN_SR_BREAKOUT_CONFIRM';
+const ORHAN_SIGNAL_TAG='ORHAN_SR_BREAKOUT_CONFIRM';
 const ALLOWED_MODES=new Set(['github-pa-v1','github-lifecycle','approved','auto','server-auto']);
 const ALLOWED_TFS=new Set(['1m','5m','15m','30m','1h','4h']);
 const EXCHANGE_INFO_TTL_MS=5*60*1000;
@@ -80,6 +82,10 @@ export async function POST(req:NextRequest){
   if(String(body?.mode||'').toLowerCase().includes('system')||String(body?.setup?.symbol||'').toUpperCase().includes('SAOMI_SYSTEM'))throw new Error('Sistem mesajları trade endpointine gönderilemez');
   const setup=validateSetup(body);
   const signalId=makeSignalId(body,setup);
+  const analysisVersion=String(setup?.analysisVersion||body?.analysisVersion||'');
+  if(analysisVersion!==ORHAN_ANALYSIS_VERSION || !String(signalId).includes('|'+ORHAN_SIGNAL_TAG+':')){
+    throw new Error('Yalnız ORHAN SETUP sinyalleri kabul edilir');
+  }
   const symbols=await validSymbols();
   if(!symbols.has(setup.symbol))throw new Error(`${setup.symbol} Binance USD-M TRADING/PERPETUAL değil`);
   const{token,chatId}=creds();const caption=tradeText(body,setup);let r:Response;
