@@ -38690,9 +38690,9 @@
       "riskAtr": 3.64,
       "commentary": "ORHAN SETUP — Destek/direnc rol degisimi + sikisma + kirilim + onay. HTF bilgi: 1W ↓ · 1D ↔ · 4H ↑ · 1H ↑. Bolge 0.0338604–0.0339446 · temas 10 · rol degisimi EVET · sikisma 3/4. SHORT giris 0.033637. STOP 0.0343351 · TP1 0.0327643 · TP2 0.0322407 · TP3 0.0315426. EMA/HTF tek basina sinyal vermez; ana tetik S/R bolgesi kirilimi ve kapanis onayidir.",
       "commentaryProvider": "SAOMI RC5.47 STRICT HTF RETEST PRICE ACTION",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-22T14:55:10.629Z",
       "lastCheckedAt": "2026-09-22T14:53:59.094Z",
       "notified": {
         "entry": false,
@@ -38702,7 +38702,13 @@
         "stop": false,
         "ambiguous": false
       },
-      "initialStop": 0.03433514015425624
+      "initialStop": 0.03433514015425624,
+      "entryCandleOpenTime": 1790088900000,
+      "lastDeliveryError": {
+        "at": "2026-09-22T14:56:59.641Z",
+        "event": "ENTRY",
+        "message": "Tracker signalId bulunamadı"
+      }
     },
     "ZETAUSDT|futures|1m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790088780000": {
       "fingerprint": "ZETAUSDT|futures|1m|SHORT|NEUTRAL|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
@@ -77450,7 +77456,7 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-22T14:54:43.622Z",
+    "updatedAt": "2026-09-22T14:57:05.002Z",
     "scoredTrades": 66,
     "wins": 9,
     "losses": 57,
@@ -77465,8 +77471,8 @@
     "expiredBeforeEntry": 3,
     "expiredAfterEntry": 6,
     "active": 18,
-    "waitingEntry": 3,
-    "inTrade": 15,
+    "waitingEntry": 2,
+    "inTrade": 16,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 28,
@@ -77501,8 +77507,8 @@
         "expiredBeforeEntry": 0,
         "expiredAfterEntry": 0,
         "active": 4,
-        "waitingEntry": 1,
-        "inTrade": 3
+        "waitingEntry": 0,
+        "inTrade": 4
       },
       "15m": {
         "scoredTrades": 14,
