@@ -4,6 +4,7 @@ import {randomUUID} from 'node:crypto';
 const PREFIX='saomi/tracker/signals/';
 const LATEST='saomi/tracker/latest.json';
 const INDEX='saomi/tracker/index.json';
+const MAX_INDEX=500;
 const TERMINAL=new Set(['TP3','STOP','AMBIGUOUS','EXPIRED','CANCELLED','EXPIRED-CANCELLED']);
 
 function blobToken(){
@@ -53,7 +54,7 @@ async function readOne(pathname:string){
 
 export async function storeSignal(record:any){
   const current=await readOne(INDEX),rows=Array.isArray(current)?current.filter((x:any)=>x?.signalId!==record.signalId):[];
-  const nextIndex=[record,...rows].slice(0,100);
+  const nextIndex=[record,...rows].slice(0,MAX_INDEX);
   await Promise.all([
     write(PREFIX+encodeURIComponent(record.signalId)+'.json',record),
     write(LATEST,record),
@@ -63,9 +64,9 @@ export async function storeSignal(record:any){
 }
 
 export async function readTrackerState(max=80){
-  const n=Math.max(1,Math.min(100,Number(max)||80));
+  const n=Math.max(1,Math.min(MAX_INDEX,Number(max)||80));
   const [page,indexRows,pointer]=await Promise.all([
-    list({prefix:PREFIX,limit:100,token:blobToken()}),
+    list({prefix:PREFIX,limit:Math.min(1000,Math.max(100,n)),token:blobToken()}),
     readOne(INDEX),
     readOne(LATEST)
   ]);
@@ -83,17 +84,28 @@ export async function readTrackerState(max=80){
   return {activeSignals:Object.fromEntries(active.map((x:any)=>[x.signalId,x])),history,latest,count:rows.length};
 }
 
-export async function updateSignal(signalId:string,patch:any){
-  const path=PREFIX+encodeURIComponent(signalId)+'.json';
-  const old=await readOne(path);
-  if(!old) throw new Error('Tracker signalId bulunamadı');
-  const next={...old,...patch,signalId:old.signalId,updatedAt:new Date().toISOString()};
+export async function upsertSignal(signalId:string,seed:any,patch:any={}){
+  const id=String(signalId||'').trim();
+  if(!id) throw new Error('Tracker signalId gerekli');
+  const path=PREFIX+encodeURIComponent(id)+'.json';
+  const [direct,latest,current]=await Promise.all([readOne(path),readOne(LATEST),readOne(INDEX)]);
+  const rows=Array.isArray(current)?current:[];
+  const indexed=rows.find((x:any)=>x?.signalId===id)||null;
+  const pointed=latest?.signalId===id?latest:null;
+  const base=direct||indexed||pointed||(seed&&typeof seed==='object'?seed:null);
+  if(!base) throw new Error('Tracker signalId bulunamadı');
+  const now=new Date().toISOString();
+  const next={...base,...patch,signalId:id,createdAt:base.createdAt||base.sentAt||now,sentAt:base.sentAt||base.createdAt||now,updatedAt:now};
   await write(path,next);
-  const [latest,current]=await Promise.all([readOne(LATEST),readOne(INDEX)]);
-  if(latest?.signalId===signalId) await write(LATEST,next);
-  if(Array.isArray(current)){
-    const nextIndex=current.map((x:any)=>x?.signalId===signalId?next:x);
-    await write(INDEX,nextIndex);
-  }
+  const nextIndex=[next,...rows.filter((x:any)=>x?.signalId!==id)]
+    .sort((a:any,b:any)=>(Date.parse(b.sentAt||b.createdAt||0)||0)-(Date.parse(a.sentAt||a.createdAt||0)||0))
+    .slice(0,MAX_INDEX);
+  const writes=[write(INDEX,nextIndex)];
+  if(!latest||latest?.signalId===id) writes.push(write(LATEST,next));
+  await Promise.all(writes);
   return next;
+}
+
+export async function updateSignal(signalId:string,patch:any){
+  return upsertSignal(signalId,null,patch);
 }
