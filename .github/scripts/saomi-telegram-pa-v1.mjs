@@ -238,9 +238,9 @@ function nearestForward(ctx,direction,entry,frames){
 
 function orhanRoleReversalZones(c){
  const s=detectStructure(c),av=atr(c,14).at(-1)||Math.max(c.at(-1).close*.004,1e-8),price=c.at(-1).close;
- const tol=Math.max(av*.22,price*.0009),pts=[];
- for(const p of (s.pivots?.highs||[]).slice(-24))pts.push({...p,kind:'HIGH'});
- for(const p of (s.pivots?.lows||[]).slice(-24))pts.push({...p,kind:'LOW'});
+ const tol=Math.max(av*.18,price*.00065),pts=[];
+ for(const p of (s.pivots?.highs||[]).slice(-36))pts.push({...p,kind:'HIGH'});
+ for(const p of (s.pivots?.lows||[]).slice(-36))pts.push({...p,kind:'LOW'});
  pts.sort((a,b)=>a.price-b.price);
  const groups=[];
  for(const p of pts){
@@ -250,10 +250,58 @@ function orhanRoleReversalZones(c){
  }
  return groups.map(g=>{
   const highs=g.members.filter(x=>x.kind==='HIGH').length,lows=g.members.filter(x=>x.kind==='LOW').length;
-  const touches=g.members.length,roleReversal=highs>0&&lows>0;
-  const lastIndex=Math.max(...g.members.map(x=>x.i));
-  return{price:g.price,low:g.price-tol,high:g.price+tol,touches,highTouches:highs,lowTouches:lows,roleReversal,lastIndex,members:g.members};
- }).filter(z=>z.touches>=3&&(z.roleReversal||z.touches>=4)).sort((a,b)=>b.lastIndex-a.lastIndex)
+  const pivotTouches=g.members.length,roleReversal=highs>0&&lows>0,lastIndex=Math.max(...g.members.map(x=>x.i));
+  const low=g.price-tol,high=g.price+tol;
+  // Manuel Orhan çizimi: yalnız pivot noktası değil, fitil/gövde tepkileri de aynı yatay bölgeyi doğrulamalı.
+  let reactionTouches=0,aboveCloses=0,belowCloses=0,lastTouchIndex=-1;
+  for(let i=Math.max(0,c.length-220);i<c.length;i++){
+    const k=c[i],touch=k.low<=high&&k.high>=low;
+    if(!touch)continue;
+    const prev=c[i-1],next=c[i+1];
+    const reacted=(prev&&Math.sign(prev.close-g.price)!==Math.sign(k.close-g.price))||
+                  (next&&Math.sign(next.close-g.price)!==Math.sign(k.close-g.price))||
+                  Math.max(Math.abs(k.high-g.price),Math.abs(k.low-g.price))>=tol*.6;
+    if(reacted){reactionTouches++;lastTouchIndex=i}
+    if(k.close>high)aboveCloses++;
+    if(k.close<low)belowCloses++;
+  }
+  const touches=Math.max(pivotTouches,reactionTouches);
+  const roleFlip=roleReversal||(aboveCloses>0&&belowCloses>0);
+  const strength=touches+(roleFlip?2:0)+Math.min(2,Math.min(aboveCloses,belowCloses));
+  return{price:g.price,low,high,touches,pivotTouches,reactionTouches,highTouches:highs,lowTouches:lows,roleReversal:roleFlip,lastIndex:Math.max(lastIndex,lastTouchIndex),strength,members:g.members};
+ }).filter(z=>z.touches>=3&&(z.roleReversal||z.touches>=5)).sort((a,b)=>b.strength-a.strength||b.lastIndex-a.lastIndex)
+}
+
+function orhanManualTrendline(c,direction,av){
+ const s=detectStructure(c),i=c.length-1,lookback=Math.max(0,c.length-220);
+ const points=(direction==='LONG'?s.pivots?.highs:s.pivots?.lows||[]).filter(p=>p.i>=lookback&&p.i<i-2);
+ if(points.length<2)return null;
+ const wantDown=direction==='LONG';
+ let best=null;
+ for(let a=0;a<points.length-1;a++)for(let b=a+1;b<points.length;b++){
+   const p1=points[a],p2=points[b],dx=p2.i-p1.i;if(dx<8)continue;
+   const slope=(p2.price-p1.price)/dx;
+   if(wantDown&&slope>=-av*.002)continue;
+   if(!wantDown&&slope<=av*.002)continue;
+   const projected=p2.price+slope*(i-p2.i);
+   if(!finite(projected))continue;
+   let touches=0,violations=0;
+   for(const p of points){
+     if(p.i<p1.i)continue;
+     const line=p1.price+slope*(p.i-p1.i),dist=Math.abs(p.price-line);
+     if(dist<=av*.28)touches++;
+     const crossed=wantDown?p.price>line+av*.42:p.price<line-av*.42;
+     if(crossed)violations++;
+   }
+   if(touches<2||violations>1)continue;
+   const age=i-p2.i;
+   const distanceAtr=Math.abs(c[i].close-projected)/Math.max(av,1e-12);
+   if(distanceAtr>3.2)continue;
+   const score=touches*3-Math.min(age,60)*.03-violations*4-distanceAtr;
+   const row={side:wantDown?'DESC_RESISTANCE':'ASC_SUPPORT',p1,p2,slope,projected,index:i,touches,violations,ageBars:age,distanceAtr:Number(distanceAtr.toFixed(2)),score:Number(score.toFixed(2))};
+   if(!best||row.score>best.score)best=row;
+ }
+ return best
 }
 function orhanCompression(c,zone,av){
  const s=detectStructure(c),hs=(s.pivots?.highs||[]).filter(x=>x.i>=Math.max(0,c.length-90)).slice(-4),ls=(s.pivots?.lows||[]).filter(x=>x.i>=Math.max(0,c.length-90)).slice(-4);
@@ -267,30 +315,48 @@ function orhanCompression(c,zone,av){
  const score=(descendingHighs?1:0)+(risingLows?1:0)+(rangeContract?1:0)+(nearZone?1:0);
  return{ok:score>=3,score,descendingHighs,risingLows,rangeContract,nearZone,recentRange,olderRange,highs:hs,lows:ls}
 }
-function orhanBreakoutSequence(c,zone,direction,av,tf='15m'){
- const up=direction==='LONG',i=c.length-1,maxAge=String(tf)==='1m'?5:String(tf)==='5m'?4:String(tf)==='15m'?3:3;
+function orhanBreakoutSequence(c,zone,direction,av,tf='15m',trendline=null){
+ const up=direction==='LONG',i=c.length-1,maxAge=String(tf)==='1m'?4:String(tf)==='5m'?3:String(tf)==='15m'?3:2;
  let best=null;
- for(let b=Math.max(2,i-maxAge-3);b<=i;b++){
+ for(let b=Math.max(2,i-maxAge-4);b<=i;b++){
   const k=c[b],body=Math.abs(k.close-k.open),range=Math.max(k.high-k.low,1e-12);
-  const broke=up?k.close>zone.high:k.close<zone.low;
-  const openedInsideOrNear=up?k.open<=zone.high+av*.35:k.open>=zone.low-av*.35;
-  if(!broke||!openedInsideOrNear||body<av*.18||body/range<.45)continue;
+  const lineAtBreak=trendline?trendline.p1.price+trendline.slope*(b-trendline.p1.i):null;
+  const horizontalBreak=up?k.close>zone.high:k.close<zone.low;
+  const trendBreak=!trendline?false:(up?k.close>lineAtBreak+av*.05:k.close<lineAtBreak-av*.05);
+  const openedInsideOrNear=up?k.open<=zone.high+av*.45:k.open>=zone.low-av*.45;
+  if(!horizontalBreak||!trendBreak||!openedInsideOrNear||body<av*.22||body/range<.48)continue;
+
+  const confluenceDistance=Math.abs(lineAtBreak-zone.price)/Math.max(av,1e-12);
+  if(confluenceDistance>1.35)continue;
+
   const conf=c[b+1];
-  let confirmed=false,retest=null;
-  if(conf){
-   const holds=up?conf.close>zone.price:conf.close<zone.price;
-   const directional=up?conf.close>=conf.open:conf.close<=conf.open;
-   const touched=conf.low<=zone.high+av*.12&&conf.high>=zone.low-av*.12;
-   const noDeepFail=up?conf.close>=zone.low-av*.05:conf.close<=zone.high+av*.05;
-   confirmed=holds&&directional&&noDeepFail;
-   if(touched&&confirmed)retest={time:conf.time,index:b+1,candle:{open:conf.open,high:conf.high,low:conf.low,close:conf.close}};
-  }else{
-   confirmed=true;
-  }
+  if(!conf)continue; // Orhan çiziminde kırılımın tek başına yetmesi yok; sonraki mum onayı zorunlu.
+  const lineAtConf=trendline.p1.price+trendline.slope*((b+1)-trendline.p1.i);
+  const holdsHorizontal=up?conf.close>zone.price+av*.03:conf.close<zone.price-av*.03;
+  const holdsTrend=up?conf.close>lineAtConf:conf.close<lineAtConf;
+  const noDeepFail=up?conf.close>=zone.low-av*.03:conf.close<=zone.high+av*.03;
+  const touchedHorizontal=conf.low<=zone.high+av*.15&&conf.high>=zone.low-av*.15;
+  const touchedTrend=up?conf.low<=lineAtConf+av*.18:conf.high>=lineAtConf-av*.18;
+  const directional=up?conf.close>=conf.open-av*.04:conf.close<=conf.open+av*.04;
+  const confirmed=holdsHorizontal&&holdsTrend&&noDeepFail&&directional;
   if(!confirmed)continue;
+
+  const retest=(touchedHorizontal||touchedTrend)?{
+    time:conf.time,index:b+1,
+    heldHorizontal:touchedHorizontal,heldTrendline:touchedTrend,
+    candle:{open:conf.open,high:conf.high,low:conf.low,close:conf.close}
+  }:null;
   const age=i-b;if(age>maxAge)continue;
-  const row={breakout:{time:k.time,index:b,candle:{open:k.open,high:k.high,low:k.low,close:k.close},bodyAtr:Number((body/Math.max(av,1e-12)).toFixed(2)),bodyRatio:Number((body/range).toFixed(2))},confirmation:conf?{time:conf.time,index:b+1,candle:{open:conf.open,high:conf.high,low:conf.low,close:conf.close}}:null,retest,ageBars:age};
-  if(!best||row.ageBars<best.ageBars)best=row;
+  const row={
+    breakout:{
+      time:k.time,index:b,candle:{open:k.open,high:k.high,low:k.low,close:k.close},
+      bodyAtr:Number((body/Math.max(av,1e-12)).toFixed(2)),bodyRatio:Number((body/range).toFixed(2)),
+      horizontalLevel:zone.price,trendlineLevel:lineAtBreak,dualBreak:true,confluenceDistanceAtr:Number(confluenceDistance.toFixed(2))
+    },
+    confirmation:{time:conf.time,index:b+1,candle:{open:conf.open,high:conf.high,low:conf.low,close:conf.close},holdsHorizontal,holdsTrend},
+    retest,ageBars:age
+  };
+  if(!best||row.ageBars<best.ageBars||row.ageBars===best.ageBars&&row.breakout.confluenceDistanceAtr<best.breakout.confluenceDistanceAtr)best=row;
  }
  return best
 }
@@ -300,11 +366,15 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
  if(!zones.length)return rejectReason('ORHAN_NO_SR_ROLE_REVERSAL_ZONE');
 
  let chosen=null;
- for(const zone of zones.slice(0,8)){
+ for(const zone of zones.slice(0,10)){
   const comp=orhanCompression(c,zone,av);
   if(!comp.ok)continue;
   for(const direction of ['LONG','SHORT']){
-   const seq=orhanBreakoutSequence(c,zone,direction,av,tf);
+   const trendline=orhanManualTrendline(c,direction,av);
+   if(!trendline)continue;
+   const zoneLineGap=Math.abs(trendline.projected-zone.price)/Math.max(av,1e-12);
+   if(zoneLineGap>2.2)continue;
+   const seq=orhanBreakoutSequence(c,zone,direction,av,tf,trendline);
    if(!seq)continue;
    const breakoutIndex=seq.breakout.index;
    const pre=c.slice(Math.max(0,breakoutIndex-24),breakoutIndex+1);
@@ -335,7 +405,9 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
     entryTrigger:{
       type:'ORHAN_SR_BREAKOUT_CONFIRM',
       order:['SR_ZONE','COMPRESSION','BREAKOUT','CONFIRMATION','ENTRY'],
-      zone:{price:zone.price,low:zone.low,high:zone.high,touches:zone.touches,highTouches:zone.highTouches,lowTouches:zone.lowTouches,roleReversal:zone.roleReversal},
+      zone:{price:zone.price,low:zone.low,high:zone.high,touches:zone.touches,pivotTouches:zone.pivotTouches,reactionTouches:zone.reactionTouches,highTouches:zone.highTouches,lowTouches:zone.lowTouches,roleReversal:zone.roleReversal,strength:zone.strength},
+      trendline,
+      confluence:{zoneTrendlineGapAtr:Number(zoneLineGap.toFixed(2)),required:true},
       compression:comp,breakout:seq.breakout,confirmation:seq.confirmation,retest:seq.retest
     },
     entrySequence:seq,liquidityEvidence:null,majorObstacle:null,riskAtr:Number(riskAtr.toFixed(2)),
@@ -343,9 +415,11 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
       'Orhan S/R bolgesi '+zone.touches+' temas',
       zone.roleReversal?'Dip-tepe rol degisimi var':'Coklu temas bolgesi',
       'Sikisma skoru '+comp.score+'/4',
-      'Bolge kirilimi '+direction,
-      seq.confirmation?'Onay mumu var':'Kirilim mumu onayi',
-      seq.retest?'Retest tuttu':'Retest zorunlu degil',
+      direction==='LONG'?'Alcalan trend direnci fitil tepelerinden cekildi':'Yukselen trend destegi fitil diplerinden cekildi',
+      'Yatay S/R + trend cizgisi ayni bolgede kesisti',
+      'Cift kirilim '+direction+' (yatay seviye + trend cizgisi)',
+      'Sonraki mum iki seviyenin de disinda kaldi',
+      seq.retest?'Retest/rol degisimi tuttu':'Onay mumu seviyeleri korudu',
       'HTF sadece bilgi; veto degil'
     ],
     invalidation:up?'Sikisma dibi / destek bolgesi alti':'Sikisma tepesi / direnc bolgesi ustu',
@@ -361,12 +435,12 @@ function fmtNum(v){if(v===null||v===undefined||v==='')return'—';const x=Number
 
 function commentary(setup){
  const d=setup.topDownContext?.decision||{},tr=setup.entryTrigger||{},z=tr.zone||{},cp=tr.compression||{};
- return 'ORHAN SETUP — Destek/direnc rol degisimi + sikisma + kirilim + onay. '
+ return 'ORHAN SETUP — Manuel S/R + fitil trend cizgisi + kesişim + çift kırılım + onay. '
   +(d.summary?('HTF bilgi: '+d.summary+'. '):'')
   +'Bolge '+fmtNum(z.low)+'–'+fmtNum(z.high)+' · temas '+(z.touches??'—')+' · rol degisimi '+(z.roleReversal?'EVET':'HAYIR')
   +' · sikisma '+(cp.score??'—')+'/4. '+setup.direction+' giris '+fmtNum(setup.entry)
   +'. STOP '+fmtNum(setup.stop)+' · TP1 '+fmtNum(setup.tp1)+' · TP2 '+fmtNum(setup.tp2)+' · TP3 '+fmtNum(setup.tp3)
-  +'. EMA/HTF tek basina sinyal vermez; ana tetik S/R bolgesi kirilimi ve kapanis onayidir.';
+  +'. EMA/HTF tek basina sinyal vermez; ana tetik yatay S/R ile trend cizgisinin ayni yerde kirilmasi ve sonraki mumun iki seviyeyi de korumasidir.';
 }
 const cache=new Map();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -569,7 +643,7 @@ for(const symbol of scanSymbols){
     const dup=duplicateReason(signalState,setup);
     if(dup){console.log(symbol,tf,'NOT SENT ('+dup+')');continue}
     console.log(symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward,major:setup.topDownContext.decision.summary,trend:setup.indicatorContext?.priceAction?.structureTrend,ema200:setup.indicatorContext?.trend?.ema200Side,trigger:setup.entryTrigger?.type});
-    const meta={provider:'SAOMI RC5.47 STRICT HTF RETEST PRICE ACTION',commentary:commentary(setup)};
+    const meta={provider:'SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE',commentary:commentary(setup)};
     if(!telegramReady){
       console.log('SIGNAL_READY_TELEGRAM_BLOCKED',symbol,tf,{direction:setup.direction,confidence:setup.confidence,rr:setup.riskReward});
       continue
