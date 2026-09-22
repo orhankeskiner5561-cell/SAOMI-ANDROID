@@ -108,13 +108,17 @@ export async function POST(req:NextRequest){
     if(lc.closedAt)patch.closedAt=lc.closedAt;
     if(Number.isFinite(Number(lc.currentPrice)))patch.currentPrice=Number(lc.currentPrice);
     const seed=makeTrackerRecord(body,setup,j?.result?.message_id,signalId);
-    await upsertSignal(signalId,seed,patch);
-    console.info('Telegram lifecycle sent + canonical tracker updated',{signalId,status,stage:patch.stage,messageId:j?.result?.message_id});
-    return NextResponse.json({ok:true,trackerUpdated:true,messageId:j?.result?.message_id,mode:'text',symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,signalId,status,payloadVersion:PAYLOAD_VERSION});
+    let trackerUpdated=true;
+    try{await upsertSignal(signalId,seed,patch)}
+    catch(e){trackerUpdated=false;console.error('TRACKER_BLOB_WRITE_FAIL_NONFATAL',signalId,e instanceof Error?e.message:e)}
+    console.info('Telegram lifecycle sent',{signalId,status,stage:patch.stage,messageId:j?.result?.message_id,trackerUpdated});
+    return NextResponse.json({ok:true,trackerUpdated,messageId:j?.result?.message_id,mode:'text',symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,signalId,status,payloadVersion:PAYLOAD_VERSION});
   }
   const record=makeTrackerRecord(body,setup,j?.result?.message_id,signalId);
-  await storeSignal(record);
-  console.info('Telegram trade sent + tracker stored',{signalId,symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,mode:body.mode,messageId:j?.result?.message_id});
-  return NextResponse.json({ok:true,trackerStored:true,messageId:j?.result?.message_id,mode:body.imageDataUrl?'photo':'text',symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,signalId,payloadVersion:PAYLOAD_VERSION});
+  let trackerStored=true;
+  try{await storeSignal(record)}
+  catch(e){trackerStored=false;console.error('TRACKER_BLOB_WRITE_FAIL_NONFATAL',signalId,e instanceof Error?e.message:e)}
+  console.info('Telegram trade sent',{signalId,symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,mode:body.mode,messageId:j?.result?.message_id,trackerStored});
+  return NextResponse.json({ok:true,trackerStored,messageId:j?.result?.message_id,mode:body.imageDataUrl?'photo':'text',symbol:setup.symbol,direction:setup.direction,timeframe:setup.timeframe,signalId,payloadVersion:PAYLOAD_VERSION});
  }catch(e){const m=e instanceof Error?e.message:'Telegram gönderimi başarısız';console.error('Telegram trade rejected',m);const status=m.includes('ayarları eksik')?400:/Geçersiz|sahte|yalnız|olmalı|sıralaması|değil|Sistem mesajları/i.test(m)?422:502;return NextResponse.json({ok:false,error:m,payloadVersion:PAYLOAD_VERSION},{status})}
 }
