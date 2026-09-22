@@ -31183,14 +31183,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "TACUSDT 15m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↓ · 4H ↓ · 1H ↓"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-22T15:01:12.478Z",
+            "candleCloseTime": 1790089199999,
+            "price": 0.001591,
+            "originalDirection": "SHORT",
+            "majorDirection": "SHORT",
+            "majorConviction": 90,
+            "currentDirection": "SHORT",
+            "currentConfidence": 92,
+            "lowerTrend": {
+              "ema200": 0.0016110982721343453,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790067600000,
+                "index": 475,
+                "ageBars": 23
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790072100000,
+                "price": 0.001608,
+                "index": 480,
+                "breakClose": 0.001593,
+                "ageBars": 18
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790072100000,
+                "price": 0.001608,
+                "index": 480,
+                "breakClose": 0.001593,
+                "ageBars": 18
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "TACUSDT 15m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↓ · 4H ↓ · 1H ↓"
           }
         ],
-        "lastCandleCloseTime": 1790088299999,
+        "lastCandleCloseTime": 1790089199999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -31685,7 +31731,65 @@
       },
       "initialStop": 0.05568835726394885,
       "entryCandleOpenTime": 1790070060000,
-      "lastDeliveryError": null
+      "lastDeliveryError": null,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:14.316Z",
+            "candleCloseTime": 1790089199999,
+            "price": 0.05489,
+            "originalDirection": "SHORT",
+            "majorDirection": "LONG",
+            "majorConviction": 64,
+            "currentDirection": "WAIT",
+            "currentConfidence": 55,
+            "lowerTrend": {
+              "ema200": 0.054639539269734694,
+              "alignment": "NEUTRAL",
+              "structure": "DOWN",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790088300000,
+                "index": 496,
+                "ageBars": 2
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790085600000,
+                "price": 0.05498,
+                "index": 487,
+                "breakClose": 0.05496,
+                "ageBars": 11
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790085600000,
+                "price": 0.05498,
+                "index": 487,
+                "breakClose": 0.05496,
+                "ageBars": 11
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "TAUSDT 5m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↑ · 1D ↓ · 4H ↔ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089199999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
+      }
     },
     "SYNUSDT|futures|30m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790069400000": {
       "fingerprint": "SYNUSDT|futures|30m|LONG|LONG|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
@@ -32210,14 +32314,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "SYNUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↔ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-22T15:01:17.269Z",
+            "candleCloseTime": 1790089199999,
+            "price": 0.23492,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "SHORT",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 0.22138228545017377,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087400000,
+                "price": 0.23775,
+                "index": 498,
+                "breakClose": 0.23492,
+                "ageBars": 0
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087400000,
+                "price": 0.23775,
+                "index": 498,
+                "breakClose": 0.23492,
+                "ageBars": 0
+              }
+            },
+            "verdict": "TERS_MINOR",
+            "commentary": "SYNUSDT 30m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↔ · 1D ↑ · 4H ↑ · 1H ↔"
           }
         ],
-        "lastCandleCloseTime": 1790087399999,
+        "lastCandleCloseTime": 1790089199999,
         "summary": {
           "same": 1,
           "wait": 0,
-          "opposite": 0,
-          "total": 1
+          "opposite": 1,
+          "total": 2
         }
       }
     },
@@ -32748,14 +32893,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "TACUSDT 30m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↓ · 4H ↓ · 1H ↓"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-22T15:01:12.705Z",
+            "candleCloseTime": 1790089199999,
+            "price": 0.001591,
+            "originalDirection": "SHORT",
+            "majorDirection": "SHORT",
+            "majorConviction": 90,
+            "currentDirection": "SHORT",
+            "currentConfidence": 92,
+            "lowerTrend": {
+              "ema200": 0.001627303274409674,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790064000000,
+                "index": 485,
+                "ageBars": 13
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790071200000,
+                "price": 0.001611,
+                "index": 489,
+                "breakClose": 0.001593,
+                "ageBars": 9
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790071200000,
+                "price": 0.001611,
+                "index": 489,
+                "breakClose": 0.001593,
+                "ageBars": 9
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "TACUSDT 30m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↓ · 4H ↓ · 1H ↓"
           }
         ],
-        "lastCandleCloseTime": 1790087399999,
+        "lastCandleCloseTime": 1790089199999,
         "summary": {
-          "same": 1,
+          "same": 2,
           "wait": 0,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
       }
     },
@@ -33236,6 +33427,59 @@
         "at": "2026-09-22T14:54:27.176Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:19.628Z",
+            "candleCloseTime": 1790089199999,
+            "price": 86196.1,
+            "originalDirection": "SHORT",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 79,
+            "lowerTrend": {
+              "ema200": 84302.54550924768,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790084700000,
+                "price": 86216.3,
+                "index": 494,
+                "breakClose": 86293.8,
+                "ageBars": 4
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790084700000,
+                "price": 86216.3,
+                "index": 494,
+                "breakClose": 86293.8,
+                "ageBars": 4
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "BTCUSDC 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↔ · 1D ↑ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089199999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
       }
     },
     "ETHUSDC|futures|5m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790088300000": {
@@ -33727,6 +33971,64 @@
         "at": "2026-09-22T14:54:27.997Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:21.988Z",
+            "candleCloseTime": 1790089199999,
+            "price": 2741,
+            "originalDirection": "SHORT",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "WAIT",
+            "currentConfidence": 55,
+            "lowerTrend": {
+              "ema200": 2740.15617174392,
+              "alignment": "NEUTRAL",
+              "structure": "DOWN",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790088900000,
+                "index": 498,
+                "ageBars": 0
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087400000,
+                "price": 2736.97,
+                "index": 493,
+                "breakClose": 2727.89,
+                "ageBars": 5
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087400000,
+                "price": 2736.97,
+                "index": 493,
+                "breakClose": 2727.89,
+                "ageBars": 5
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "ETHUSDC 5m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089199999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
       }
     },
     "TAUSDT|futures|1m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790088720000": {
@@ -34212,6 +34514,64 @@
         "at": "2026-09-22T14:54:28.779Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:14.075Z",
+            "candleCloseTime": 1790089259999,
+            "price": 0.05486,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 64,
+            "currentDirection": "WAIT",
+            "currentConfidence": 55,
+            "lowerTrend": {
+              "ema200": 0.05488966037114508,
+              "alignment": "NEUTRAL",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790089200000,
+                "index": 498,
+                "ageBars": 0
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088420000,
+                "price": 0.05462,
+                "index": 485,
+                "breakClose": 0.05464,
+                "ageBars": 13
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088420000,
+                "price": 0.05462,
+                "index": 485,
+                "breakClose": 0.05464,
+                "ageBars": 13
+              }
+            },
+            "verdict": "BEKLE",
+            "commentary": "TAUSDT 1m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↑ · 1D ↓ · 4H ↔ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089259999,
+        "summary": {
+          "same": 0,
+          "wait": 1,
+          "opposite": 0,
+          "total": 1
+        }
       }
     },
     "YFIUSDT|futures|15m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790087400000": {
@@ -34686,7 +35046,60 @@
         "stop": false,
         "ambiguous": false
       },
-      "initialStop": 2252.689348846248
+      "initialStop": 2252.689348846248,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:26.532Z",
+            "candleCloseTime": 1790089199999,
+            "price": 2300,
+            "originalDirection": "LONG",
+            "majorDirection": "SHORT",
+            "majorConviction": 69,
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 2263.370003324181,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790080200000,
+                "price": 2279,
+                "index": 489,
+                "breakClose": 2287,
+                "ageBars": 9
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790080200000,
+                "price": 2279,
+                "index": 489,
+                "breakClose": 2287,
+                "ageBars": 9
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "YFIUSDT 15m recheck: major SHORT · trend/EMA200/PA LONG · 1W ↓ · 1D ↓ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089199999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
+      }
     },
     "YGGUSDT|futures|5m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790088300000": {
       "fingerprint": "YGGUSDT|futures|5m|SHORT|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
@@ -35177,6 +35590,64 @@
         "at": "2026-09-22T14:54:30.356Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:28.896Z",
+            "candleCloseTime": 1790089199999,
+            "price": 0.02592,
+            "originalDirection": "SHORT",
+            "majorDirection": "SHORT",
+            "majorConviction": 76,
+            "currentDirection": "SHORT",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 0.02594924150692782,
+              "alignment": "SHORT",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790087400000,
+                "index": 493,
+                "ageBars": 5
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087400000,
+                "price": 0.0259,
+                "index": 493,
+                "breakClose": 0.02579,
+                "ageBars": 5
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087400000,
+                "price": 0.0259,
+                "index": 493,
+                "breakClose": 0.02579,
+                "ageBars": 5
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "YGGUSDT 5m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↓ · 4H ↑ · 1H ↓"
+          }
+        ],
+        "lastCandleCloseTime": 1790089199999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
       }
     },
     "ZAMAUSDT|futures|15m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790087400000": {
@@ -35655,6 +36126,64 @@
         "at": "2026-09-22T14:54:30.908Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:33.501Z",
+            "candleCloseTime": 1790089199999,
+            "price": 0.08911,
+            "originalDirection": "SHORT",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "SHORT",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 0.0913107954957447,
+              "alignment": "SHORT",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790082900000,
+                "index": 492,
+                "ageBars": 6
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087400000,
+                "price": 0.09032,
+                "index": 497,
+                "breakClose": 0.08793,
+                "ageBars": 1
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087400000,
+                "price": 0.09032,
+                "index": 497,
+                "breakClose": 0.08793,
+                "ageBars": 1
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "ZAMAUSDT 15m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089199999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
       }
     },
     "ZBTUSDT|futures|1m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790088720000": {
@@ -36164,6 +36693,64 @@
         "at": "2026-09-22T14:54:32.013Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:36.328Z",
+            "candleCloseTime": 1790089259999,
+            "price": 0.08732,
+            "originalDirection": "LONG",
+            "majorDirection": "SHORT",
+            "majorConviction": 60,
+            "currentDirection": "LONG",
+            "currentConfidence": 79,
+            "lowerTrend": {
+              "ema200": 0.08702962469258335,
+              "alignment": "LONG",
+              "structure": "DOWN",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790089080000,
+                "index": 496,
+                "ageBars": 2
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790089140000,
+                "price": 0.08727,
+                "index": 497,
+                "breakClose": 0.08729,
+                "ageBars": 1
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790089140000,
+                "price": 0.08727,
+                "index": 497,
+                "breakClose": 0.08729,
+                "ageBars": 1
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "ZBTUSDT 1m recheck: major SHORT · trend/EMA200/PA LONG · 1W ↓ · 1D ↔ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089259999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
       }
     },
     "ZECUSDC|futures|1m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790088720000": {
@@ -36650,6 +37237,64 @@
         "at": "2026-09-22T14:54:33.101Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:40.312Z",
+            "candleCloseTime": 1790089259999,
+            "price": 1531.77,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 92,
+            "lowerTrend": {
+              "ema200": 1519.127795277394,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790088540000,
+                "index": 487,
+                "ageBars": 11
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088300000,
+                "price": 1512.82,
+                "index": 483,
+                "breakClose": 1514.96,
+                "ageBars": 15
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088300000,
+                "price": 1512.82,
+                "index": 483,
+                "breakClose": 1514.96,
+                "ageBars": 15
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "ZECUSDC 1m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089259999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
       }
     },
     "ZECUSDT|futures|1m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790088720000": {
@@ -37136,6 +37781,64 @@
         "at": "2026-09-22T14:54:34.309Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:44.582Z",
+            "candleCloseTime": 1790089259999,
+            "price": 1533.09,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 1520.3939919754932,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790088540000,
+                "index": 487,
+                "ageBars": 11
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088300000,
+                "price": 1513.6,
+                "index": 483,
+                "breakClose": 1516.06,
+                "ageBars": 15
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088300000,
+                "price": 1513.6,
+                "index": 483,
+                "breakClose": 1516.06,
+                "ageBars": 15
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "ZECUSDT 1m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089259999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
       }
     },
     "ZEREBROUSDT|futures|5m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790088300000": {
@@ -37628,6 +38331,64 @@
         "at": "2026-09-22T14:56:59.641Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:48.276Z",
+            "candleCloseTime": 1790089199999,
+            "price": 0.033751,
+            "originalDirection": "SHORT",
+            "majorDirection": "SHORT",
+            "majorConviction": 60,
+            "currentDirection": "SHORT",
+            "currentConfidence": 92,
+            "lowerTrend": {
+              "ema200": 0.03389208110973996,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790086800000,
+                "index": 491,
+                "ageBars": 7
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087100000,
+                "price": 0.033832,
+                "index": 492,
+                "breakClose": 0.033782,
+                "ageBars": 6
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790087100000,
+                "price": 0.033832,
+                "index": 492,
+                "breakClose": 0.033782,
+                "ageBars": 6
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "ZEREBROUSDT 5m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↔ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089199999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
       }
     },
     "ZETAUSDT|futures|1m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790088780000": {
@@ -38139,6 +38900,64 @@
         "at": "2026-09-22T14:54:35.363Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:50.975Z",
+            "candleCloseTime": 1790089259999,
+            "price": 0.0546,
+            "originalDirection": "SHORT",
+            "majorDirection": "NEUTRAL",
+            "majorConviction": 55,
+            "currentDirection": "LONG",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 0.05505775798132993,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790087040000,
+                "index": 462,
+                "ageBars": 36
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088900000,
+                "price": 0.05482,
+                "index": 493,
+                "breakClose": 0.05484,
+                "ageBars": 5
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088900000,
+                "price": 0.05482,
+                "index": 493,
+                "breakClose": 0.05484,
+                "ageBars": 5
+              }
+            },
+            "verdict": "TERS_MINOR",
+            "commentary": "ZETAUSDT 1m recheck: major NEUTRAL · trend/EMA200/PA LONG · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↓"
+          }
+        ],
+        "lastCandleCloseTime": 1790089259999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
       }
     },
     "ZKCUSDT|futures|1m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790088780000": {
@@ -38611,6 +39430,64 @@
         "at": "2026-09-22T14:54:36.534Z",
         "event": "ENTRY",
         "message": "Tracker signalId bulunamadı"
+      },
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-09-22T15:01:53.868Z",
+            "candleCloseTime": 1790089259999,
+            "price": 0.04196,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 69,
+            "currentDirection": "WAIT",
+            "currentConfidence": 55,
+            "lowerTrend": {
+              "ema200": 0.04202848588822354,
+              "alignment": "NEUTRAL",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790087160000,
+                "index": 464,
+                "ageBars": 34
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088840000,
+                "price": 0.04183,
+                "index": 492,
+                "breakClose": 0.04186,
+                "ageBars": 6
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790088840000,
+                "price": 0.04183,
+                "index": 492,
+                "breakClose": 0.04186,
+                "ageBars": 6
+              }
+            },
+            "verdict": "BEKLE",
+            "commentary": "ZKCUSDT 1m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↑ · 1D ↓ · 4H ↑ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1790089259999,
+        "summary": {
+          "same": 0,
+          "wait": 1,
+          "opposite": 0,
+          "total": 1
+        }
       }
     }
   },
@@ -77593,51 +78470,51 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 18,
+    "cursor": 58,
     "total": 571,
-    "lastRefreshAt": "2026-09-22T14:53:25.660Z",
-    "lastBatchAt": "2026-09-22T14:53:25.660Z",
+    "lastRefreshAt": "2026-09-22T15:01:10.028Z",
+    "lastBatchAt": "2026-09-22T15:01:10.028Z",
     "lastBatch": [
-      "YFIUSDT",
-      "YGGUSDT",
-      "ZAMAUSDT",
-      "ZBTUSDT",
-      "ZECUSDC",
-      "ZECUSDT",
-      "ZENUSDT",
-      "ZEREBROUSDT",
-      "ZESTUSDT",
-      "ZETAUSDT",
-      "ZILUSDT",
-      "ZKCUSDT",
-      "ZKPUSDT",
-      "ZKUSDT",
-      "ZORAUSDT",
-      "ZROUSDT",
-      "ZRXUSDT",
-      "哈基米USDT",
-      "币安人生USDT",
-      "我踏马来了USDT",
-      "牛来USDT",
-      "龙虾USDT",
-      "0GUSDT",
-      "1000000BOBUSDT",
-      "1000000MOGUSDT",
-      "1000BONKUSDC",
-      "1000BONKUSDT",
-      "1000CATUSDT",
-      "1000CHEEMSUSDT",
-      "1000FLOKIUSDT",
-      "1000LUNCUSDT",
-      "1000PEPEUSDC",
-      "1000PEPEUSDT",
-      "1000RATSUSDT",
-      "1000SATSUSDT",
-      "1000SHIBUSDC",
-      "1000SHIBUSDT",
-      "1000XECUSDT",
-      "1INCHUSDT",
-      "1MBABYDOGEUSDT"
+      "2ZUSDT",
+      "4USDT",
+      "AAVEUSDC",
+      "AAVEUSDT",
+      "ACEUSDT",
+      "ACHUSDT",
+      "ACTUSDT",
+      "ACUUSDT",
+      "ADAUSDC",
+      "ADAUSDT",
+      "AEROUSDT",
+      "AEVOUSDT",
+      "AGLDUSDT",
+      "AGTUSDT",
+      "AIAUSDT",
+      "AIGENSYNUSDT",
+      "AINUSDT",
+      "AIOTUSDT",
+      "AIOUSDT",
+      "AIXBTUSDT",
+      "AKEUSDT",
+      "AKTUSDT",
+      "ALCHUSDT",
+      "ALGOUSDT",
+      "ALICEUSDT",
+      "ALLOUSDT",
+      "ALLUSDT",
+      "ALPINEUSDT",
+      "ALTUSDT",
+      "ANIMEUSDT",
+      "ANKRUSDT",
+      "APEUSDT",
+      "API3USDT",
+      "APRUSDT",
+      "APTUSDT",
+      "ARBUSDC",
+      "ARBUSDT",
+      "ARCUSDT",
+      "ARIAUSDT",
+      "ARKMUSDT"
     ],
     "batchSize": 40,
     "cyclesCompleted": 2
@@ -77654,7 +78531,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-09-22T14:53:25.183Z",
+    "validatedAt": "2026-09-22T15:01:09.838Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
