@@ -41,8 +41,13 @@ export async function POST(req:NextRequest){
     const patch:any={status};
     for(const k of ['stage','result','enteredAt','closedAt','expiryKind','currentPrice']) if(b[k]!==undefined) patch[k]=b[k];
     const seed=b?.signal&&typeof b.signal==='object'?{...b.signal,signalId}:null;
-    const row=await upsertSignal(signalId,seed,patch);
-    return NextResponse.json({ok:true,signal:row},{headers:HEADERS});
+    try{
+      const row=await upsertSignal(signalId,seed,patch);
+      return NextResponse.json({ok:true,signal:row,persisted:'vercel-blob'},{headers:HEADERS});
+    }catch(e){
+      console.error('TRACKER_BLOB_POST_FAIL_GITHUB_AUTHORITY',signalId,e instanceof Error?e.message:e);
+      return NextResponse.json({ok:true,signal:{...(seed||{}),...patch,signalId},persisted:'github-state-authoritative'},{headers:HEADERS});
+    }
   }catch(e){
     return NextResponse.json({ok:false,error:e instanceof Error?e.message:'Tracker güncellenemedi'},{status:422,headers:HEADERS});
   }
