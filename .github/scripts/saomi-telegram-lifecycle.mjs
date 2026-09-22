@@ -167,7 +167,7 @@ function eventSetup(sig,event){
     price:event.price??sig.entry,entry:sig.entry,stop:sig.stop,
     tp1:sig.tp1,tp2:sig.tp2,tp3:sig.tp3,riskReward:sig.riskReward??3,
     analysisVersion:sig.analysisVersion||null,topDownContext:sig.topDownContext||null,lowerFrameContext:sig.lowerFrameContext||null,
-    signalId:`${sig.signalId}|${event.type}|${event.time}`
+    signalId:sig.signalId
   }
 }
 function tgEsc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
@@ -241,7 +241,16 @@ async function notify(sig,event){
       provider:'ŞAOMİ TAKİP',
       riskReward:sig.riskReward??3,
       mode:'github-lifecycle',
-      signalId:setup.signalId
+      signalId:setup.signalId,
+      lifecycle:{
+        eventType:String(event.type||'').toUpperCase(),
+        status:String(event.type||'').toUpperCase()==='ENTRY'?'ACTIVE':String(event.type||'').toUpperCase(),
+        stage:String(event.type||'').toUpperCase()==='TP1'?1:String(event.type||'').toUpperCase()==='TP2'?2:String(event.type||'').toUpperCase()==='TP3'?3:Number(sig.stage||0),
+        result:['TP3','STOP','EXPIRED','CANCELLED','AMBIGUOUS'].includes(String(event.type||'').toUpperCase())?String(event.type||'').toUpperCase():null,
+        enteredAt:String(event.type||'').toUpperCase()==='ENTRY'?new Date(Number(event.time)).toISOString():(sig.enteredAt||null),
+        closedAt:['TP3','STOP','EXPIRED','CANCELLED','AMBIGUOUS'].includes(String(event.type||'').toUpperCase())?new Date(Number(event.time)).toISOString():null,
+        currentPrice:event.price??null
+      }
     }),
     signal:AbortSignal.timeout(15000)
   });
