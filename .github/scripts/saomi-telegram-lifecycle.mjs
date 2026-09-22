@@ -275,6 +275,56 @@ async function notifyOnce(sig,key,event){
     return false
   }
 }
+async function syncTrackerRecord(sig,statusOverride=null){
+  if(!sig?.signalId)return false;
+  const rawStatus=String(statusOverride||sig.status||sig.result||'WAIT_ENTRY').toUpperCase();
+  const terminalMap={STOP_AFTER_TP1:'STOP',STOP_AFTER_TP2:'STOP',EXPIRED_CANCELLED:'EXPIRED-CANCELLED'};
+  const status=terminalMap[rawStatus]||rawStatus;
+  const allowed=new Set(['WAIT_ENTRY','ACTIVE','TP1','TP2','TP3','STOP','AMBIGUOUS','EXPIRED','CANCELLED','EXPIRED-CANCELLED']);
+  if(!allowed.has(status))return false;
+  const terminal=new Set(['TP3','STOP','AMBIGUOUS','EXPIRED','CANCELLED','EXPIRED-CANCELLED']);
+  const body={
+    mode:'github-lifecycle',
+    signalId:sig.signalId,
+    status,
+    stage:Number(sig.maxStage??sig.finalStage??sig.stage??0)||0,
+    result:terminal.has(status)?String(sig.result||status):null,
+    enteredAt:sig.enteredAt||null,
+    closedAt:terminal.has(status)?(sig.closedAt||null):null,
+    expiryKind:sig.expiryKind||null,
+    currentPrice:finite(sig.currentPrice)?Number(sig.currentPrice):null
+  };
+  try{
+    const res=await fetch(TELEGRAM_PUBLIC+'/api/tracker',{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify(body),
+      signal:AbortSignal.timeout(12000)
+    });
+    const raw=await res.text();
+    if(!res.ok){
+      console.error(sig.symbol,'tracker sync failed',res.status,raw.slice(0,160));
+      return false;
+    }
+    return true;
+  }catch(e){
+    console.error(sig.symbol,'tracker sync error',String(e?.message||e).slice(0,160));
+    return false;
+  }
+}
+async function reconcileTrackerFromState(state){
+  const active=Object.values(state?.activeSignals||{}).filter(Boolean);
+  const history=Array.isArray(state?.history)?state.history.slice(-160):[];
+  let ok=0,fail=0;
+  for(const sig of active){
+    if(await syncTrackerRecord(sig,sig.status))ok++;else fail++;
+  }
+  for(const sig of history){
+    if(await syncTrackerRecord(sig,sig.status||sig.result))ok++;else fail++;
+  }
+  console.log('TRACKER_RECONCILE ok='+ok+' fail='+fail+' active='+active.length+' historyChecked='+history.length);
+}
+
 function closeSignal(state,id,sig,result,closedAt,extra={}){
   state.history.push({
     ...sig,
@@ -465,6 +515,8 @@ for(const [id,sig] of entries){
     console.error(`HATA ${sig?.symbol||id}:`,e?.message||e);
   }
 }
+
+await reconcileTrackerFromState(state);
 
 const nextPerformance=performance(state);
 const comparablePerformance=p=>{
