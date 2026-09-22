@@ -20794,18 +20794,21 @@
       "riskAtr": 2.86,
       "commentary": "STRICT HTF + Price Action. 1W ↔ · 1D ↑ · 4H ↑ · 1H ↑. Trend kirilimi UP. Retest + kapanmis onay mumu zorunlu. LONG giris 1.988. STOP 1.9442 (2.86 ATR) · TP1 2.0428 · TP2 2.0757 · TP3 2.1195. EMA200 sadece yon filtresidir; tek basina sinyal degildir.",
       "commentaryProvider": "SAOMI RC5.47 STRICT HTF RETEST PRICE ACTION",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-22T00:52:38.546Z",
       "lastCheckedAt": "2026-09-22T00:52:36.694Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "initialStop": 1.9441724142928598,
+      "entryCandleOpenTime": 1790038320000,
+      "lastDeliveryError": null
     }
   },
   "history": [
@@ -45171,7 +45174,7 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-21T22:19:50.238Z",
+    "updatedAt": "2026-09-22T00:54:06.500Z",
     "scoredTrades": 43,
     "wins": 8,
     "losses": 35,
@@ -45185,9 +45188,9 @@
     "expired": 6,
     "expiredBeforeEntry": 3,
     "expiredAfterEntry": 3,
-    "active": 7,
+    "active": 8,
     "waitingEntry": 0,
-    "inTrade": 7,
+    "inTrade": 8,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 21,
@@ -45239,9 +45242,9 @@
         "expired": 3,
         "expiredBeforeEntry": 1,
         "expiredAfterEntry": 2,
-        "active": 3,
+        "active": 4,
         "waitingEntry": 0,
-        "inTrade": 3
+        "inTrade": 4
       },
       "30m": {
         "scoredTrades": 4,
