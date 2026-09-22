@@ -5,6 +5,7 @@ const PREFIX='saomi/tracker/signals/';
 const LATEST='saomi/tracker/latest.json';
 const INDEX='saomi/tracker/index.json';
 const MAX_INDEX=500;
+const GITHUB_STATE_URL='https://raw.githubusercontent.com/orhankeskiner5561-cell/SAOMI-ANDROID/main/.github/state/saomi-telegram-state.json';
 const TERMINAL=new Set(['TP3','STOP','AMBIGUOUS','EXPIRED','CANCELLED','EXPIRED-CANCELLED']);
 
 function blobToken(){
@@ -63,25 +64,47 @@ export async function storeSignal(record:any){
   return record;
 }
 
-export async function readTrackerState(max=80){
+async function readGithubTrackerState(max=80){
   const n=Math.max(1,Math.min(MAX_INDEX,Number(max)||80));
-  const [page,indexRows,pointer]=await Promise.all([
-    list({prefix:PREFIX,limit:Math.min(1000,Math.max(100,n)),token:blobToken()}),
-    readOne(INDEX),
-    readOne(LATEST)
-  ]);
-  const blobs=[...(page.blobs||[])]
-    .sort((a:any,b:any)=>Date.parse(String(b.uploadedAt||0))-Date.parse(String(a.uploadedAt||0)))
+  const r=await fetch(GITHUB_STATE_URL,{cache:'no-store',signal:AbortSignal.timeout(15000)});
+  if(!r.ok) throw new Error('GitHub tracker state HTTP '+r.status);
+  const state:any=await r.json();
+  const activeAll=Object.values(state?.activeSignals||{}) as any[];
+  const historyAll=Array.isArray(state?.history)?state.history:[];
+  const rows=[...activeAll,...historyAll]
+    .filter((x:any)=>x?.signalId)
+    .sort((a:any,b:any)=>(Date.parse(b.sentAt||b.createdAt||b.closedAt||0)||0)-(Date.parse(a.sentAt||a.createdAt||a.closedAt||0)||0))
     .slice(0,n);
-  const listed=(await Promise.all(blobs.map((b:any)=>readOne(b.pathname)))).filter(Boolean);
-  const merged=new Map<string,any>();
-  for(const row of [...(Array.isArray(indexRows)?indexRows:[]),...listed]) if(row?.signalId&&!merged.has(row.signalId)) merged.set(row.signalId,row);
-  if(pointer?.signalId&&!merged.has(pointer.signalId)) merged.set(pointer.signalId,pointer);
-  const rows=[...merged.values()].sort((a:any,b:any)=>(Date.parse(b.sentAt||b.createdAt||0)||0)-(Date.parse(a.sentAt||a.createdAt||0)||0)).slice(0,n);
   const active=rows.filter((x:any)=>!TERMINAL.has(String(x.status||x.result||'').toUpperCase()));
   const history=rows.filter((x:any)=>TERMINAL.has(String(x.status||x.result||'').toUpperCase()));
-  const latest=pointer&&!TERMINAL.has(String(pointer.status||pointer.result||'').toUpperCase())?pointer:(active[0]||rows[0]||null);
-  return {activeSignals:Object.fromEntries(active.map((x:any)=>[x.signalId,x])),history,latest,count:rows.length};
+  const latest=active[0]||rows[0]||null;
+  return {activeSignals:Object.fromEntries(active.map((x:any)=>[x.signalId,x])),history,latest,count:rows.length,source:'github-state'};
+}
+
+export async function readTrackerState(max=80){
+  const n=Math.max(1,Math.min(MAX_INDEX,Number(max)||80));
+  try{
+    const [page,indexRows,pointer]=await Promise.all([
+      list({prefix:PREFIX,limit:Math.min(1000,Math.max(100,n)),token:blobToken()}),
+      readOne(INDEX),
+      readOne(LATEST)
+    ]);
+    const blobs=[...(page.blobs||[])]
+      .sort((a:any,b:any)=>Date.parse(String(b.uploadedAt||0))-Date.parse(String(a.uploadedAt||0)))
+      .slice(0,n);
+    const listed=(await Promise.all(blobs.map((b:any)=>readOne(b.pathname)))).filter(Boolean);
+    const merged=new Map<string,any>();
+    for(const row of [...(Array.isArray(indexRows)?indexRows:[]),...listed]) if(row?.signalId&&!merged.has(row.signalId)) merged.set(row.signalId,row);
+    if(pointer?.signalId&&!merged.has(pointer.signalId)) merged.set(pointer.signalId,pointer);
+    const rows=[...merged.values()].sort((a:any,b:any)=>(Date.parse(b.sentAt||b.createdAt||0)||0)-(Date.parse(a.sentAt||a.createdAt||0)||0)).slice(0,n);
+    const active=rows.filter((x:any)=>!TERMINAL.has(String(x.status||x.result||'').toUpperCase()));
+    const history=rows.filter((x:any)=>TERMINAL.has(String(x.status||x.result||'').toUpperCase()));
+    const latest=pointer&&!TERMINAL.has(String(pointer.status||pointer.result||'').toUpperCase())?pointer:(active[0]||rows[0]||null);
+    return {activeSignals:Object.fromEntries(active.map((x:any)=>[x.signalId,x])),history,latest,count:rows.length,source:'vercel-blob'};
+  }catch(e){
+    console.error('TRACKER_BLOB_READ_FAIL_FALLBACK_GITHUB',e instanceof Error?e.message:e);
+    return readGithubTrackerState(n);
+  }
 }
 
 export async function upsertSignal(signalId:string,seed:any,patch:any={}){
