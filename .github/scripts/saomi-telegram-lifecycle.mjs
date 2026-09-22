@@ -188,7 +188,6 @@ async function liveNonLegacyProbeSymbol(){
   return symbol
 }
 async function resolveTelegramEndpoint(){
-  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID)return null;
   const probeSymbol=await liveNonLegacyProbeSymbol();
   if(TELEGRAM_READY)return TELEGRAM_SELECTED_ENDPOINT;
   const failures=[];
@@ -215,22 +214,6 @@ async function resolveTelegramEndpoint(){
 }
 async function notify(sig,event){
   const setup=eventSetup(sig,event);
-  if(TELEGRAM_BOT_TOKEN&&TELEGRAM_CHAT_ID){
-    const r=await fetch('https://api.telegram.org/bot'+TELEGRAM_BOT_TOKEN+'/sendMessage',{
-      method:'POST',
-      headers:{'content-type':'application/json'},
-      body:JSON.stringify({
-        chat_id:TELEGRAM_CHAT_ID,
-        text:lifecycleText(sig,event),
-        parse_mode:'HTML',
-        disable_web_page_preview:true
-      }),
-      signal:AbortSignal.timeout(15000)
-    });
-    const j=await r.json().catch(()=>({}));
-    if(!r.ok||!j.ok)throw new Error(j.description||('Telegram lifecycle direct HTTP '+r.status));
-    return {ok:true,messageId:j?.result?.message_id,mode:'direct-github'}
-  }
   const endpoint=await resolveTelegramEndpoint();
   const r=await fetch(endpoint+'/api/telegram',{
     method:'POST',
