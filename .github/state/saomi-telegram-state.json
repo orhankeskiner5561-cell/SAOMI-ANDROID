@@ -42887,6 +42887,2187 @@
       "riskAtr": 1.6,
       "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↑ · 1D ↑ · 4H ↔ · 1H ↑. Bolge 0.21799–0.21828 · temas 52 · rol degisimi EVET · sikisma 3/4. SHORT giris 0.21804. STOP 0.21887 · TP1 0.21701 · TP2 0.21639 · TP3 0.21556. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
       "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE"
+    },
+    "NEWTUSDT|1m": {
+      "fingerprint": "NEWTUSDT|futures|1m|SHORT|LONG|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "structureKey": "NEWTUSDT|futures|1m|SHORT|LONG|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "signalId": "NEWTUSDT|futures|1m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790147460000",
+      "symbol": "NEWTUSDT",
+      "market": "futures",
+      "timeframe": "1m",
+      "direction": "SHORT",
+      "confidence": 94,
+      "riskReward": 3,
+      "sentAt": "2026-09-23T07:12:25.168Z",
+      "entry": 0.05139,
+      "stop": 0.051748105499999995,
+      "tp1": 0.050942368125,
+      "tp2": 0.050673789000000004,
+      "tp3": 0.05031568350000001,
+      "messageId": 647,
+      "analysisVersion": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+      "topDownContext": {
+        "version": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "1w",
+          "1d",
+          "4h",
+          "1h"
+        ],
+        "builtAt": "2026-09-23T07:12:23.862Z",
+        "frames": [
+          {
+            "timeframe": "1w",
+            "bias": "SHORT",
+            "strength": 67,
+            "price": 0.04497,
+            "atr": 0.008470931250836696,
+            "trend": {
+              "ema200": null,
+              "alignment": "SHORT",
+              "structure": "RANGE",
+              "ema200Side": "NEUTRAL",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1780272000000,
+                "price": 0.06162,
+                "index": 50,
+                "breakClose": 0.05512,
+                "ageBars": 15
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1780272000000,
+                "price": 0.06162,
+                "index": 50,
+                "breakClose": 0.05512,
+                "ageBars": 15
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 NEUTRAL",
+              "Trend kirilimi DOWN"
+            ]
+          },
+          {
+            "timeframe": "1d",
+            "bias": "LONG",
+            "strength": 67,
+            "price": 0.05092,
+            "atr": 0.0031304816643177137,
+            "trend": {
+              "ema200": 0.06214088978486511,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1788566400000,
+                "price": 0.04296,
+                "index": 443,
+                "breakClose": 0.04437,
+                "ageBars": 17
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1788566400000,
+                "price": 0.04296,
+                "index": 443,
+                "breakClose": 0.04437,
+                "ageBars": 17
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 SHORT",
+              "Trend kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "4h",
+            "bias": "LONG",
+            "strength": 79,
+            "price": 0.05125,
+            "atr": 0.001669327077322641,
+            "trend": {
+              "ema200": 0.04338471843045489,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1789689600000,
+                "index": 468,
+                "ageBars": 30
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790035200000,
+                "price": 0.0486,
+                "index": 492,
+                "breakClose": 0.04974,
+                "ageBars": 6
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790035200000,
+                "price": 0.0486,
+                "index": 492,
+                "breakClose": 0.04974,
+                "ageBars": 6
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1h",
+            "bias": "LONG",
+            "strength": 79,
+            "price": 0.05151,
+            "atr": 0.0007375976871959191,
+            "trend": {
+              "ema200": 0.045872145225687624,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790038800000,
+                "price": 0.0486,
+                "index": 469,
+                "breakClose": 0.04923,
+                "ageBars": 29
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790038800000,
+                "price": 0.0486,
+                "index": 469,
+                "breakClose": 0.04923,
+                "ageBars": 29
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG"
+            ]
+          }
+        ],
+        "major": {
+          "direction": "LONG",
+          "longScore": 6,
+          "shortScore": 4,
+          "conviction": 62,
+          "summary": "1W ↓ · 1D ↑ · 4H ↑ · 1H ↑",
+          "warnings": [],
+          "supports": []
+        },
+        "decision": {
+          "allowed": true,
+          "direction": "SHORT",
+          "majorDirection": "LONG",
+          "summary": "1W ↓ · 1D ↑ · 4H ↑ · 1H ↑",
+          "conviction": 62,
+          "blockers": [],
+          "warnings": [
+            "HTF bilgi amaclidir; Orhan setup sinyalini veto etmez."
+          ],
+          "supports": []
+        }
+      },
+      "lowerFrameContext": {
+        "timeframe": "1m",
+        "bias": "NEUTRAL",
+        "strength": 55,
+        "price": 0.05139,
+        "atr": 0.00007729468087758466,
+        "trend": {
+          "ema200": 0.0513732190284286,
+          "alignment": "NEUTRAL",
+          "structure": "DOWN",
+          "ema200Side": "LONG",
+          "ema200Cross": {
+            "side": "UP",
+            "time": 1790147460000,
+            "index": 498,
+            "ageBars": 0
+          },
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790147340000,
+            "price": 0.05141,
+            "index": 496,
+            "breakClose": 0.05135,
+            "ageBars": 2
+          }
+        },
+        "priceAction": {
+          "structureTrend": "DOWN",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790147340000,
+            "price": 0.05141,
+            "index": 496,
+            "breakClose": 0.05135,
+            "ageBars": 2
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend DOWN",
+          "EMA200 LONG",
+          "Trend kirilimi DOWN",
+          "EMA200 kirilimi UP"
+        ]
+      },
+      "indicatorContext": {
+        "timeframe": "1m",
+        "bias": "NEUTRAL",
+        "strength": 55,
+        "price": 0.05139,
+        "atr": 0.00007729468087758466,
+        "trend": {
+          "ema200": 0.0513732190284286,
+          "alignment": "NEUTRAL",
+          "structure": "DOWN",
+          "ema200Side": "LONG",
+          "ema200Cross": {
+            "side": "UP",
+            "time": 1790147460000,
+            "index": 498,
+            "ageBars": 0
+          },
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790147340000,
+            "price": 0.05141,
+            "index": 496,
+            "breakClose": 0.05135,
+            "ageBars": 2
+          }
+        },
+        "priceAction": {
+          "structureTrend": "DOWN",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790147340000,
+            "price": 0.05141,
+            "index": 496,
+            "breakClose": 0.05135,
+            "ageBars": 2
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend DOWN",
+          "EMA200 LONG",
+          "Trend kirilimi DOWN",
+          "EMA200 kirilimi UP"
+        ]
+      },
+      "entryTrigger": {
+        "type": "ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "SR_ZONE",
+          "COMPRESSION",
+          "BREAKOUT",
+          "CONFIRMATION",
+          "ENTRY"
+        ],
+        "zone": {
+          "price": 0.05146142857142858,
+          "low": 0.05142802507142858,
+          "high": 0.05149483207142858,
+          "touches": 84,
+          "pivotTouches": 7,
+          "reactionTouches": 84,
+          "highTouches": 5,
+          "lowTouches": 2,
+          "roleReversal": true,
+          "strength": 88
+        },
+        "trendline": {
+          "side": "ASC_SUPPORT",
+          "p1": {
+            "i": 457,
+            "time": 1790145000000,
+            "price": 0.05123
+          },
+          "p2": {
+            "i": 489,
+            "time": 1790146920000,
+            "price": 0.05141
+          },
+          "slope": 0.000005624999999999988,
+          "projected": 0.051460624999999996,
+          "index": 498,
+          "touches": 2,
+          "violations": 0,
+          "ageBars": 9,
+          "distanceAtr": 0.91,
+          "score": 4.82
+        },
+        "confluence": {
+          "zoneTrendlineGapAtr": 0.01,
+          "required": true
+        },
+        "reclaim": {
+          "firstBreak": {
+            "index": 428,
+            "time": 1790143260000,
+            "close": 0.05157
+          },
+          "roleRetest": {
+            "index": 442,
+            "time": 1790144100000,
+            "close": 0.05147
+          },
+          "priorLiquidity": {
+            "index": 422,
+            "time": 1790142900000,
+            "price": 0.05133
+          },
+          "liquiditySweep": {
+            "index": 433,
+            "time": 1790143560000,
+            "extreme": 0.05173,
+            "tookLiquidity": true
+          },
+          "reclaim": {
+            "index": 496,
+            "time": 1790147340000,
+            "close": 0.05135
+          },
+          "structuralStop": 0.051748105499999995,
+          "stopBuffer": 0.000018105499999999998
+        },
+        "compression": {
+          "ok": true,
+          "score": 3,
+          "descendingHighs": true,
+          "risingLows": false,
+          "rangeContract": true,
+          "nearZone": true,
+          "recentRange": 0.00023999999999999716,
+          "olderRange": 0.00034999999999999615,
+          "highs": [
+            {
+              "i": 422,
+              "time": 1790142900000,
+              "price": 0.05133
+            },
+            {
+              "i": 447,
+              "time": 1790144400000,
+              "price": 0.05146
+            },
+            {
+              "i": 468,
+              "time": 1790145660000,
+              "price": 0.05168
+            },
+            {
+              "i": 485,
+              "time": 1790146680000,
+              "price": 0.05159
+            }
+          ],
+          "lows": [
+            {
+              "i": 457,
+              "time": 1790145000000,
+              "price": 0.05123
+            },
+            {
+              "i": 469,
+              "time": 1790145720000,
+              "price": 0.05156
+            },
+            {
+              "i": 479,
+              "time": 1790146320000,
+              "price": 0.05146
+            },
+            {
+              "i": 489,
+              "time": 1790146920000,
+              "price": 0.05141
+            }
+          ]
+        },
+        "breakout": {
+          "time": 1790147340000,
+          "index": 496,
+          "candle": {
+            "open": 0.0515,
+            "high": 0.0515,
+            "low": 0.05135,
+            "close": 0.05135
+          },
+          "bodyAtr": 1.94,
+          "bodyRatio": 1,
+          "horizontalLevel": 0.05146142857142858,
+          "trendlineLevel": 0.051449375,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.16
+        },
+        "confirmation": {
+          "time": 1790147400000,
+          "index": 497,
+          "candle": {
+            "open": 0.05136,
+            "high": 0.05136,
+            "low": 0.05135,
+            "close": 0.05135
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": null
+      },
+      "entrySequence": {
+        "breakout": {
+          "time": 1790147340000,
+          "index": 496,
+          "candle": {
+            "open": 0.0515,
+            "high": 0.0515,
+            "low": 0.05135,
+            "close": 0.05135
+          },
+          "bodyAtr": 1.94,
+          "bodyRatio": 1,
+          "horizontalLevel": 0.05146142857142858,
+          "trendlineLevel": 0.051449375,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.16
+        },
+        "confirmation": {
+          "time": 1790147400000,
+          "index": 497,
+          "candle": {
+            "open": 0.05136,
+            "high": 0.05136,
+            "low": 0.05135,
+            "close": 0.05135
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": null,
+        "ageBars": 2
+      },
+      "liquidityEvidence": null,
+      "majorObstacle": null,
+      "riskAtr": 4.63,
+      "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑. Bolge 0.051428–0.0514948 · temas 84 · rol degisimi EVET · sikisma 3/4. SHORT giris 0.05139. STOP 0.0517481 · TP1 0.0509424 · TP2 0.0506738 · TP3 0.0503157. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
+      "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE"
+    },
+    "ONDOUSDT|15m": {
+      "fingerprint": "ONDOUSDT|futures|15m|LONG|LONG|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "structureKey": "ONDOUSDT|futures|15m|LONG|LONG|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "signalId": "ONDOUSDT|futures|15m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790145900000",
+      "symbol": "ONDOUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "direction": "LONG",
+      "confidence": 94,
+      "riskReward": 3,
+      "sentAt": "2026-09-23T07:12:52.305Z",
+      "entry": 0.44,
+      "stop": 0.4208338485433149,
+      "tp1": 0.46395768932085635,
+      "tp2": 0.4783323029133702,
+      "tp3": 0.4974984543700553,
+      "messageId": 648,
+      "analysisVersion": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+      "topDownContext": {
+        "version": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "1w",
+          "1d",
+          "4h",
+          "1h"
+        ],
+        "builtAt": "2026-09-23T07:12:50.744Z",
+        "frames": [
+          {
+            "timeframe": "1w",
+            "bias": "LONG",
+            "strength": 67,
+            "price": 0.4327,
+            "atr": 0.07371902661752018,
+            "trend": {
+              "ema200": null,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "NEUTRAL",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789344000000,
+                "price": 0.4288,
+                "index": 139,
+                "breakClose": 0.4327,
+                "ageBars": 0
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789344000000,
+                "price": 0.4288,
+                "index": 139,
+                "breakClose": 0.4327,
+                "ageBars": 0
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 NEUTRAL",
+              "Trend kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1d",
+            "bias": "LONG",
+            "strength": 79,
+            "price": 0.4414,
+            "atr": 0.032780512789644826,
+            "trend": {
+              "ema200": 0.37327932438665645,
+              "alignment": "LONG",
+              "structure": "DOWN",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1789603200000,
+                "index": 493,
+                "ageBars": 5
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789689600000,
+                "price": 0.3952,
+                "index": 494,
+                "breakClose": 0.3987,
+                "ageBars": 4
+              }
+            },
+            "priceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789689600000,
+                "price": 0.3952,
+                "index": 494,
+                "breakClose": 0.3987,
+                "ageBars": 4
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend DOWN",
+              "EMA200 LONG",
+              "Trend kirilimi UP",
+              "EMA200 kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "4h",
+            "bias": "LONG",
+            "strength": 91,
+            "price": 0.444,
+            "atr": 0.015971865853269297,
+            "trend": {
+              "ema200": 0.3743543799088079,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1789646400000,
+                "index": 465,
+                "ageBars": 33
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789977600000,
+                "price": 0.4435,
+                "index": 488,
+                "breakClose": 0.4517,
+                "ageBars": 10
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789977600000,
+                "price": 0.4435,
+                "index": 488,
+                "breakClose": 0.4517,
+                "ageBars": 10
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1h",
+            "bias": "LONG",
+            "strength": 91,
+            "price": 0.44,
+            "atr": 0.006237526492195445,
+            "trend": {
+              "ema200": 0.4057451914919357,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790114400000,
+                "price": 0.4364,
+                "index": 490,
+                "breakClose": 0.4378,
+                "ageBars": 8
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790114400000,
+                "price": 0.4364,
+                "index": 490,
+                "breakClose": 0.4378,
+                "ageBars": 8
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          }
+        ],
+        "major": {
+          "direction": "LONG",
+          "longScore": 10,
+          "shortScore": 0,
+          "conviction": 90,
+          "summary": "1W ↑ · 1D ↑ · 4H ↑ · 1H ↑",
+          "warnings": [],
+          "supports": []
+        },
+        "decision": {
+          "allowed": true,
+          "direction": "LONG",
+          "majorDirection": "LONG",
+          "summary": "1W ↑ · 1D ↑ · 4H ↑ · 1H ↑",
+          "conviction": 90,
+          "blockers": [],
+          "warnings": [
+            "HTF bilgi amaclidir; Orhan setup sinyalini veto etmez."
+          ],
+          "supports": []
+        }
+      },
+      "lowerFrameContext": {
+        "timeframe": "15m",
+        "bias": "LONG",
+        "strength": 79,
+        "price": 0.44,
+        "atr": 0.0033296532620364565,
+        "trend": {
+          "ema200": 0.4355624495165165,
+          "alignment": "LONG",
+          "structure": "RANGE",
+          "ema200Side": "LONG",
+          "ema200Cross": {
+            "side": "UP",
+            "time": 1790115300000,
+            "index": 464,
+            "ageBars": 34
+          },
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790138700000,
+            "price": 0.4425,
+            "index": 490,
+            "breakClose": 0.4427,
+            "ageBars": 8
+          }
+        },
+        "priceAction": {
+          "structureTrend": "RANGE",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790138700000,
+            "price": 0.4425,
+            "index": 490,
+            "breakClose": 0.4427,
+            "ageBars": 8
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend RANGE",
+          "EMA200 LONG",
+          "Trend kirilimi UP"
+        ]
+      },
+      "indicatorContext": {
+        "timeframe": "15m",
+        "bias": "LONG",
+        "strength": 79,
+        "price": 0.44,
+        "atr": 0.0033296532620364565,
+        "trend": {
+          "ema200": 0.4355624495165165,
+          "alignment": "LONG",
+          "structure": "RANGE",
+          "ema200Side": "LONG",
+          "ema200Cross": {
+            "side": "UP",
+            "time": 1790115300000,
+            "index": 464,
+            "ageBars": 34
+          },
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790138700000,
+            "price": 0.4425,
+            "index": 490,
+            "breakClose": 0.4427,
+            "ageBars": 8
+          }
+        },
+        "priceAction": {
+          "structureTrend": "RANGE",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790138700000,
+            "price": 0.4425,
+            "index": 490,
+            "breakClose": 0.4427,
+            "ageBars": 8
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend RANGE",
+          "EMA200 LONG",
+          "Trend kirilimi UP"
+        ]
+      },
+      "entryTrigger": {
+        "type": "ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "SR_ZONE",
+          "COMPRESSION",
+          "BREAKOUT",
+          "CONFIRMATION",
+          "ENTRY"
+        ],
+        "zone": {
+          "price": 0.4388666666666667,
+          "low": 0.4382673290795001,
+          "high": 0.43946600425383325,
+          "touches": 52,
+          "pivotTouches": 3,
+          "reactionTouches": 52,
+          "highTouches": 3,
+          "lowTouches": 0,
+          "roleReversal": true,
+          "strength": 56
+        },
+        "trendline": {
+          "side": "DESC_RESISTANCE",
+          "p1": {
+            "i": 376,
+            "time": 1790036100000,
+            "price": 0.4642
+          },
+          "p2": {
+            "i": 477,
+            "time": 1790127000000,
+            "price": 0.4425
+          },
+          "slope": -0.00021485148514851482,
+          "projected": 0.4379881188118812,
+          "index": 498,
+          "touches": 3,
+          "violations": 0,
+          "ageBars": 21,
+          "distanceAtr": 0.6,
+          "score": 7.77
+        },
+        "confluence": {
+          "zoneTrendlineGapAtr": 0.26,
+          "required": true
+        },
+        "reclaim": {
+          "firstBreak": {
+            "index": 405,
+            "time": 1790062200000,
+            "close": 0.4319
+          },
+          "roleRetest": {
+            "index": 410,
+            "time": 1790066700000,
+            "close": 0.4378
+          },
+          "priorLiquidity": {
+            "index": 397,
+            "time": 1790055000000,
+            "price": 0.4287
+          },
+          "liquiditySweep": {
+            "index": 433,
+            "time": 1790087400000,
+            "extreme": 0.4213,
+            "tookLiquidity": true
+          },
+          "reclaim": {
+            "index": 495,
+            "time": 1790143200000,
+            "close": 0.44
+          },
+          "structuralStop": 0.4208338485433149,
+          "stopBuffer": 0.00046615145668510395
+        },
+        "compression": {
+          "ok": true,
+          "score": 4,
+          "descendingHighs": true,
+          "risingLows": true,
+          "rangeContract": true,
+          "nearZone": true,
+          "recentRange": 0.011099999999999999,
+          "olderRange": 0.012799999999999978,
+          "highs": [
+            {
+              "i": 438,
+              "time": 1790091900000,
+              "price": 0.4339
+            },
+            {
+              "i": 455,
+              "time": 1790107200000,
+              "price": 0.4385
+            },
+            {
+              "i": 468,
+              "time": 1790118900000,
+              "price": 0.4446
+            },
+            {
+              "i": 477,
+              "time": 1790127000000,
+              "price": 0.4425
+            }
+          ],
+          "lows": [
+            {
+              "i": 464,
+              "time": 1790115300000,
+              "price": 0.4318
+            },
+            {
+              "i": 474,
+              "time": 1790124300000,
+              "price": 0.436
+            },
+            {
+              "i": 479,
+              "time": 1790128800000,
+              "price": 0.4361
+            },
+            {
+              "i": 494,
+              "time": 1790142300000,
+              "price": 0.4368
+            }
+          ]
+        },
+        "breakout": {
+          "time": 1790143200000,
+          "index": 495,
+          "candle": {
+            "open": 0.4383,
+            "high": 0.4414,
+            "low": 0.4382,
+            "close": 0.44
+          },
+          "bodyAtr": 0.51,
+          "bodyRatio": 0.53,
+          "horizontalLevel": 0.4388666666666667,
+          "trendlineLevel": 0.43863267326732674,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.07
+        },
+        "confirmation": {
+          "time": 1790144100000,
+          "index": 496,
+          "candle": {
+            "open": 0.4401,
+            "high": 0.442,
+            "low": 0.4398,
+            "close": 0.4403
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": {
+          "time": 1790144100000,
+          "index": 496,
+          "heldHorizontal": true,
+          "heldTrendline": false,
+          "candle": {
+            "open": 0.4401,
+            "high": 0.442,
+            "low": 0.4398,
+            "close": 0.4403
+          }
+        }
+      },
+      "entrySequence": {
+        "breakout": {
+          "time": 1790143200000,
+          "index": 495,
+          "candle": {
+            "open": 0.4383,
+            "high": 0.4414,
+            "low": 0.4382,
+            "close": 0.44
+          },
+          "bodyAtr": 0.51,
+          "bodyRatio": 0.53,
+          "horizontalLevel": 0.4388666666666667,
+          "trendlineLevel": 0.43863267326732674,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.07
+        },
+        "confirmation": {
+          "time": 1790144100000,
+          "index": 496,
+          "candle": {
+            "open": 0.4401,
+            "high": 0.442,
+            "low": 0.4398,
+            "close": 0.4403
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": {
+          "time": 1790144100000,
+          "index": 496,
+          "heldHorizontal": true,
+          "heldTrendline": false,
+          "candle": {
+            "open": 0.4401,
+            "high": 0.442,
+            "low": 0.4398,
+            "close": 0.4403
+          }
+        },
+        "ageBars": 3
+      },
+      "liquidityEvidence": null,
+      "majorObstacle": null,
+      "riskAtr": 5.76,
+      "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑. Bolge 0.43827–0.43947 · temas 52 · rol degisimi EVET · sikisma 4/4. LONG giris 0.44. STOP 0.42083 · TP1 0.46396 · TP2 0.47833 · TP3 0.4975. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
+      "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE"
+    },
+    "OPENUSDT|5m": {
+      "fingerprint": "OPENUSDT|futures|5m|SHORT|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "structureKey": "OPENUSDT|futures|5m|SHORT|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "signalId": "OPENUSDT|futures|5m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790147100000",
+      "symbol": "OPENUSDT",
+      "market": "futures",
+      "timeframe": "5m",
+      "direction": "SHORT",
+      "confidence": 94,
+      "riskReward": 3,
+      "sentAt": "2026-09-23T07:13:07.247Z",
+      "entry": 0.145,
+      "stop": 0.14676749955411122,
+      "tp1": 0.14279062555736094,
+      "tp2": 0.14146500089177752,
+      "tp3": 0.13969750133766629,
+      "messageId": 649,
+      "analysisVersion": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+      "topDownContext": {
+        "version": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "1w",
+          "1d",
+          "4h",
+          "1h"
+        ],
+        "builtAt": "2026-09-23T07:13:06.432Z",
+        "frames": [
+          {
+            "timeframe": "1w",
+            "bias": "SHORT",
+            "strength": 79,
+            "price": 0.1405,
+            "atr": 0.035804440590808485,
+            "trend": {
+              "ema200": null,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "NEUTRAL",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1787529600000,
+                "price": 0.1403,
+                "index": 50,
+                "breakClose": 0.1375,
+                "ageBars": 3
+              }
+            },
+            "priceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1787529600000,
+                "price": 0.1403,
+                "index": 50,
+                "breakClose": 0.1375,
+                "ageBars": 3
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend DOWN",
+              "EMA200 NEUTRAL",
+              "Trend kirilimi DOWN"
+            ]
+          },
+          {
+            "timeframe": "1d",
+            "bias": "SHORT",
+            "strength": 67,
+            "price": 0.1452,
+            "atr": 0.010389124268306453,
+            "trend": {
+              "ema200": 0.20484728115068077,
+              "alignment": "SHORT",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1788048000000,
+                "price": 0.1454,
+                "index": 356,
+                "breakClose": 0.1375,
+                "ageBars": 23
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1788048000000,
+                "price": 0.1454,
+                "index": 356,
+                "breakClose": 0.1375,
+                "ageBars": 23
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 SHORT"
+            ]
+          },
+          {
+            "timeframe": "4h",
+            "bias": "LONG",
+            "strength": 79,
+            "price": 0.1458,
+            "atr": 0.0041899365655325375,
+            "trend": {
+              "ema200": 0.1430491958562453,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790107200000,
+                "index": 497,
+                "ageBars": 1
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789732800000,
+                "price": 0.1386,
+                "index": 471,
+                "breakClose": 0.1445,
+                "ageBars": 27
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789732800000,
+                "price": 0.1386,
+                "index": 471,
+                "breakClose": 0.1445,
+                "ageBars": 27
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 LONG",
+              "EMA200 kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1h",
+            "bias": "LONG",
+            "strength": 91,
+            "price": 0.1457,
+            "atr": 0.0017886237108788424,
+            "trend": {
+              "ema200": 0.14022126174695645,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 0.1454,
+                "index": 498,
+                "breakClose": 0.1457,
+                "ageBars": 0
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 0.1454,
+                "index": 498,
+                "breakClose": 0.1457,
+                "ageBars": 0
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          }
+        ],
+        "major": {
+          "direction": "SHORT",
+          "longScore": 3,
+          "shortScore": 7,
+          "conviction": 69,
+          "summary": "1W ↓ · 1D ↓ · 4H ↑ · 1H ↑",
+          "warnings": [],
+          "supports": []
+        },
+        "decision": {
+          "allowed": true,
+          "direction": "SHORT",
+          "majorDirection": "SHORT",
+          "summary": "1W ↓ · 1D ↓ · 4H ↑ · 1H ↑",
+          "conviction": 69,
+          "blockers": [],
+          "warnings": [
+            "HTF bilgi amaclidir; Orhan setup sinyalini veto etmez."
+          ],
+          "supports": []
+        }
+      },
+      "lowerFrameContext": {
+        "timeframe": "5m",
+        "bias": "LONG",
+        "strength": 67,
+        "price": 0.145,
+        "atr": 0.00048213967222299735,
+        "trend": {
+          "ema200": 0.14401859825578517,
+          "alignment": "LONG",
+          "structure": "UP",
+          "ema200Side": "LONG",
+          "ema200Cross": null,
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790146800000,
+            "price": 0.1453,
+            "index": 497,
+            "breakClose": 0.1452,
+            "ageBars": 1
+          }
+        },
+        "priceAction": {
+          "structureTrend": "UP",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790146800000,
+            "price": 0.1453,
+            "index": 497,
+            "breakClose": 0.1452,
+            "ageBars": 1
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend UP",
+          "EMA200 LONG",
+          "Trend kirilimi DOWN"
+        ]
+      },
+      "indicatorContext": {
+        "timeframe": "5m",
+        "bias": "LONG",
+        "strength": 67,
+        "price": 0.145,
+        "atr": 0.00048213967222299735,
+        "trend": {
+          "ema200": 0.14401859825578517,
+          "alignment": "LONG",
+          "structure": "UP",
+          "ema200Side": "LONG",
+          "ema200Cross": null,
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790146800000,
+            "price": 0.1453,
+            "index": 497,
+            "breakClose": 0.1452,
+            "ageBars": 1
+          }
+        },
+        "priceAction": {
+          "structureTrend": "UP",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790146800000,
+            "price": 0.1453,
+            "index": 497,
+            "breakClose": 0.1452,
+            "ageBars": 1
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend UP",
+          "EMA200 LONG",
+          "Trend kirilimi DOWN"
+        ]
+      },
+      "entryTrigger": {
+        "type": "ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "SR_ZONE",
+          "COMPRESSION",
+          "BREAKOUT",
+          "CONFIRMATION",
+          "ENTRY"
+        ],
+        "zone": {
+          "price": 0.1454,
+          "low": 0.14530575,
+          "high": 0.14549425,
+          "touches": 27,
+          "pivotTouches": 2,
+          "reactionTouches": 27,
+          "highTouches": 2,
+          "lowTouches": 0,
+          "roleReversal": true,
+          "strength": 31
+        },
+        "trendline": {
+          "side": "ASC_SUPPORT",
+          "p1": {
+            "i": 407,
+            "time": 1790119800000,
+            "price": 0.1443
+          },
+          "p2": {
+            "i": 464,
+            "time": 1790136900000,
+            "price": 0.1453
+          },
+          "slope": 0.000017543859649122823,
+          "projected": 0.1458964912280702,
+          "index": 498,
+          "touches": 3,
+          "violations": 0,
+          "ageBars": 34,
+          "distanceAtr": 1.86,
+          "score": 6.12
+        },
+        "confluence": {
+          "zoneTrendlineGapAtr": 1.03,
+          "required": true
+        },
+        "reclaim": {
+          "firstBreak": {
+            "index": 455,
+            "time": 1790134200000,
+            "close": 0.1457
+          },
+          "roleRetest": {
+            "index": 456,
+            "time": 1790134500000,
+            "close": 0.1456
+          },
+          "priorLiquidity": {
+            "index": 451,
+            "time": 1790133000000,
+            "price": 0.1461
+          },
+          "liquiditySweep": {
+            "index": 473,
+            "time": 1790139600000,
+            "extreme": 0.1467,
+            "tookLiquidity": true
+          },
+          "reclaim": {
+            "index": 497,
+            "time": 1790146800000,
+            "close": 0.1452
+          },
+          "structuralStop": 0.14676749955411122,
+          "stopBuffer": 0.00006749955411121963
+        },
+        "compression": {
+          "ok": true,
+          "score": 3,
+          "descendingHighs": false,
+          "risingLows": true,
+          "rangeContract": true,
+          "nearZone": true,
+          "recentRange": 0.001600000000000018,
+          "olderRange": 0.001899999999999985,
+          "highs": [
+            {
+              "i": 465,
+              "time": 1790137200000,
+              "price": 0.1463
+            },
+            {
+              "i": 473,
+              "time": 1790139600000,
+              "price": 0.1467
+            },
+            {
+              "i": 482,
+              "time": 1790142300000,
+              "price": 0.146
+            },
+            {
+              "i": 493,
+              "time": 1790145600000,
+              "price": 0.1461
+            }
+          ],
+          "lows": [
+            {
+              "i": 418,
+              "time": 1790123100000,
+              "price": 0.1445
+            },
+            {
+              "i": 464,
+              "time": 1790136900000,
+              "price": 0.1453
+            }
+          ]
+        },
+        "breakout": {
+          "time": 1790146800000,
+          "index": 497,
+          "candle": {
+            "open": 0.1457,
+            "high": 0.1457,
+            "low": 0.1451,
+            "close": 0.1452
+          },
+          "bodyAtr": 1.04,
+          "bodyRatio": 0.83,
+          "horizontalLevel": 0.1454,
+          "trendlineLevel": 0.14587894736842105,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.99
+        },
+        "confirmation": {
+          "time": 1790147100000,
+          "index": 498,
+          "candle": {
+            "open": 0.1453,
+            "high": 0.1454,
+            "low": 0.1445,
+            "close": 0.145
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": {
+          "time": 1790147100000,
+          "index": 498,
+          "heldHorizontal": true,
+          "heldTrendline": false,
+          "candle": {
+            "open": 0.1453,
+            "high": 0.1454,
+            "low": 0.1445,
+            "close": 0.145
+          }
+        }
+      },
+      "entrySequence": {
+        "breakout": {
+          "time": 1790146800000,
+          "index": 497,
+          "candle": {
+            "open": 0.1457,
+            "high": 0.1457,
+            "low": 0.1451,
+            "close": 0.1452
+          },
+          "bodyAtr": 1.04,
+          "bodyRatio": 0.83,
+          "horizontalLevel": 0.1454,
+          "trendlineLevel": 0.14587894736842105,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.99
+        },
+        "confirmation": {
+          "time": 1790147100000,
+          "index": 498,
+          "candle": {
+            "open": 0.1453,
+            "high": 0.1454,
+            "low": 0.1445,
+            "close": 0.145
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": {
+          "time": 1790147100000,
+          "index": 498,
+          "heldHorizontal": true,
+          "heldTrendline": false,
+          "candle": {
+            "open": 0.1453,
+            "high": 0.1454,
+            "low": 0.1445,
+            "close": 0.145
+          }
+        },
+        "ageBars": 1
+      },
+      "liquidityEvidence": null,
+      "majorObstacle": null,
+      "riskAtr": 3.67,
+      "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↓ · 1D ↓ · 4H ↑ · 1H ↑. Bolge 0.14531–0.14549 · temas 27 · rol degisimi EVET · sikisma 3/4. SHORT giris 0.145. STOP 0.14677 · TP1 0.14279 · TP2 0.14147 · TP3 0.1397. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
+      "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE"
+    },
+    "PARTIUSDT|5m": {
+      "fingerprint": "PARTIUSDT|futures|5m|LONG|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "structureKey": "PARTIUSDT|futures|5m|LONG|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "signalId": "PARTIUSDT|futures|5m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790147100000",
+      "symbol": "PARTIUSDT",
+      "market": "futures",
+      "timeframe": "5m",
+      "direction": "LONG",
+      "confidence": 94,
+      "riskReward": 3,
+      "sentAt": "2026-09-23T07:13:33.025Z",
+      "entry": 0.02674,
+      "stop": 0.025738144384813103,
+      "tp1": 0.02799231951898362,
+      "tp2": 0.028743711230373795,
+      "tp3": 0.029745566845560692,
+      "messageId": 650,
+      "analysisVersion": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+      "topDownContext": {
+        "version": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "1w",
+          "1d",
+          "4h",
+          "1h"
+        ],
+        "builtAt": "2026-09-23T07:13:31.717Z",
+        "frames": [
+          {
+            "timeframe": "1w",
+            "bias": "SHORT",
+            "strength": 79,
+            "price": 0.02423,
+            "atr": 0.007924673609206286,
+            "trend": {
+              "ema200": null,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "NEUTRAL",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1783296000000,
+                "price": 0.0425,
+                "index": 67,
+                "breakClose": 0.03134,
+                "ageBars": 10
+              }
+            },
+            "priceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1783296000000,
+                "price": 0.0425,
+                "index": 67,
+                "breakClose": 0.03134,
+                "ageBars": 10
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend DOWN",
+              "EMA200 NEUTRAL",
+              "Trend kirilimi DOWN"
+            ]
+          },
+          {
+            "timeframe": "1d",
+            "bias": "SHORT",
+            "strength": 91,
+            "price": 0.02608,
+            "atr": 0.001831981683558588,
+            "trend": {
+              "ema200": 0.04912171198932279,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1788912000000,
+                "price": 0.02303,
+                "index": 485,
+                "breakClose": 0.02301,
+                "ageBars": 13
+              }
+            },
+            "priceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1788912000000,
+                "price": 0.02303,
+                "index": 485,
+                "breakClose": 0.02301,
+                "ageBars": 13
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend DOWN",
+              "EMA200 SHORT",
+              "Trend kirilimi DOWN"
+            ]
+          },
+          {
+            "timeframe": "4h",
+            "bias": "LONG",
+            "strength": 92,
+            "price": 0.02653,
+            "atr": 0.0008740333915118469,
+            "trend": {
+              "ema200": 0.024370458773434613,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1789920000000,
+                "index": 484,
+                "ageBars": 14
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790092800000,
+                "price": 0.02601,
+                "index": 496,
+                "breakClose": 0.02626,
+                "ageBars": 2
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790092800000,
+                "price": 0.02601,
+                "index": 496,
+                "breakClose": 0.02626,
+                "ageBars": 2
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP",
+              "EMA200 kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1h",
+            "bias": "LONG",
+            "strength": 91,
+            "price": 0.02685,
+            "atr": 0.00046036678247762786,
+            "trend": {
+              "ema200": 0.024355441075656924,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 0.02658,
+                "index": 498,
+                "breakClose": 0.02685,
+                "ageBars": 0
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 0.02658,
+                "index": 498,
+                "breakClose": 0.02685,
+                "ageBars": 0
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          }
+        ],
+        "major": {
+          "direction": "SHORT",
+          "longScore": 3,
+          "shortScore": 7,
+          "conviction": 69,
+          "summary": "1W ↓ · 1D ↓ · 4H ↑ · 1H ↑",
+          "warnings": [],
+          "supports": []
+        },
+        "decision": {
+          "allowed": true,
+          "direction": "LONG",
+          "majorDirection": "SHORT",
+          "summary": "1W ↓ · 1D ↓ · 4H ↑ · 1H ↑",
+          "conviction": 69,
+          "blockers": [],
+          "warnings": [
+            "HTF bilgi amaclidir; Orhan setup sinyalini veto etmez."
+          ],
+          "supports": []
+        }
+      },
+      "lowerFrameContext": {
+        "timeframe": "5m",
+        "bias": "LONG",
+        "strength": 79,
+        "price": 0.02674,
+        "atr": 0.00015611153704928282,
+        "trend": {
+          "ema200": 0.02611553819823061,
+          "alignment": "LONG",
+          "structure": "RANGE",
+          "ema200Side": "LONG",
+          "ema200Cross": null,
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790144700000,
+            "price": 0.02657,
+            "index": 490,
+            "breakClose": 0.02659,
+            "ageBars": 8
+          }
+        },
+        "priceAction": {
+          "structureTrend": "RANGE",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790144700000,
+            "price": 0.02657,
+            "index": 490,
+            "breakClose": 0.02659,
+            "ageBars": 8
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend RANGE",
+          "EMA200 LONG",
+          "Trend kirilimi UP"
+        ]
+      },
+      "indicatorContext": {
+        "timeframe": "5m",
+        "bias": "LONG",
+        "strength": 79,
+        "price": 0.02674,
+        "atr": 0.00015611153704928282,
+        "trend": {
+          "ema200": 0.02611553819823061,
+          "alignment": "LONG",
+          "structure": "RANGE",
+          "ema200Side": "LONG",
+          "ema200Cross": null,
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790144700000,
+            "price": 0.02657,
+            "index": 490,
+            "breakClose": 0.02659,
+            "ageBars": 8
+          }
+        },
+        "priceAction": {
+          "structureTrend": "RANGE",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790144700000,
+            "price": 0.02657,
+            "index": 490,
+            "breakClose": 0.02659,
+            "ageBars": 8
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend RANGE",
+          "EMA200 LONG",
+          "Trend kirilimi UP"
+        ]
+      },
+      "entryTrigger": {
+        "type": "ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "SR_ZONE",
+          "COMPRESSION",
+          "BREAKOUT",
+          "CONFIRMATION",
+          "ENTRY"
+        ],
+        "zone": {
+          "price": 0.026573333333333334,
+          "low": 0.026545233256664462,
+          "high": 0.026601433410002207,
+          "touches": 27,
+          "pivotTouches": 3,
+          "reactionTouches": 27,
+          "highTouches": 2,
+          "lowTouches": 1,
+          "roleReversal": true,
+          "strength": 31
+        },
+        "trendline": {
+          "side": "DESC_RESISTANCE",
+          "p1": {
+            "i": 454,
+            "time": 1790133900000,
+            "price": 0.02669
+          },
+          "p2": {
+            "i": 486,
+            "time": 1790143500000,
+            "price": 0.02657
+          },
+          "slope": -0.0000037499999999999556,
+          "projected": 0.026525,
+          "index": 498,
+          "touches": 4,
+          "violations": 0,
+          "ageBars": 12,
+          "distanceAtr": 1.38,
+          "score": 10.26
+        },
+        "confluence": {
+          "zoneTrendlineGapAtr": 0.31,
+          "required": true
+        },
+        "reclaim": {
+          "firstBreak": {
+            "index": 405,
+            "time": 1790119200000,
+            "close": 0.02632
+          },
+          "roleRetest": {
+            "index": 454,
+            "time": 1790133900000,
+            "close": 0.0266
+          },
+          "priorLiquidity": {
+            "index": 392,
+            "time": 1790115300000,
+            "price": 0.02581
+          },
+          "liquiditySweep": {
+            "index": 436,
+            "time": 1790128500000,
+            "extreme": 0.02576,
+            "tookLiquidity": true
+          },
+          "reclaim": {
+            "index": 495,
+            "time": 1790146200000,
+            "close": 0.02681
+          },
+          "structuralStop": 0.025738144384813103,
+          "stopBuffer": 0.000021855615186899598
+        },
+        "compression": {
+          "ok": true,
+          "score": 3,
+          "descendingHighs": true,
+          "risingLows": true,
+          "rangeContract": false,
+          "nearZone": true,
+          "recentRange": 0.0008099999999999982,
+          "olderRange": 0.0003699999999999988,
+          "highs": [
+            {
+              "i": 454,
+              "time": 1790133900000,
+              "price": 0.02669
+            },
+            {
+              "i": 463,
+              "time": 1790136600000,
+              "price": 0.02662
+            },
+            {
+              "i": 473,
+              "time": 1790139600000,
+              "price": 0.02665
+            },
+            {
+              "i": 486,
+              "time": 1790143500000,
+              "price": 0.02657
+            }
+          ],
+          "lows": [
+            {
+              "i": 474,
+              "time": 1790139900000,
+              "price": 0.02628
+            },
+            {
+              "i": 479,
+              "time": 1790141400000,
+              "price": 0.02616
+            },
+            {
+              "i": 484,
+              "time": 1790142900000,
+              "price": 0.02611
+            },
+            {
+              "i": 494,
+              "time": 1790145900000,
+              "price": 0.02657
+            }
+          ]
+        },
+        "breakout": {
+          "time": 1790146200000,
+          "index": 495,
+          "candle": {
+            "open": 0.0266,
+            "high": 0.02685,
+            "low": 0.0266,
+            "close": 0.02681
+          },
+          "bodyAtr": 1.35,
+          "bodyRatio": 0.84,
+          "horizontalLevel": 0.026573333333333334,
+          "trendlineLevel": 0.02653625,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.24
+        },
+        "confirmation": {
+          "time": 1790146500000,
+          "index": 496,
+          "candle": {
+            "open": 0.02681,
+            "high": 0.02692,
+            "low": 0.02678,
+            "close": 0.02685
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": null
+      },
+      "entrySequence": {
+        "breakout": {
+          "time": 1790146200000,
+          "index": 495,
+          "candle": {
+            "open": 0.0266,
+            "high": 0.02685,
+            "low": 0.0266,
+            "close": 0.02681
+          },
+          "bodyAtr": 1.35,
+          "bodyRatio": 0.84,
+          "horizontalLevel": 0.026573333333333334,
+          "trendlineLevel": 0.02653625,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.24
+        },
+        "confirmation": {
+          "time": 1790146500000,
+          "index": 496,
+          "candle": {
+            "open": 0.02681,
+            "high": 0.02692,
+            "low": 0.02678,
+            "close": 0.02685
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": null,
+        "ageBars": 3
+      },
+      "liquidityEvidence": null,
+      "majorObstacle": null,
+      "riskAtr": 6.42,
+      "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↓ · 1D ↓ · 4H ↑ · 1H ↑. Bolge 0.0265452–0.0266014 · temas 27 · rol degisimi EVET · sikisma 3/4. LONG giris 0.02674. STOP 0.0257381 · TP1 0.0279923 · TP2 0.0287437 · TP3 0.0297456. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
+      "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE"
     }
   },
   "activeSignals": {
@@ -45543,14 +47724,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "ENSOUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-23T07:11:30.097Z",
+            "candleCloseTime": 1790146799999,
+            "price": 1.0289,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 62,
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 0.9911461861827681,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790134200000,
+                "price": 1.0267,
+                "index": 492,
+                "breakClose": 1.0321,
+                "ageBars": 6
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790134200000,
+                "price": 1.0267,
+                "index": 492,
+                "breakClose": 1.0321,
+                "ageBars": 6
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "ENSOUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790134199999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -46185,14 +48407,60 @@
             },
             "verdict": "TERS_MAJOR",
             "commentary": "FUSDT 30m recheck: major SHORT · trend/EMA200/PA LONG · 1W ↓ · 1D ↓ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-23T07:11:32.649Z",
+            "candleCloseTime": 1790146799999,
+            "price": 0.003775,
+            "originalDirection": "LONG",
+            "majorDirection": "SHORT",
+            "majorConviction": 69,
+            "currentDirection": "LONG",
+            "currentConfidence": 92,
+            "lowerTrend": {
+              "ema200": 0.0037284935246837533,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790109000000,
+                "index": 478,
+                "ageBars": 20
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790139600000,
+                "price": 0.003803,
+                "index": 495,
+                "breakClose": 0.003818,
+                "ageBars": 3
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790139600000,
+                "price": 0.003803,
+                "index": 495,
+                "breakClose": 0.003818,
+                "ageBars": 3
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "FUSDT 30m recheck: major SHORT · trend/EMA200/PA LONG · 1W ↓ · 1D ↓ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790134199999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
           "same": 0,
           "wait": 0,
-          "opposite": 2,
-          "total": 2
+          "opposite": 3,
+          "total": 3
         }
       }
     },
@@ -46817,14 +49085,60 @@
             },
             "verdict": "TERS_MAJOR",
             "commentary": "HOMEUSDT 15m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↓ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-23T07:11:35.482Z",
+            "candleCloseTime": 1790146799999,
+            "price": 0.006571,
+            "originalDirection": "LONG",
+            "majorDirection": "SHORT",
+            "majorConviction": 69,
+            "currentDirection": "SHORT",
+            "currentConfidence": 79,
+            "lowerTrend": {
+              "ema200": 0.006601703305151527,
+              "alignment": "SHORT",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790145000000,
+                "index": 497,
+                "ageBars": 1
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790124300000,
+                "price": 0.006516,
+                "index": 474,
+                "breakClose": 0.006514,
+                "ageBars": 24
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790124300000,
+                "price": 0.006516,
+                "index": 474,
+                "breakClose": 0.006514,
+                "ageBars": 24
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "HOMEUSDT 15m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↓ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790134199999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
           "same": 0,
           "wait": 0,
-          "opposite": 2,
-          "total": 2
+          "opposite": 3,
+          "total": 3
         }
       }
     },
@@ -47430,14 +49744,55 @@
             },
             "verdict": "BEKLE",
             "commentary": "NEARUSDT 30m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↔"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-23T07:11:38.466Z",
+            "candleCloseTime": 1790146799999,
+            "price": 4.474,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 79,
+            "lowerTrend": {
+              "ema200": 4.039564680391148,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 4.473,
+                "index": 497,
+                "breakClose": 4.487,
+                "ageBars": 1
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 4.473,
+                "index": 497,
+                "breakClose": 4.487,
+                "ageBars": 1
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "NEARUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790134199999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
-          "same": 0,
+          "same": 1,
           "wait": 2,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -48045,14 +50400,55 @@
             },
             "verdict": "BEKLE",
             "commentary": "1000PEPEUSDT 15m recheck: major NEUTRAL · trend/EMA200/PA WAIT · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↓"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-23T07:11:41.306Z",
+            "candleCloseTime": 1790146799999,
+            "price": 0.0049736,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 62,
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 0.004768559137565165,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790137800000,
+                "price": 0.0050214,
+                "index": 489,
+                "breakClose": 0.0050295,
+                "ageBars": 9
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790137800000,
+                "price": 0.0050214,
+                "index": 489,
+                "breakClose": 0.0050295,
+                "ageBars": 9
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "1000PEPEUSDT 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790134199999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
-          "same": 1,
+          "same": 2,
           "wait": 1,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -48619,14 +51015,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "SUIUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-23T07:11:44.282Z",
+            "candleCloseTime": 1790146799999,
+            "price": 1.0273,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 62,
+            "currentDirection": "LONG",
+            "currentConfidence": 79,
+            "lowerTrend": {
+              "ema200": 0.9447837534058464,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790114400000,
+                "price": 1.0151,
+                "index": 481,
+                "breakClose": 1.0179,
+                "ageBars": 17
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790114400000,
+                "price": 1.0151,
+                "index": 481,
+                "breakClose": 1.0179,
+                "ageBars": 17
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "SUIUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790126999999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
-          "same": 1,
+          "same": 2,
           "wait": 0,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
       }
     },
@@ -49192,14 +51629,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "TAOUSDT 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↔"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-23T07:11:46.406Z",
+            "candleCloseTime": 1790146799999,
+            "price": 313.63,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 59,
+            "currentDirection": "WAIT",
+            "currentConfidence": 55,
+            "lowerTrend": {
+              "ema200": 303.2289682132673,
+              "alignment": "NEUTRAL",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790142300000,
+                "price": 312.71,
+                "index": 494,
+                "breakClose": 311.86,
+                "ageBars": 4
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790142300000,
+                "price": 312.71,
+                "index": 494,
+                "breakClose": 311.86,
+                "ageBars": 4
+              }
+            },
+            "verdict": "BEKLE",
+            "commentary": "TAOUSDT 15m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↓ · 1D ↑ · 4H ↑ · 1H ↔"
           }
         ],
-        "lastCandleCloseTime": 1790134199999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
           "same": 1,
-          "wait": 0,
+          "wait": 1,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
       }
     },
@@ -49807,14 +52285,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "ADAUSDT 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-23T07:11:48.875Z",
+            "candleCloseTime": 1790146799999,
+            "price": 0.2588,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 91,
+            "lowerTrend": {
+              "ema200": 0.24684934513333098,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790134200000,
+                "price": 0.2579,
+                "index": 485,
+                "breakClose": 0.2584,
+                "ageBars": 13
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790134200000,
+                "price": 0.2579,
+                "index": 485,
+                "breakClose": 0.2584,
+                "ageBars": 13
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "ADAUSDT 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790134199999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -50392,14 +52911,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "ENAUSDT 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↔ · 1H ↑"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-23T07:11:50.610Z",
+            "candleCloseTime": 1790146799999,
+            "price": 0.21762,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 76,
+            "currentDirection": "LONG",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 0.21154390983587015,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790115300000,
+                "index": 464,
+                "ageBars": 34
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790115300000,
+                "price": 0.20956,
+                "index": 464,
+                "breakClose": 0.21119,
+                "ageBars": 34
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790115300000,
+                "price": 0.20956,
+                "index": 464,
+                "breakClose": 0.21119,
+                "ageBars": 34
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "ENAUSDT 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↓ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790127899999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
-          "same": 1,
+          "same": 2,
           "wait": 0,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
       }
     },
@@ -50997,14 +53562,60 @@
             },
             "verdict": "TERS_MINOR",
             "commentary": "JSTUSDT 30m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↓"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-23T07:11:53.291Z",
+            "candleCloseTime": 1790146799999,
+            "price": 0.112,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 83,
+            "currentDirection": "SHORT",
+            "currentConfidence": 79,
+            "lowerTrend": {
+              "ema200": 0.11416446099339934,
+              "alignment": "SHORT",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790100000000,
+                "index": 473,
+                "ageBars": 25
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790145000000,
+                "price": 0.11211,
+                "index": 498,
+                "breakClose": 0.112,
+                "ageBars": 0
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790145000000,
+                "price": 0.11211,
+                "index": 498,
+                "breakClose": 0.112,
+                "ageBars": 0
+              }
+            },
+            "verdict": "TERS_MINOR",
+            "commentary": "JSTUSDT 30m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↓"
           }
         ],
-        "lastCandleCloseTime": 1790134199999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
           "same": 0,
           "wait": 0,
-          "opposite": 1,
-          "total": 1
+          "opposite": 2,
+          "total": 2
         }
       },
       "initialStop": 0.11186726546208159,
@@ -51593,14 +54204,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "BTCUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-23T07:11:55.910Z",
+            "candleCloseTime": 1790146799999,
+            "price": 86424.1,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 79,
+            "lowerTrend": {
+              "ema200": 83652.17594899474,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790136000000,
+                "price": 86817.3,
+                "index": 493,
+                "breakClose": 86976.4,
+                "ageBars": 5
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790136000000,
+                "price": 86817.3,
+                "index": 493,
+                "breakClose": 86976.4,
+                "ageBars": 5
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "BTCUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790134199999,
+        "lastCandleCloseTime": 1790146799999,
         "summary": {
-          "same": 1,
+          "same": 2,
           "wait": 0,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
       },
       "initialStop": 85340.21515477303,
@@ -51609,6 +54261,2235 @@
         "at": "2026-09-23T06:42:34.177Z",
         "event": "ENTRY",
         "message": "Telegram HTTP 429"
+      }
+    },
+    "NEWTUSDT|futures|1m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790147460000": {
+      "fingerprint": "NEWTUSDT|futures|1m|SHORT|LONG|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "structureKey": "NEWTUSDT|futures|1m|SHORT|LONG|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "signalId": "NEWTUSDT|futures|1m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790147460000",
+      "symbol": "NEWTUSDT",
+      "market": "futures",
+      "timeframe": "1m",
+      "direction": "SHORT",
+      "confidence": 94,
+      "riskReward": 3,
+      "sentAt": "2026-09-23T07:12:25.168Z",
+      "entry": 0.05139,
+      "stop": 0.051748105499999995,
+      "tp1": 0.050942368125,
+      "tp2": 0.050673789000000004,
+      "tp3": 0.05031568350000001,
+      "messageId": 647,
+      "analysisVersion": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+      "topDownContext": {
+        "version": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "1w",
+          "1d",
+          "4h",
+          "1h"
+        ],
+        "builtAt": "2026-09-23T07:12:23.862Z",
+        "frames": [
+          {
+            "timeframe": "1w",
+            "bias": "SHORT",
+            "strength": 67,
+            "price": 0.04497,
+            "atr": 0.008470931250836696,
+            "trend": {
+              "ema200": null,
+              "alignment": "SHORT",
+              "structure": "RANGE",
+              "ema200Side": "NEUTRAL",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1780272000000,
+                "price": 0.06162,
+                "index": 50,
+                "breakClose": 0.05512,
+                "ageBars": 15
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1780272000000,
+                "price": 0.06162,
+                "index": 50,
+                "breakClose": 0.05512,
+                "ageBars": 15
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 NEUTRAL",
+              "Trend kirilimi DOWN"
+            ]
+          },
+          {
+            "timeframe": "1d",
+            "bias": "LONG",
+            "strength": 67,
+            "price": 0.05092,
+            "atr": 0.0031304816643177137,
+            "trend": {
+              "ema200": 0.06214088978486511,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1788566400000,
+                "price": 0.04296,
+                "index": 443,
+                "breakClose": 0.04437,
+                "ageBars": 17
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1788566400000,
+                "price": 0.04296,
+                "index": 443,
+                "breakClose": 0.04437,
+                "ageBars": 17
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 SHORT",
+              "Trend kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "4h",
+            "bias": "LONG",
+            "strength": 79,
+            "price": 0.05125,
+            "atr": 0.001669327077322641,
+            "trend": {
+              "ema200": 0.04338471843045489,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1789689600000,
+                "index": 468,
+                "ageBars": 30
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790035200000,
+                "price": 0.0486,
+                "index": 492,
+                "breakClose": 0.04974,
+                "ageBars": 6
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790035200000,
+                "price": 0.0486,
+                "index": 492,
+                "breakClose": 0.04974,
+                "ageBars": 6
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1h",
+            "bias": "LONG",
+            "strength": 79,
+            "price": 0.05151,
+            "atr": 0.0007375976871959191,
+            "trend": {
+              "ema200": 0.045872145225687624,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790038800000,
+                "price": 0.0486,
+                "index": 469,
+                "breakClose": 0.04923,
+                "ageBars": 29
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790038800000,
+                "price": 0.0486,
+                "index": 469,
+                "breakClose": 0.04923,
+                "ageBars": 29
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG"
+            ]
+          }
+        ],
+        "major": {
+          "direction": "LONG",
+          "longScore": 6,
+          "shortScore": 4,
+          "conviction": 62,
+          "summary": "1W ↓ · 1D ↑ · 4H ↑ · 1H ↑",
+          "warnings": [],
+          "supports": []
+        },
+        "decision": {
+          "allowed": true,
+          "direction": "SHORT",
+          "majorDirection": "LONG",
+          "summary": "1W ↓ · 1D ↑ · 4H ↑ · 1H ↑",
+          "conviction": 62,
+          "blockers": [],
+          "warnings": [
+            "HTF bilgi amaclidir; Orhan setup sinyalini veto etmez."
+          ],
+          "supports": []
+        }
+      },
+      "lowerFrameContext": {
+        "timeframe": "1m",
+        "bias": "NEUTRAL",
+        "strength": 55,
+        "price": 0.05139,
+        "atr": 0.00007729468087758466,
+        "trend": {
+          "ema200": 0.0513732190284286,
+          "alignment": "NEUTRAL",
+          "structure": "DOWN",
+          "ema200Side": "LONG",
+          "ema200Cross": {
+            "side": "UP",
+            "time": 1790147460000,
+            "index": 498,
+            "ageBars": 0
+          },
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790147340000,
+            "price": 0.05141,
+            "index": 496,
+            "breakClose": 0.05135,
+            "ageBars": 2
+          }
+        },
+        "priceAction": {
+          "structureTrend": "DOWN",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790147340000,
+            "price": 0.05141,
+            "index": 496,
+            "breakClose": 0.05135,
+            "ageBars": 2
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend DOWN",
+          "EMA200 LONG",
+          "Trend kirilimi DOWN",
+          "EMA200 kirilimi UP"
+        ]
+      },
+      "indicatorContext": {
+        "timeframe": "1m",
+        "bias": "NEUTRAL",
+        "strength": 55,
+        "price": 0.05139,
+        "atr": 0.00007729468087758466,
+        "trend": {
+          "ema200": 0.0513732190284286,
+          "alignment": "NEUTRAL",
+          "structure": "DOWN",
+          "ema200Side": "LONG",
+          "ema200Cross": {
+            "side": "UP",
+            "time": 1790147460000,
+            "index": 498,
+            "ageBars": 0
+          },
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790147340000,
+            "price": 0.05141,
+            "index": 496,
+            "breakClose": 0.05135,
+            "ageBars": 2
+          }
+        },
+        "priceAction": {
+          "structureTrend": "DOWN",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790147340000,
+            "price": 0.05141,
+            "index": 496,
+            "breakClose": 0.05135,
+            "ageBars": 2
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend DOWN",
+          "EMA200 LONG",
+          "Trend kirilimi DOWN",
+          "EMA200 kirilimi UP"
+        ]
+      },
+      "entryTrigger": {
+        "type": "ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "SR_ZONE",
+          "COMPRESSION",
+          "BREAKOUT",
+          "CONFIRMATION",
+          "ENTRY"
+        ],
+        "zone": {
+          "price": 0.05146142857142858,
+          "low": 0.05142802507142858,
+          "high": 0.05149483207142858,
+          "touches": 84,
+          "pivotTouches": 7,
+          "reactionTouches": 84,
+          "highTouches": 5,
+          "lowTouches": 2,
+          "roleReversal": true,
+          "strength": 88
+        },
+        "trendline": {
+          "side": "ASC_SUPPORT",
+          "p1": {
+            "i": 457,
+            "time": 1790145000000,
+            "price": 0.05123
+          },
+          "p2": {
+            "i": 489,
+            "time": 1790146920000,
+            "price": 0.05141
+          },
+          "slope": 0.000005624999999999988,
+          "projected": 0.051460624999999996,
+          "index": 498,
+          "touches": 2,
+          "violations": 0,
+          "ageBars": 9,
+          "distanceAtr": 0.91,
+          "score": 4.82
+        },
+        "confluence": {
+          "zoneTrendlineGapAtr": 0.01,
+          "required": true
+        },
+        "reclaim": {
+          "firstBreak": {
+            "index": 428,
+            "time": 1790143260000,
+            "close": 0.05157
+          },
+          "roleRetest": {
+            "index": 442,
+            "time": 1790144100000,
+            "close": 0.05147
+          },
+          "priorLiquidity": {
+            "index": 422,
+            "time": 1790142900000,
+            "price": 0.05133
+          },
+          "liquiditySweep": {
+            "index": 433,
+            "time": 1790143560000,
+            "extreme": 0.05173,
+            "tookLiquidity": true
+          },
+          "reclaim": {
+            "index": 496,
+            "time": 1790147340000,
+            "close": 0.05135
+          },
+          "structuralStop": 0.051748105499999995,
+          "stopBuffer": 0.000018105499999999998
+        },
+        "compression": {
+          "ok": true,
+          "score": 3,
+          "descendingHighs": true,
+          "risingLows": false,
+          "rangeContract": true,
+          "nearZone": true,
+          "recentRange": 0.00023999999999999716,
+          "olderRange": 0.00034999999999999615,
+          "highs": [
+            {
+              "i": 422,
+              "time": 1790142900000,
+              "price": 0.05133
+            },
+            {
+              "i": 447,
+              "time": 1790144400000,
+              "price": 0.05146
+            },
+            {
+              "i": 468,
+              "time": 1790145660000,
+              "price": 0.05168
+            },
+            {
+              "i": 485,
+              "time": 1790146680000,
+              "price": 0.05159
+            }
+          ],
+          "lows": [
+            {
+              "i": 457,
+              "time": 1790145000000,
+              "price": 0.05123
+            },
+            {
+              "i": 469,
+              "time": 1790145720000,
+              "price": 0.05156
+            },
+            {
+              "i": 479,
+              "time": 1790146320000,
+              "price": 0.05146
+            },
+            {
+              "i": 489,
+              "time": 1790146920000,
+              "price": 0.05141
+            }
+          ]
+        },
+        "breakout": {
+          "time": 1790147340000,
+          "index": 496,
+          "candle": {
+            "open": 0.0515,
+            "high": 0.0515,
+            "low": 0.05135,
+            "close": 0.05135
+          },
+          "bodyAtr": 1.94,
+          "bodyRatio": 1,
+          "horizontalLevel": 0.05146142857142858,
+          "trendlineLevel": 0.051449375,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.16
+        },
+        "confirmation": {
+          "time": 1790147400000,
+          "index": 497,
+          "candle": {
+            "open": 0.05136,
+            "high": 0.05136,
+            "low": 0.05135,
+            "close": 0.05135
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": null
+      },
+      "entrySequence": {
+        "breakout": {
+          "time": 1790147340000,
+          "index": 496,
+          "candle": {
+            "open": 0.0515,
+            "high": 0.0515,
+            "low": 0.05135,
+            "close": 0.05135
+          },
+          "bodyAtr": 1.94,
+          "bodyRatio": 1,
+          "horizontalLevel": 0.05146142857142858,
+          "trendlineLevel": 0.051449375,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.16
+        },
+        "confirmation": {
+          "time": 1790147400000,
+          "index": 497,
+          "candle": {
+            "open": 0.05136,
+            "high": 0.05136,
+            "low": 0.05135,
+            "close": 0.05135
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": null,
+        "ageBars": 2
+      },
+      "liquidityEvidence": null,
+      "majorObstacle": null,
+      "riskAtr": 4.63,
+      "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↓ · 1D ↑ · 4H ↑ · 1H ↑. Bolge 0.051428–0.0514948 · temas 84 · rol degisimi EVET · sikisma 3/4. SHORT giris 0.05139. STOP 0.0517481 · TP1 0.0509424 · TP2 0.0506738 · TP3 0.0503157. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
+      "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
+      "status": "WAIT_ENTRY",
+      "stage": 0,
+      "enteredAt": null,
+      "lastCheckedAt": "2026-09-23T07:12:25.168Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
+      }
+    },
+    "ONDOUSDT|futures|15m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790145900000": {
+      "fingerprint": "ONDOUSDT|futures|15m|LONG|LONG|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "structureKey": "ONDOUSDT|futures|15m|LONG|LONG|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "signalId": "ONDOUSDT|futures|15m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790145900000",
+      "symbol": "ONDOUSDT",
+      "market": "futures",
+      "timeframe": "15m",
+      "direction": "LONG",
+      "confidence": 94,
+      "riskReward": 3,
+      "sentAt": "2026-09-23T07:12:52.305Z",
+      "entry": 0.44,
+      "stop": 0.4208338485433149,
+      "tp1": 0.46395768932085635,
+      "tp2": 0.4783323029133702,
+      "tp3": 0.4974984543700553,
+      "messageId": 648,
+      "analysisVersion": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+      "topDownContext": {
+        "version": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "1w",
+          "1d",
+          "4h",
+          "1h"
+        ],
+        "builtAt": "2026-09-23T07:12:50.744Z",
+        "frames": [
+          {
+            "timeframe": "1w",
+            "bias": "LONG",
+            "strength": 67,
+            "price": 0.4327,
+            "atr": 0.07371902661752018,
+            "trend": {
+              "ema200": null,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "NEUTRAL",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789344000000,
+                "price": 0.4288,
+                "index": 139,
+                "breakClose": 0.4327,
+                "ageBars": 0
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789344000000,
+                "price": 0.4288,
+                "index": 139,
+                "breakClose": 0.4327,
+                "ageBars": 0
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 NEUTRAL",
+              "Trend kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1d",
+            "bias": "LONG",
+            "strength": 79,
+            "price": 0.4414,
+            "atr": 0.032780512789644826,
+            "trend": {
+              "ema200": 0.37327932438665645,
+              "alignment": "LONG",
+              "structure": "DOWN",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1789603200000,
+                "index": 493,
+                "ageBars": 5
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789689600000,
+                "price": 0.3952,
+                "index": 494,
+                "breakClose": 0.3987,
+                "ageBars": 4
+              }
+            },
+            "priceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789689600000,
+                "price": 0.3952,
+                "index": 494,
+                "breakClose": 0.3987,
+                "ageBars": 4
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend DOWN",
+              "EMA200 LONG",
+              "Trend kirilimi UP",
+              "EMA200 kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "4h",
+            "bias": "LONG",
+            "strength": 91,
+            "price": 0.444,
+            "atr": 0.015971865853269297,
+            "trend": {
+              "ema200": 0.3743543799088079,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1789646400000,
+                "index": 465,
+                "ageBars": 33
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789977600000,
+                "price": 0.4435,
+                "index": 488,
+                "breakClose": 0.4517,
+                "ageBars": 10
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789977600000,
+                "price": 0.4435,
+                "index": 488,
+                "breakClose": 0.4517,
+                "ageBars": 10
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1h",
+            "bias": "LONG",
+            "strength": 91,
+            "price": 0.44,
+            "atr": 0.006237526492195445,
+            "trend": {
+              "ema200": 0.4057451914919357,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790114400000,
+                "price": 0.4364,
+                "index": 490,
+                "breakClose": 0.4378,
+                "ageBars": 8
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790114400000,
+                "price": 0.4364,
+                "index": 490,
+                "breakClose": 0.4378,
+                "ageBars": 8
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          }
+        ],
+        "major": {
+          "direction": "LONG",
+          "longScore": 10,
+          "shortScore": 0,
+          "conviction": 90,
+          "summary": "1W ↑ · 1D ↑ · 4H ↑ · 1H ↑",
+          "warnings": [],
+          "supports": []
+        },
+        "decision": {
+          "allowed": true,
+          "direction": "LONG",
+          "majorDirection": "LONG",
+          "summary": "1W ↑ · 1D ↑ · 4H ↑ · 1H ↑",
+          "conviction": 90,
+          "blockers": [],
+          "warnings": [
+            "HTF bilgi amaclidir; Orhan setup sinyalini veto etmez."
+          ],
+          "supports": []
+        }
+      },
+      "lowerFrameContext": {
+        "timeframe": "15m",
+        "bias": "LONG",
+        "strength": 79,
+        "price": 0.44,
+        "atr": 0.0033296532620364565,
+        "trend": {
+          "ema200": 0.4355624495165165,
+          "alignment": "LONG",
+          "structure": "RANGE",
+          "ema200Side": "LONG",
+          "ema200Cross": {
+            "side": "UP",
+            "time": 1790115300000,
+            "index": 464,
+            "ageBars": 34
+          },
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790138700000,
+            "price": 0.4425,
+            "index": 490,
+            "breakClose": 0.4427,
+            "ageBars": 8
+          }
+        },
+        "priceAction": {
+          "structureTrend": "RANGE",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790138700000,
+            "price": 0.4425,
+            "index": 490,
+            "breakClose": 0.4427,
+            "ageBars": 8
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend RANGE",
+          "EMA200 LONG",
+          "Trend kirilimi UP"
+        ]
+      },
+      "indicatorContext": {
+        "timeframe": "15m",
+        "bias": "LONG",
+        "strength": 79,
+        "price": 0.44,
+        "atr": 0.0033296532620364565,
+        "trend": {
+          "ema200": 0.4355624495165165,
+          "alignment": "LONG",
+          "structure": "RANGE",
+          "ema200Side": "LONG",
+          "ema200Cross": {
+            "side": "UP",
+            "time": 1790115300000,
+            "index": 464,
+            "ageBars": 34
+          },
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790138700000,
+            "price": 0.4425,
+            "index": 490,
+            "breakClose": 0.4427,
+            "ageBars": 8
+          }
+        },
+        "priceAction": {
+          "structureTrend": "RANGE",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790138700000,
+            "price": 0.4425,
+            "index": 490,
+            "breakClose": 0.4427,
+            "ageBars": 8
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend RANGE",
+          "EMA200 LONG",
+          "Trend kirilimi UP"
+        ]
+      },
+      "entryTrigger": {
+        "type": "ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "SR_ZONE",
+          "COMPRESSION",
+          "BREAKOUT",
+          "CONFIRMATION",
+          "ENTRY"
+        ],
+        "zone": {
+          "price": 0.4388666666666667,
+          "low": 0.4382673290795001,
+          "high": 0.43946600425383325,
+          "touches": 52,
+          "pivotTouches": 3,
+          "reactionTouches": 52,
+          "highTouches": 3,
+          "lowTouches": 0,
+          "roleReversal": true,
+          "strength": 56
+        },
+        "trendline": {
+          "side": "DESC_RESISTANCE",
+          "p1": {
+            "i": 376,
+            "time": 1790036100000,
+            "price": 0.4642
+          },
+          "p2": {
+            "i": 477,
+            "time": 1790127000000,
+            "price": 0.4425
+          },
+          "slope": -0.00021485148514851482,
+          "projected": 0.4379881188118812,
+          "index": 498,
+          "touches": 3,
+          "violations": 0,
+          "ageBars": 21,
+          "distanceAtr": 0.6,
+          "score": 7.77
+        },
+        "confluence": {
+          "zoneTrendlineGapAtr": 0.26,
+          "required": true
+        },
+        "reclaim": {
+          "firstBreak": {
+            "index": 405,
+            "time": 1790062200000,
+            "close": 0.4319
+          },
+          "roleRetest": {
+            "index": 410,
+            "time": 1790066700000,
+            "close": 0.4378
+          },
+          "priorLiquidity": {
+            "index": 397,
+            "time": 1790055000000,
+            "price": 0.4287
+          },
+          "liquiditySweep": {
+            "index": 433,
+            "time": 1790087400000,
+            "extreme": 0.4213,
+            "tookLiquidity": true
+          },
+          "reclaim": {
+            "index": 495,
+            "time": 1790143200000,
+            "close": 0.44
+          },
+          "structuralStop": 0.4208338485433149,
+          "stopBuffer": 0.00046615145668510395
+        },
+        "compression": {
+          "ok": true,
+          "score": 4,
+          "descendingHighs": true,
+          "risingLows": true,
+          "rangeContract": true,
+          "nearZone": true,
+          "recentRange": 0.011099999999999999,
+          "olderRange": 0.012799999999999978,
+          "highs": [
+            {
+              "i": 438,
+              "time": 1790091900000,
+              "price": 0.4339
+            },
+            {
+              "i": 455,
+              "time": 1790107200000,
+              "price": 0.4385
+            },
+            {
+              "i": 468,
+              "time": 1790118900000,
+              "price": 0.4446
+            },
+            {
+              "i": 477,
+              "time": 1790127000000,
+              "price": 0.4425
+            }
+          ],
+          "lows": [
+            {
+              "i": 464,
+              "time": 1790115300000,
+              "price": 0.4318
+            },
+            {
+              "i": 474,
+              "time": 1790124300000,
+              "price": 0.436
+            },
+            {
+              "i": 479,
+              "time": 1790128800000,
+              "price": 0.4361
+            },
+            {
+              "i": 494,
+              "time": 1790142300000,
+              "price": 0.4368
+            }
+          ]
+        },
+        "breakout": {
+          "time": 1790143200000,
+          "index": 495,
+          "candle": {
+            "open": 0.4383,
+            "high": 0.4414,
+            "low": 0.4382,
+            "close": 0.44
+          },
+          "bodyAtr": 0.51,
+          "bodyRatio": 0.53,
+          "horizontalLevel": 0.4388666666666667,
+          "trendlineLevel": 0.43863267326732674,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.07
+        },
+        "confirmation": {
+          "time": 1790144100000,
+          "index": 496,
+          "candle": {
+            "open": 0.4401,
+            "high": 0.442,
+            "low": 0.4398,
+            "close": 0.4403
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": {
+          "time": 1790144100000,
+          "index": 496,
+          "heldHorizontal": true,
+          "heldTrendline": false,
+          "candle": {
+            "open": 0.4401,
+            "high": 0.442,
+            "low": 0.4398,
+            "close": 0.4403
+          }
+        }
+      },
+      "entrySequence": {
+        "breakout": {
+          "time": 1790143200000,
+          "index": 495,
+          "candle": {
+            "open": 0.4383,
+            "high": 0.4414,
+            "low": 0.4382,
+            "close": 0.44
+          },
+          "bodyAtr": 0.51,
+          "bodyRatio": 0.53,
+          "horizontalLevel": 0.4388666666666667,
+          "trendlineLevel": 0.43863267326732674,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.07
+        },
+        "confirmation": {
+          "time": 1790144100000,
+          "index": 496,
+          "candle": {
+            "open": 0.4401,
+            "high": 0.442,
+            "low": 0.4398,
+            "close": 0.4403
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": {
+          "time": 1790144100000,
+          "index": 496,
+          "heldHorizontal": true,
+          "heldTrendline": false,
+          "candle": {
+            "open": 0.4401,
+            "high": 0.442,
+            "low": 0.4398,
+            "close": 0.4403
+          }
+        },
+        "ageBars": 3
+      },
+      "liquidityEvidence": null,
+      "majorObstacle": null,
+      "riskAtr": 5.76,
+      "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑. Bolge 0.43827–0.43947 · temas 52 · rol degisimi EVET · sikisma 4/4. LONG giris 0.44. STOP 0.42083 · TP1 0.46396 · TP2 0.47833 · TP3 0.4975. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
+      "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
+      "status": "WAIT_ENTRY",
+      "stage": 0,
+      "enteredAt": null,
+      "lastCheckedAt": "2026-09-23T07:12:52.305Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
+      }
+    },
+    "OPENUSDT|futures|5m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790147100000": {
+      "fingerprint": "OPENUSDT|futures|5m|SHORT|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "structureKey": "OPENUSDT|futures|5m|SHORT|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "signalId": "OPENUSDT|futures|5m|SHORT|ORHAN_SR_BREAKOUT_CONFIRM:1790147100000",
+      "symbol": "OPENUSDT",
+      "market": "futures",
+      "timeframe": "5m",
+      "direction": "SHORT",
+      "confidence": 94,
+      "riskReward": 3,
+      "sentAt": "2026-09-23T07:13:07.247Z",
+      "entry": 0.145,
+      "stop": 0.14676749955411122,
+      "tp1": 0.14279062555736094,
+      "tp2": 0.14146500089177752,
+      "tp3": 0.13969750133766629,
+      "messageId": 649,
+      "analysisVersion": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+      "topDownContext": {
+        "version": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "1w",
+          "1d",
+          "4h",
+          "1h"
+        ],
+        "builtAt": "2026-09-23T07:13:06.432Z",
+        "frames": [
+          {
+            "timeframe": "1w",
+            "bias": "SHORT",
+            "strength": 79,
+            "price": 0.1405,
+            "atr": 0.035804440590808485,
+            "trend": {
+              "ema200": null,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "NEUTRAL",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1787529600000,
+                "price": 0.1403,
+                "index": 50,
+                "breakClose": 0.1375,
+                "ageBars": 3
+              }
+            },
+            "priceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1787529600000,
+                "price": 0.1403,
+                "index": 50,
+                "breakClose": 0.1375,
+                "ageBars": 3
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend DOWN",
+              "EMA200 NEUTRAL",
+              "Trend kirilimi DOWN"
+            ]
+          },
+          {
+            "timeframe": "1d",
+            "bias": "SHORT",
+            "strength": 67,
+            "price": 0.1452,
+            "atr": 0.010389124268306453,
+            "trend": {
+              "ema200": 0.20484728115068077,
+              "alignment": "SHORT",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1788048000000,
+                "price": 0.1454,
+                "index": 356,
+                "breakClose": 0.1375,
+                "ageBars": 23
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1788048000000,
+                "price": 0.1454,
+                "index": 356,
+                "breakClose": 0.1375,
+                "ageBars": 23
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 SHORT"
+            ]
+          },
+          {
+            "timeframe": "4h",
+            "bias": "LONG",
+            "strength": 79,
+            "price": 0.1458,
+            "atr": 0.0041899365655325375,
+            "trend": {
+              "ema200": 0.1430491958562453,
+              "alignment": "LONG",
+              "structure": "RANGE",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790107200000,
+                "index": 497,
+                "ageBars": 1
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789732800000,
+                "price": 0.1386,
+                "index": 471,
+                "breakClose": 0.1445,
+                "ageBars": 27
+              }
+            },
+            "priceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1789732800000,
+                "price": 0.1386,
+                "index": 471,
+                "breakClose": 0.1445,
+                "ageBars": 27
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend RANGE",
+              "EMA200 LONG",
+              "EMA200 kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1h",
+            "bias": "LONG",
+            "strength": 91,
+            "price": 0.1457,
+            "atr": 0.0017886237108788424,
+            "trend": {
+              "ema200": 0.14022126174695645,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 0.1454,
+                "index": 498,
+                "breakClose": 0.1457,
+                "ageBars": 0
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 0.1454,
+                "index": 498,
+                "breakClose": 0.1457,
+                "ageBars": 0
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          }
+        ],
+        "major": {
+          "direction": "SHORT",
+          "longScore": 3,
+          "shortScore": 7,
+          "conviction": 69,
+          "summary": "1W ↓ · 1D ↓ · 4H ↑ · 1H ↑",
+          "warnings": [],
+          "supports": []
+        },
+        "decision": {
+          "allowed": true,
+          "direction": "SHORT",
+          "majorDirection": "SHORT",
+          "summary": "1W ↓ · 1D ↓ · 4H ↑ · 1H ↑",
+          "conviction": 69,
+          "blockers": [],
+          "warnings": [
+            "HTF bilgi amaclidir; Orhan setup sinyalini veto etmez."
+          ],
+          "supports": []
+        }
+      },
+      "lowerFrameContext": {
+        "timeframe": "5m",
+        "bias": "LONG",
+        "strength": 67,
+        "price": 0.145,
+        "atr": 0.00048213967222299735,
+        "trend": {
+          "ema200": 0.14401859825578517,
+          "alignment": "LONG",
+          "structure": "UP",
+          "ema200Side": "LONG",
+          "ema200Cross": null,
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790146800000,
+            "price": 0.1453,
+            "index": 497,
+            "breakClose": 0.1452,
+            "ageBars": 1
+          }
+        },
+        "priceAction": {
+          "structureTrend": "UP",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790146800000,
+            "price": 0.1453,
+            "index": 497,
+            "breakClose": 0.1452,
+            "ageBars": 1
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend UP",
+          "EMA200 LONG",
+          "Trend kirilimi DOWN"
+        ]
+      },
+      "indicatorContext": {
+        "timeframe": "5m",
+        "bias": "LONG",
+        "strength": 67,
+        "price": 0.145,
+        "atr": 0.00048213967222299735,
+        "trend": {
+          "ema200": 0.14401859825578517,
+          "alignment": "LONG",
+          "structure": "UP",
+          "ema200Side": "LONG",
+          "ema200Cross": null,
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790146800000,
+            "price": 0.1453,
+            "index": 497,
+            "breakClose": 0.1452,
+            "ageBars": 1
+          }
+        },
+        "priceAction": {
+          "structureTrend": "UP",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "DOWN",
+            "time": 1790146800000,
+            "price": 0.1453,
+            "index": 497,
+            "breakClose": 0.1452,
+            "ageBars": 1
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend UP",
+          "EMA200 LONG",
+          "Trend kirilimi DOWN"
+        ]
+      },
+      "entryTrigger": {
+        "type": "ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "SR_ZONE",
+          "COMPRESSION",
+          "BREAKOUT",
+          "CONFIRMATION",
+          "ENTRY"
+        ],
+        "zone": {
+          "price": 0.1454,
+          "low": 0.14530575,
+          "high": 0.14549425,
+          "touches": 27,
+          "pivotTouches": 2,
+          "reactionTouches": 27,
+          "highTouches": 2,
+          "lowTouches": 0,
+          "roleReversal": true,
+          "strength": 31
+        },
+        "trendline": {
+          "side": "ASC_SUPPORT",
+          "p1": {
+            "i": 407,
+            "time": 1790119800000,
+            "price": 0.1443
+          },
+          "p2": {
+            "i": 464,
+            "time": 1790136900000,
+            "price": 0.1453
+          },
+          "slope": 0.000017543859649122823,
+          "projected": 0.1458964912280702,
+          "index": 498,
+          "touches": 3,
+          "violations": 0,
+          "ageBars": 34,
+          "distanceAtr": 1.86,
+          "score": 6.12
+        },
+        "confluence": {
+          "zoneTrendlineGapAtr": 1.03,
+          "required": true
+        },
+        "reclaim": {
+          "firstBreak": {
+            "index": 455,
+            "time": 1790134200000,
+            "close": 0.1457
+          },
+          "roleRetest": {
+            "index": 456,
+            "time": 1790134500000,
+            "close": 0.1456
+          },
+          "priorLiquidity": {
+            "index": 451,
+            "time": 1790133000000,
+            "price": 0.1461
+          },
+          "liquiditySweep": {
+            "index": 473,
+            "time": 1790139600000,
+            "extreme": 0.1467,
+            "tookLiquidity": true
+          },
+          "reclaim": {
+            "index": 497,
+            "time": 1790146800000,
+            "close": 0.1452
+          },
+          "structuralStop": 0.14676749955411122,
+          "stopBuffer": 0.00006749955411121963
+        },
+        "compression": {
+          "ok": true,
+          "score": 3,
+          "descendingHighs": false,
+          "risingLows": true,
+          "rangeContract": true,
+          "nearZone": true,
+          "recentRange": 0.001600000000000018,
+          "olderRange": 0.001899999999999985,
+          "highs": [
+            {
+              "i": 465,
+              "time": 1790137200000,
+              "price": 0.1463
+            },
+            {
+              "i": 473,
+              "time": 1790139600000,
+              "price": 0.1467
+            },
+            {
+              "i": 482,
+              "time": 1790142300000,
+              "price": 0.146
+            },
+            {
+              "i": 493,
+              "time": 1790145600000,
+              "price": 0.1461
+            }
+          ],
+          "lows": [
+            {
+              "i": 418,
+              "time": 1790123100000,
+              "price": 0.1445
+            },
+            {
+              "i": 464,
+              "time": 1790136900000,
+              "price": 0.1453
+            }
+          ]
+        },
+        "breakout": {
+          "time": 1790146800000,
+          "index": 497,
+          "candle": {
+            "open": 0.1457,
+            "high": 0.1457,
+            "low": 0.1451,
+            "close": 0.1452
+          },
+          "bodyAtr": 1.04,
+          "bodyRatio": 0.83,
+          "horizontalLevel": 0.1454,
+          "trendlineLevel": 0.14587894736842105,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.99
+        },
+        "confirmation": {
+          "time": 1790147100000,
+          "index": 498,
+          "candle": {
+            "open": 0.1453,
+            "high": 0.1454,
+            "low": 0.1445,
+            "close": 0.145
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": {
+          "time": 1790147100000,
+          "index": 498,
+          "heldHorizontal": true,
+          "heldTrendline": false,
+          "candle": {
+            "open": 0.1453,
+            "high": 0.1454,
+            "low": 0.1445,
+            "close": 0.145
+          }
+        }
+      },
+      "entrySequence": {
+        "breakout": {
+          "time": 1790146800000,
+          "index": 497,
+          "candle": {
+            "open": 0.1457,
+            "high": 0.1457,
+            "low": 0.1451,
+            "close": 0.1452
+          },
+          "bodyAtr": 1.04,
+          "bodyRatio": 0.83,
+          "horizontalLevel": 0.1454,
+          "trendlineLevel": 0.14587894736842105,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.99
+        },
+        "confirmation": {
+          "time": 1790147100000,
+          "index": 498,
+          "candle": {
+            "open": 0.1453,
+            "high": 0.1454,
+            "low": 0.1445,
+            "close": 0.145
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": {
+          "time": 1790147100000,
+          "index": 498,
+          "heldHorizontal": true,
+          "heldTrendline": false,
+          "candle": {
+            "open": 0.1453,
+            "high": 0.1454,
+            "low": 0.1445,
+            "close": 0.145
+          }
+        },
+        "ageBars": 1
+      },
+      "liquidityEvidence": null,
+      "majorObstacle": null,
+      "riskAtr": 3.67,
+      "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↓ · 1D ↓ · 4H ↑ · 1H ↑. Bolge 0.14531–0.14549 · temas 27 · rol degisimi EVET · sikisma 3/4. SHORT giris 0.145. STOP 0.14677 · TP1 0.14279 · TP2 0.14147 · TP3 0.1397. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
+      "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
+      "status": "WAIT_ENTRY",
+      "stage": 0,
+      "enteredAt": null,
+      "lastCheckedAt": "2026-09-23T07:13:07.247Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
+      }
+    },
+    "PARTIUSDT|futures|5m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790147100000": {
+      "fingerprint": "PARTIUSDT|futures|5m|LONG|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "structureKey": "PARTIUSDT|futures|5m|LONG|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
+      "signalId": "PARTIUSDT|futures|5m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1790147100000",
+      "symbol": "PARTIUSDT",
+      "market": "futures",
+      "timeframe": "5m",
+      "direction": "LONG",
+      "confidence": 94,
+      "riskReward": 3,
+      "sentAt": "2026-09-23T07:13:33.025Z",
+      "entry": 0.02674,
+      "stop": 0.025738144384813103,
+      "tp1": 0.02799231951898362,
+      "tp2": 0.028743711230373795,
+      "tp3": 0.029745566845560692,
+      "messageId": 650,
+      "analysisVersion": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+      "topDownContext": {
+        "version": "RC5.48_ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "1w",
+          "1d",
+          "4h",
+          "1h"
+        ],
+        "builtAt": "2026-09-23T07:13:31.717Z",
+        "frames": [
+          {
+            "timeframe": "1w",
+            "bias": "SHORT",
+            "strength": 79,
+            "price": 0.02423,
+            "atr": 0.007924673609206286,
+            "trend": {
+              "ema200": null,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "NEUTRAL",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1783296000000,
+                "price": 0.0425,
+                "index": 67,
+                "breakClose": 0.03134,
+                "ageBars": 10
+              }
+            },
+            "priceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1783296000000,
+                "price": 0.0425,
+                "index": 67,
+                "breakClose": 0.03134,
+                "ageBars": 10
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend DOWN",
+              "EMA200 NEUTRAL",
+              "Trend kirilimi DOWN"
+            ]
+          },
+          {
+            "timeframe": "1d",
+            "bias": "SHORT",
+            "strength": 91,
+            "price": 0.02608,
+            "atr": 0.001831981683558588,
+            "trend": {
+              "ema200": 0.04912171198932279,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1788912000000,
+                "price": 0.02303,
+                "index": 485,
+                "breakClose": 0.02301,
+                "ageBars": 13
+              }
+            },
+            "priceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1788912000000,
+                "price": 0.02303,
+                "index": 485,
+                "breakClose": 0.02301,
+                "ageBars": 13
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend DOWN",
+              "EMA200 SHORT",
+              "Trend kirilimi DOWN"
+            ]
+          },
+          {
+            "timeframe": "4h",
+            "bias": "LONG",
+            "strength": 92,
+            "price": 0.02653,
+            "atr": 0.0008740333915118469,
+            "trend": {
+              "ema200": 0.024370458773434613,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1789920000000,
+                "index": 484,
+                "ageBars": 14
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790092800000,
+                "price": 0.02601,
+                "index": 496,
+                "breakClose": 0.02626,
+                "ageBars": 2
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790092800000,
+                "price": 0.02601,
+                "index": 496,
+                "breakClose": 0.02626,
+                "ageBars": 2
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP",
+              "EMA200 kirilimi UP"
+            ]
+          },
+          {
+            "timeframe": "1h",
+            "bias": "LONG",
+            "strength": 91,
+            "price": 0.02685,
+            "atr": 0.00046036678247762786,
+            "trend": {
+              "ema200": 0.024355441075656924,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 0.02658,
+                "index": 498,
+                "breakClose": 0.02685,
+                "ageBars": 0
+              }
+            },
+            "priceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790143200000,
+                "price": 0.02658,
+                "index": 498,
+                "breakClose": 0.02685,
+                "ageBars": 0
+              }
+            },
+            "supertrend": null,
+            "volume": null,
+            "supportResistance": null,
+            "liquidity": null,
+            "fibonacci": null,
+            "smartMoney": null,
+            "reasons": [
+              "Trend UP",
+              "EMA200 LONG",
+              "Trend kirilimi UP"
+            ]
+          }
+        ],
+        "major": {
+          "direction": "SHORT",
+          "longScore": 3,
+          "shortScore": 7,
+          "conviction": 69,
+          "summary": "1W ↓ · 1D ↓ · 4H ↑ · 1H ↑",
+          "warnings": [],
+          "supports": []
+        },
+        "decision": {
+          "allowed": true,
+          "direction": "LONG",
+          "majorDirection": "SHORT",
+          "summary": "1W ↓ · 1D ↓ · 4H ↑ · 1H ↑",
+          "conviction": 69,
+          "blockers": [],
+          "warnings": [
+            "HTF bilgi amaclidir; Orhan setup sinyalini veto etmez."
+          ],
+          "supports": []
+        }
+      },
+      "lowerFrameContext": {
+        "timeframe": "5m",
+        "bias": "LONG",
+        "strength": 79,
+        "price": 0.02674,
+        "atr": 0.00015611153704928282,
+        "trend": {
+          "ema200": 0.02611553819823061,
+          "alignment": "LONG",
+          "structure": "RANGE",
+          "ema200Side": "LONG",
+          "ema200Cross": null,
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790144700000,
+            "price": 0.02657,
+            "index": 490,
+            "breakClose": 0.02659,
+            "ageBars": 8
+          }
+        },
+        "priceAction": {
+          "structureTrend": "RANGE",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790144700000,
+            "price": 0.02657,
+            "index": 490,
+            "breakClose": 0.02659,
+            "ageBars": 8
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend RANGE",
+          "EMA200 LONG",
+          "Trend kirilimi UP"
+        ]
+      },
+      "indicatorContext": {
+        "timeframe": "5m",
+        "bias": "LONG",
+        "strength": 79,
+        "price": 0.02674,
+        "atr": 0.00015611153704928282,
+        "trend": {
+          "ema200": 0.02611553819823061,
+          "alignment": "LONG",
+          "structure": "RANGE",
+          "ema200Side": "LONG",
+          "ema200Cross": null,
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790144700000,
+            "price": 0.02657,
+            "index": 490,
+            "breakClose": 0.02659,
+            "ageBars": 8
+          }
+        },
+        "priceAction": {
+          "structureTrend": "RANGE",
+          "lastBreak": {
+            "type": "TREND_BREAK",
+            "side": "UP",
+            "time": 1790144700000,
+            "price": 0.02657,
+            "index": 490,
+            "breakClose": 0.02659,
+            "ageBars": 8
+          }
+        },
+        "supertrend": null,
+        "volume": null,
+        "supportResistance": null,
+        "liquidity": null,
+        "fibonacci": null,
+        "smartMoney": null,
+        "reasons": [
+          "Trend RANGE",
+          "EMA200 LONG",
+          "Trend kirilimi UP"
+        ]
+      },
+      "entryTrigger": {
+        "type": "ORHAN_SR_BREAKOUT_CONFIRM",
+        "order": [
+          "SR_ZONE",
+          "COMPRESSION",
+          "BREAKOUT",
+          "CONFIRMATION",
+          "ENTRY"
+        ],
+        "zone": {
+          "price": 0.026573333333333334,
+          "low": 0.026545233256664462,
+          "high": 0.026601433410002207,
+          "touches": 27,
+          "pivotTouches": 3,
+          "reactionTouches": 27,
+          "highTouches": 2,
+          "lowTouches": 1,
+          "roleReversal": true,
+          "strength": 31
+        },
+        "trendline": {
+          "side": "DESC_RESISTANCE",
+          "p1": {
+            "i": 454,
+            "time": 1790133900000,
+            "price": 0.02669
+          },
+          "p2": {
+            "i": 486,
+            "time": 1790143500000,
+            "price": 0.02657
+          },
+          "slope": -0.0000037499999999999556,
+          "projected": 0.026525,
+          "index": 498,
+          "touches": 4,
+          "violations": 0,
+          "ageBars": 12,
+          "distanceAtr": 1.38,
+          "score": 10.26
+        },
+        "confluence": {
+          "zoneTrendlineGapAtr": 0.31,
+          "required": true
+        },
+        "reclaim": {
+          "firstBreak": {
+            "index": 405,
+            "time": 1790119200000,
+            "close": 0.02632
+          },
+          "roleRetest": {
+            "index": 454,
+            "time": 1790133900000,
+            "close": 0.0266
+          },
+          "priorLiquidity": {
+            "index": 392,
+            "time": 1790115300000,
+            "price": 0.02581
+          },
+          "liquiditySweep": {
+            "index": 436,
+            "time": 1790128500000,
+            "extreme": 0.02576,
+            "tookLiquidity": true
+          },
+          "reclaim": {
+            "index": 495,
+            "time": 1790146200000,
+            "close": 0.02681
+          },
+          "structuralStop": 0.025738144384813103,
+          "stopBuffer": 0.000021855615186899598
+        },
+        "compression": {
+          "ok": true,
+          "score": 3,
+          "descendingHighs": true,
+          "risingLows": true,
+          "rangeContract": false,
+          "nearZone": true,
+          "recentRange": 0.0008099999999999982,
+          "olderRange": 0.0003699999999999988,
+          "highs": [
+            {
+              "i": 454,
+              "time": 1790133900000,
+              "price": 0.02669
+            },
+            {
+              "i": 463,
+              "time": 1790136600000,
+              "price": 0.02662
+            },
+            {
+              "i": 473,
+              "time": 1790139600000,
+              "price": 0.02665
+            },
+            {
+              "i": 486,
+              "time": 1790143500000,
+              "price": 0.02657
+            }
+          ],
+          "lows": [
+            {
+              "i": 474,
+              "time": 1790139900000,
+              "price": 0.02628
+            },
+            {
+              "i": 479,
+              "time": 1790141400000,
+              "price": 0.02616
+            },
+            {
+              "i": 484,
+              "time": 1790142900000,
+              "price": 0.02611
+            },
+            {
+              "i": 494,
+              "time": 1790145900000,
+              "price": 0.02657
+            }
+          ]
+        },
+        "breakout": {
+          "time": 1790146200000,
+          "index": 495,
+          "candle": {
+            "open": 0.0266,
+            "high": 0.02685,
+            "low": 0.0266,
+            "close": 0.02681
+          },
+          "bodyAtr": 1.35,
+          "bodyRatio": 0.84,
+          "horizontalLevel": 0.026573333333333334,
+          "trendlineLevel": 0.02653625,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.24
+        },
+        "confirmation": {
+          "time": 1790146500000,
+          "index": 496,
+          "candle": {
+            "open": 0.02681,
+            "high": 0.02692,
+            "low": 0.02678,
+            "close": 0.02685
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": null
+      },
+      "entrySequence": {
+        "breakout": {
+          "time": 1790146200000,
+          "index": 495,
+          "candle": {
+            "open": 0.0266,
+            "high": 0.02685,
+            "low": 0.0266,
+            "close": 0.02681
+          },
+          "bodyAtr": 1.35,
+          "bodyRatio": 0.84,
+          "horizontalLevel": 0.026573333333333334,
+          "trendlineLevel": 0.02653625,
+          "dualBreak": true,
+          "confluenceDistanceAtr": 0.24
+        },
+        "confirmation": {
+          "time": 1790146500000,
+          "index": 496,
+          "candle": {
+            "open": 0.02681,
+            "high": 0.02692,
+            "low": 0.02678,
+            "close": 0.02685
+          },
+          "holdsHorizontal": true,
+          "holdsTrend": true
+        },
+        "retest": null,
+        "ageBars": 3
+      },
+      "liquidityEvidence": null,
+      "majorObstacle": null,
+      "riskAtr": 6.42,
+      "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↓ · 1D ↓ · 4H ↑ · 1H ↑. Bolge 0.0265452–0.0266014 · temas 27 · rol degisimi EVET · sikisma 3/4. LONG giris 0.02674. STOP 0.0257381 · TP1 0.0279923 · TP2 0.0287437 · TP3 0.0297456. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
+      "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
+      "status": "WAIT_ENTRY",
+      "stage": 0,
+      "enteredAt": null,
+      "lastCheckedAt": "2026-09-23T07:13:33.025Z",
+      "notified": {
+        "entry": false,
+        "tp1": false,
+        "tp2": false,
+        "tp3": false,
+        "stop": false,
+        "ambiguous": false
       }
     }
   },
@@ -94608,51 +99489,51 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 338,
+    "cursor": 378,
     "total": 571,
-    "lastRefreshAt": "2026-09-23T03:30:53.800Z",
-    "lastBatchAt": "2026-09-23T03:30:53.800Z",
+    "lastRefreshAt": "2026-09-23T07:11:21.219Z",
+    "lastBatchAt": "2026-09-23T07:11:21.219Z",
     "lastBatch": [
-      "LIGHTUSDT",
-      "LINEAUSDT",
-      "LINKUSDC",
-      "LINKUSDT",
-      "LISTAUSDT",
-      "LITUSDT",
-      "LPTUSDT",
-      "LQTYUSDT",
-      "LSKUSDT",
-      "LTCUSDC",
-      "LTCUSDT",
-      "LUMIAUSDT",
-      "LUNA2USDT",
-      "LYNUSDT",
-      "MAGICUSDT",
-      "MAGMAUSDT",
-      "MANAUSDT",
-      "MANTAUSDT",
-      "MANTRAUSDT",
-      "MARSCOINUSDT",
-      "MASKUSDT",
-      "MAVIAUSDT",
-      "MAVUSDT",
-      "MEGAUSDT",
-      "MELANIAUSDT",
-      "MEMEUSDT",
-      "MERLUSDT",
-      "METISUSDT",
-      "METUSDT",
-      "MEUSDT",
-      "MEWUSDT",
-      "MINAUSDT",
-      "MIRAUSDT",
-      "MITOUSDT",
-      "MMTUSDT",
-      "MOCAUSDT",
-      "MONUSDT",
-      "MOODENGUSDT",
-      "MORPHOUSDT",
-      "MOVEUSDT"
+      "MOVRUSDT",
+      "MTLUSDT",
+      "MUBARAKUSDT",
+      "MUSDT",
+      "MYXUSDT",
+      "NAORISUSDT",
+      "NEARUSDC",
+      "NEARUSDT",
+      "NEIROUSDT",
+      "NEOUSDC",
+      "NEOUSDT",
+      "NEWTUSDT",
+      "NIGHTUSDT",
+      "NILUSDT",
+      "NMRUSDT",
+      "NOMUSDT",
+      "NOTUSDT",
+      "NXPCUSDT",
+      "OGNUSDT",
+      "OGUSDT",
+      "ONDOUSDT",
+      "ONEUSDT",
+      "ONGUSDT",
+      "ONTUSDT",
+      "ONUSDT",
+      "OPENUSDT",
+      "OPGUSDT",
+      "OPNUSDT",
+      "OPUSDT",
+      "ORCAUSDT",
+      "ORDERUSDT",
+      "ORDIUSDC",
+      "ORDIUSDT",
+      "OUSDT",
+      "PARTIUSDT",
+      "PAXGUSDT",
+      "PENDLEUSDT",
+      "PENGUUSDC",
+      "PENGUUSDT",
+      "PEOPLEUSDT"
     ],
     "batchSize": 40,
     "cyclesCompleted": 2
@@ -94672,7 +99553,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-09-23T03:30:52.892Z",
+    "validatedAt": "2026-09-23T07:11:20.144Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
