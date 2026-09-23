@@ -360,6 +360,65 @@ function orhanBreakoutSequence(c,zone,direction,av,tf='15m',trendline=null){
  }
  return best
 }
+function orhanSupportBreakReclaim(c,zone,direction,av,reclaimIndex){
+ const up=direction==='LONG',start=Math.max(8,reclaimIndex-90);
+ // LONG: once-support must first break DOWN, become resistance, then be reclaimed UP.
+ // SHORT: once-resistance must first break UP, become support, then be reclaimed DOWN.
+ let firstBreak=-1;
+ for(let i=start;i<reclaimIndex;i++){
+   const k=c[i];
+   const broke=up?k.close<zone.low-av*.04:k.close>zone.high+av*.04;
+   if(broke){firstBreak=i;break}
+ }
+ if(firstBreak<0)return null;
+
+ const before=c.slice(Math.max(0,firstBreak-55),firstBreak);
+ const piv=detectStructure(c.slice(0,firstBreak+1)).pivots;
+ const priorPivot=up?[...(piv?.lows||[])].reverse().find(p=>p.i<firstBreak):[...(piv?.highs||[])].reverse().find(p=>p.i<firstBreak);
+ if(!priorPivot)return null;
+
+ const raid=c.slice(firstBreak,reclaimIndex+1);
+ if(!raid.length)return null;
+ let extreme,extremeOffset;
+ if(up){
+   extreme=Math.min(...raid.map(k=>k.low));
+   extremeOffset=raid.findIndex(k=>k.low===extreme);
+ }else{
+   extreme=Math.max(...raid.map(k=>k.high));
+   extremeOffset=raid.findIndex(k=>k.high===extreme);
+ }
+ const extremeIndex=firstBreak+extremeOffset;
+ const tookLiquidity=up?extreme<priorPivot.price-av*.05:extreme>priorPivot.price+av*.05;
+ if(!tookLiquidity)return null;
+
+ // After the first break price must actually treat the old level as the opposite side at least once.
+ let roleRetest=null;
+ for(let i=firstBreak+1;i<reclaimIndex;i++){
+   const k=c[i],touch=k.low<=zone.high+av*.12&&k.high>=zone.low-av*.12;
+   if(!touch)continue;
+   const rejected=up?k.close<=zone.high+av*.06:k.close>=zone.low-av*.06;
+   if(rejected){roleRetest={index:i,time:k.time,close:k.close};break}
+ }
+ if(!roleRetest)return null;
+
+ const reclaim=c[reclaimIndex];
+ const reentered=up?reclaim.close>zone.high+av*.04:reclaim.close<zone.low-av*.04;
+ if(!reentered)return null;
+
+ // The stop anchor is the actual liquidity-taking reversal extreme, not an arbitrary ATR stop.
+ const stopBuffer=Math.max(av*.14,Math.abs(extreme)*.00035);
+ const structuralStop=up?extreme-stopBuffer:extreme+stopBuffer;
+ return{
+   firstBreak:{index:firstBreak,time:c[firstBreak].time,close:c[firstBreak].close},
+   roleRetest,
+   priorLiquidity:{index:priorPivot.i,time:priorPivot.time,price:priorPivot.price},
+   liquiditySweep:{index:extremeIndex,time:c[extremeIndex]?.time,extreme,tookLiquidity:true},
+   reclaim:{index:reclaimIndex,time:reclaim.time,close:reclaim.close},
+   structuralStop,
+   stopBuffer
+ };
+}
+
 function buildCanonicalTradePlan(symbol,tf,c,major){
  if(!c?.length||c.length<120)return rejectReason('ORHAN_LT_120_BARS');
  const i=c.length-1,price=Number(c[i].close),av=atr(c,14).at(-1)||Math.max(price*.004,1e-8),zones=orhanRoleReversalZones(c);
@@ -377,13 +436,13 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
    const seq=orhanBreakoutSequence(c,zone,direction,av,tf,trendline);
    if(!seq)continue;
    const breakoutIndex=seq.breakout.index;
-   const pre=c.slice(Math.max(0,breakoutIndex-24),breakoutIndex+1);
-   if(pre.length<8)continue;
+   const reclaim=orhanSupportBreakReclaim(c,zone,direction,av,breakoutIndex);
+   if(!reclaim)continue;
    const up=direction==='LONG';
-   const oppositeExtreme=up?Math.min(...pre.map(x=>x.low)):Math.max(...pre.map(x=>x.high));
-   const buffer=Math.max(av*.22,price*.0005);
-   const stop=up?Math.min(oppositeExtreme,zone.low)-buffer:Math.max(oppositeExtreme,zone.high)+buffer;
+   const stop=Number(reclaim.structuralStop);
    const entry=price,risk=Math.abs(entry-stop);
+   const confirmClose=Number(seq.confirmation?.candle?.close);
+   if(finite(confirmClose)&&Math.abs(entry-confirmClose)/Math.max(av,1e-12)>.9)continue;
    if(!(risk>0))continue;
    const riskAtr=risk/Math.max(av,1e-12);
    if(riskAtr>.01&&riskAtr>7)continue;
@@ -408,6 +467,7 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
       zone:{price:zone.price,low:zone.low,high:zone.high,touches:zone.touches,pivotTouches:zone.pivotTouches,reactionTouches:zone.reactionTouches,highTouches:zone.highTouches,lowTouches:zone.lowTouches,roleReversal:zone.roleReversal,strength:zone.strength},
       trendline,
       confluence:{zoneTrendlineGapAtr:Number(zoneLineGap.toFixed(2)),required:true},
+      reclaim,
       compression:comp,breakout:seq.breakout,confirmation:seq.confirmation,retest:seq.retest
     },
     entrySequence:seq,liquidityEvidence:null,majorObstacle:null,riskAtr:Number(riskAtr.toFixed(2)),
@@ -415,6 +475,10 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
       'Orhan S/R bolgesi '+zone.touches+' temas',
       zone.roleReversal?'Dip-tepe rol degisimi var':'Coklu temas bolgesi',
       'Sikisma skoru '+comp.score+'/4',
+      direction==='LONG'?'Once destek asagi kirildi ve ayni seviye dirence dondu':'Once direnc yukari kirildi ve ayni seviye destege dondu',
+      'Eski seviyenin karsi rolde retesti goruldu',
+      'Son dip/tepe likiditesi alindi',
+      direction==='LONG'?'Stop likidite alan son dibin bir tik altinda':'Stop likidite alan son tepenin bir tik ustunde',
       direction==='LONG'?'Alcalan trend direnci fitil tepelerinden cekildi':'Yukselen trend destegi fitil diplerinden cekildi',
       'Yatay S/R + trend cizgisi ayni bolgede kesisti',
       'Cift kirilim '+direction+' (yatay seviye + trend cizgisi)',
@@ -423,7 +487,7 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
       'HTF sadece bilgi; veto degil'
     ],
     invalidation:up?'Sikisma dibi / destek bolgesi alti':'Sikisma tepesi / direnc bolgesi ustu',
-    orhanSetup:{zone,compression:comp,sequence:seq,htfContext:major?.summary||null}
+    orhanSetup:{zone,compression:comp,sequence:seq,reclaim,stopAnchor:reclaim.liquiditySweep,htfContext:major?.summary||null}
    };
    if(!chosen||candidate.confidence>chosen.confidence)chosen=candidate;
   }
@@ -435,12 +499,12 @@ function fmtNum(v){if(v===null||v===undefined||v==='')return'—';const x=Number
 
 function commentary(setup){
  const d=setup.topDownContext?.decision||{},tr=setup.entryTrigger||{},z=tr.zone||{},cp=tr.compression||{};
- return 'ORHAN SETUP — Manuel S/R + fitil trend cizgisi + kesişim + çift kırılım + onay. '
+ return 'ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. '
   +(d.summary?('HTF bilgi: '+d.summary+'. '):'')
   +'Bolge '+fmtNum(z.low)+'–'+fmtNum(z.high)+' · temas '+(z.touches??'—')+' · rol degisimi '+(z.roleReversal?'EVET':'HAYIR')
   +' · sikisma '+(cp.score??'—')+'/4. '+setup.direction+' giris '+fmtNum(setup.entry)
   +'. STOP '+fmtNum(setup.stop)+' · TP1 '+fmtNum(setup.tp1)+' · TP2 '+fmtNum(setup.tp2)+' · TP3 '+fmtNum(setup.tp3)
-  +'. EMA/HTF tek basina sinyal vermez; ana tetik yatay S/R ile trend cizgisinin ayni yerde kirilmasi ve sonraki mumun iki seviyeyi de korumasidir.';
+  +'. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.';
 }
 const cache=new Map();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
