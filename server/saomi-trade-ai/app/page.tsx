@@ -32,6 +32,9 @@ export default function Page(){
   const trigger=row?.entryTrigger||{};
   const zone=trigger.zone||row?.orhanSetup?.zone||{};
   const compression=trigger.compression||row?.orhanSetup?.compression||{};
+  const reclaim=trigger.reclaim||row?.orhanSetup?.reclaim||{};
+  const trendline=trigger.trendline||{};
+  const confluence=trigger.confluence||{};
   const breakout=trigger.breakout||row?.orhanSetup?.sequence?.breakout||{};
   const confirmation=trigger.confirmation||row?.orhanSetup?.sequence?.confirmation||null;
   const direction=String(row?.direction||'').toUpperCase();
@@ -40,60 +43,78 @@ export default function Page(){
   const decision=hasSignal?direction:'BEKLE';
   const conf=Number.isFinite(Number(row?.confidence))?Math.round(Number(row?.confidence)):null;
   const zoneReady=Number(zone?.touches||0)>=3;
-  const compressionReady=Boolean(compression?.ok);
-  const breakoutReady=Boolean(breakout?.time||breakout?.candle);
-  const confirmReady=Boolean(confirmation);
-  const riskReady=Number.isFinite(Number(row?.stop));
+  const firstBreakReady=Boolean(reclaim?.firstBreak);
+  const roleFlipReady=Boolean(reclaim?.roleRetest);
+  const liquidityReady=Boolean(reclaim?.liquiditySweep?.tookLiquidity);
+  const reentryReady=Boolean(reclaim?.reclaim);
+  const trendReady=Boolean(trendline?.p1&&trendline?.p2);
+  const dualBreakReady=Boolean(breakout?.dualBreak);
+  const confirmReady=Boolean(confirmation?.holdsHorizontal&&confirmation?.holdsTrend);
+  const riskReady=Number.isFinite(Number(row?.stop))&&Boolean(row?.orhanSetup?.stopAnchor||reclaim?.liquiditySweep);
   const htf=String(row?.topDownContext?.decision?.summary||row?.orhanSetup?.htfContext||'Bilgi amaçlı; veto değil');
 
   const cards=useMemo(()=>[
     {
-      n:1,title:'DESTEK / DİRENÇ BÖLGESİ',ok:zoneReady,
+      n:1,title:'YATAY DESTEK / DİRENÇ BÖLGESİ',ok:zoneReady,
       strong:zoneReady?('HAZIR · '+(zone.touches??'—')+' temas'):'Bölge aranıyor',
       text:zoneReady
-        ? `Bölge ${num(zone.low)}–${num(zone.high)} · dip/tepe rol değişimi: ${yes(zone.roleReversal)}.`
-        :'Dip ve tepelerin aynı fiyat çevresinde en az 3 temasla birleşmesi bekleniyor.'
+        ? `Bölge ${num(zone.low)}–${num(zone.high)} · fitil/gövde reaksiyonu ${zone.reactionTouches??'—'} · rol değişimi: ${yes(zone.roleReversal)}.`
+        :'Aynı fiyat çevresinde tekrarlanan fitil/gövde tepkileri ve güçlü yatay S/R aranıyor.'
     },
     {
-      n:2,title:'SIKIŞMA',ok:compressionReady,
-      strong:compressionReady?('VAR · skor '+(compression.score??'—')+'/4'):'Henüz yeterli değil',
-      text:compressionReady
-        ? `Yükselen dip: ${yes(compression.risingLows)} · alçalan tepe: ${yes(compression.descendingHighs)} · alan daralıyor: ${yes(compression.rangeContract)}.`
-        :'Bölgeye yaklaşırken diplerin yükselmesi, tepelerin alçalması ve hareket alanının daralması aranıyor.'
+      n:2,title:'İLK KIRILIM + ROL DEĞİŞİMİ',ok:firstBreakReady&&roleFlipReady,
+      strong:firstBreakReady&&roleFlipReady?'KIRILDI · KARŞI ROLDE TEST EDİLDİ':'İlk kırılım / rol testi bekleniyor',
+      text:firstBreakReady&&roleFlipReady
+        ? `İlk kırılım ${reclaim.firstBreak?.time?'tespit edildi':'—'} · eski seviye karşı taraftan retest edildi.`
+        :'LONG için destek önce aşağı kırılıp dirence; SHORT için direnç önce yukarı kırılıp desteğe dönmeli.'
     },
     {
-      n:3,title:'BÖLGE KIRILIMI',ok:breakoutReady,
-      strong:breakoutReady?((direction||'—')+' kırılım'):'Kırılım bekleniyor',
-      text:breakoutReady
-        ? `Kırılım mum gövdesi: ${breakout.bodyAtr??'—'} ATR · bölge dışında kapanış görüldü.`
-        :'Direnç üstü kapanış LONG, destek altı kapanış SHORT adayı oluşturur.'
+      n:3,title:'LİKİDİTE ALIMI',ok:liquidityReady,
+      strong:liquidityReady?'SON DİP/TEPE LİKİDİTESİ ALINDI':'Likidite süpürmesi bekleniyor',
+      text:liquidityReady
+        ? `Önceki likidite ${num(reclaim.priorLiquidity?.price)} · süpürme ekstremi ${num(reclaim.liquiditySweep?.extreme)}.`
+        :'Fiyat yeniden içeri dönmeden önce son yapısal dip/tepe likiditesini almalı.'
     },
     {
-      n:4,title:'ONAY / RETEST',ok:confirmReady,
-      strong:confirmReady?'ONAYLANDI':'Onay bekleniyor',
+      n:4,title:'YENİDEN İÇERİ GİRİŞ',ok:reentryReady,
+      strong:reentryReady?'SEVİYE GERİ ALINDI':'Reclaim bekleniyor',
+      text:reentryReady
+        ? 'Fiyat eski destek/direnç bölgesini yeniden geri aldı ve alan içine kapandı.'
+        :'Süpürmeden sonra fiyat eski seviyenin öbür tarafına kapanarak bölgeyi reclaim etmeli.'
+    },
+    {
+      n:5,title:'TREND ÇİZGİSİ + ÇİFT KIRILIM',ok:trendReady&&dualBreakReady,
+      strong:trendReady&&dualBreakReady?'YATAY + TREND AYNI ANDA KIRILDI':'Trend / yatay kesişim bekleniyor',
+      text:trendReady&&dualBreakReady
+        ? `Trend temasları ${trendline.touches??'—'} · kesişim uzaklığı ${breakout.confluenceDistanceAtr??confluence.zoneTrendlineGapAtr??'—'} ATR.`
+        :'Fitil uçlarından çizilen trend çizgisi ile yatay S/R aynı bölgede kırılmalı.'
+    },
+    {
+      n:6,title:'ONAY MUMU',ok:confirmReady,
+      strong:confirmReady?'İKİ SEVİYE DE KORUNDU':'Onay bekleniyor',
       text:confirmReady
-        ? 'Takip mumu kırılan bölgeyi korudu; varsa retest tutuldu.'
-        :'Kırılım sonrası bölgenin korunması veya retest ile rol değişiminin teyidi bekleniyor.'
+        ? 'Sonraki mum hem yatay bölgenin hem trend çizgisinin doğru tarafında kapandı.'
+        :'Tek kırılım yetmez; sonraki mum iki seviyeyi de korumalı.'
     },
     {
-      n:5,title:'GİRİŞ / STOP / TP',ok:riskReady,
-      strong:riskReady?('Giriş '+num(row?.entry)+' · Stop '+num(row?.stop)):'Seviyeler hesaplanmadı',
+      n:7,title:'YAPISAL STOP / KÂR KORUMA',ok:riskReady,
+      strong:riskReady?('STOP '+num(row?.stop)):'Stop hesaplanmadı',
       text:riskReady
-        ? `TP1 ${num(row?.tp1)} · TP2 ${num(row?.tp2)} · TP3 ${num(row?.tp3)} · R/R ${row?.riskReward??'—'}.`
-        :'Stop sıkışmanın karşı tarafındaki yapısal dip/tepe arkasına yerleştirilir.'
+        ? `Stop likiditeyi alan son yapısal ${direction==='LONG'?'dibin':'tepenin'} hemen dışında. TP1 ${num(row?.tp1)} sonrası BE, TP2 ${num(row?.tp2)} sonrası stop TP1'e taşınır.`
+        :'Stop ATR’ye göre rastgele değil; likiditeyi alan son yapısal dip/tepenin dışına konur.'
     },
     {
-      n:6,title:'HTF / EMA200 BİLGİSİ',ok:true,
-      strong:'VETO DEĞİL',
+      n:8,title:'HTF / EMA200',ok:true,
+      strong:'BİLGİ AMAÇLI · VETO DEĞİL',
       text:htf
     }
-  ],[row,zoneReady,compressionReady,breakoutReady,confirmReady,riskReady,direction,zone,compression,breakout,htf]);
+  ],[row,zoneReady,firstBreakReady,roleFlipReady,liquidityReady,reentryReady,trendReady,dualBreakReady,confirmReady,riskReady,direction,zone,reclaim,trendline,breakout,confluence,htf]);
 
   return <main style={S.page}>
     <header style={S.header}>
       <div>
         <div style={S.brand}>₿ <b>ŞAOMİ TRADE AI</b></div>
-        <div style={S.sub}>RC5.48 · ORHAN S/R BREAKOUT CONFIRM</div>
+        <div style={S.sub}>RC5.58 · ORHAN S/R + LİKİDİTE RECLAIM</div>
       </div>
       <div style={S.live}><span style={S.dot}/> Binance FUTURES · Tracker canlı</div>
     </header>
@@ -114,16 +135,21 @@ export default function Page(){
     <div style={S.banner}>
       {error?'⚠ '+error:
        !row?'⏳ WAIT · Aktif takip kaydı bekleniyor':
-       hasSignal?'✓ ORHAN SETUP · S/R bölgesi → sıkışma → kırılım → onay':'⏳ WAIT · ORHAN SETUP oluşmadı'}
+       hasSignal?'✓ ORHAN SETUP · S/R → rol değişimi → likidite → reclaim → çift kırılım → onay':'⏳ WAIT · ORHAN SETUP oluşmadı'}
     </div>
 
-    <h3 style={S.pathTitle}>ŞAOMİ’NİN YENİ KARAR YOLU</h3>
+    <h3 style={S.pathTitle}>ORHAN SETUP RC5.58 KARAR YOLU</h3>
     <section style={S.cards}>
       {cards.map(c=><article key={c.n} style={{...S.card,borderColor:c.ok?'#225d4d':'#672837'}}>
         <div style={S.cardHead}><b>{c.ok?'✓':'×'} {c.title}</b><b style={{fontSize:30,color:c.ok?'#2e9c77':'#b53d58'}}>{c.n}</b></div>
         <div style={S.strong}>{c.strong}</div>
         <div style={S.text}>{c.text}</div>
       </article>)}
+    </section>
+
+    <h3 style={S.pathTitle}>KULLANDIĞI APARATLAR</h3>
+    <section style={S.tools}>
+      {['Yatay S/R','Fitil Dip/Tepe','Rol Değişimi','Likidite Sweep','Reclaim','Trend Çizgisi','Çift Kırılım','Onay Mumu','Yapısal Stop','TP1→BE','TP2→TP1','Tracker','Telegram Senkron'].map(x=><span key={x} style={S.tool}>{x}</span>)}
     </section>
 
     <footer style={S.footer}>
@@ -143,6 +169,8 @@ const S:Record<string,React.CSSProperties>={
   banner:{maxWidth:820,margin:'14px auto',border:'1px solid #2a3951',background:'#0a1423',borderRadius:14,padding:'12px 16px',color:'#9faabd'},
   pathTitle:{maxWidth:820,margin:'24px auto 10px',fontSize:15,fontWeight:500,color:'#7d8798',letterSpacing:1},
   cards:{display:'grid',gap:12,maxWidth:820,margin:'0 auto'},card:{border:'1px solid',background:'#0b1525',borderRadius:18,padding:'15px 17px'},
+  tools:{display:'grid',gridTemplateColumns:'repeat(3,minmax(0,1fr))',gap:10,maxWidth:820,margin:'0 auto 12px'},
+  tool:{border:'1px solid #23324a',background:'#0b1525',borderRadius:12,padding:'10px 8px',textAlign:'center',fontSize:12,color:'#9da9bc'},
   cardHead:{display:'flex',alignItems:'center',justifyContent:'space-between',fontSize:17},strong:{fontSize:17,fontWeight:700,margin:'4px 0 8px'},text:{color:'#8e99aa',lineHeight:1.45,fontSize:14},
   footer:{position:'fixed',left:0,right:0,bottom:0,height:68,background:'#091220',borderTop:'1px solid #172236',display:'flex',alignItems:'center',justifyContent:'space-around',color:'#707b8f',fontSize:13}
 };
