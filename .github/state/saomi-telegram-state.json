@@ -58796,13 +58796,13 @@
       "riskAtr": 3.65,
       "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↑ · 1D ↑ · 4H ↔ · 1H ↑. Bolge 765.99–767.07 · temas 36 · rol degisimi EVET · sikisma 4/4. LONG giris 767.36. STOP 756.47 · TP1 780.97 · TP2 789.14 · TP3 800.02. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
       "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
-      "status": "ACTIVE",
-      "stage": 0,
+      "status": "TP1",
+      "stage": 1,
       "enteredAt": "2026-09-24T01:26:04.097Z",
       "lastCheckedAt": "2026-09-24T01:26:03.221Z",
       "notified": {
         "entry": true,
-        "tp1": false,
+        "tp1": true,
         "tp2": false,
         "tp3": false,
         "stop": false,
@@ -59550,18 +59550,21 @@
       "riskAtr": 5.21,
       "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↔ · 1D ↑ · 4H ↓ · 1H ↓. Bolge 0.0616697–0.0617503 · temas 51 · rol degisimi EVET · sikisma 4/4. LONG giris 0.06205. STOP 0.0609813 · TP1 0.0633859 · TP2 0.0641874 · TP3 0.0652561. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
       "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-09-24T12:02:54.372Z",
       "lastCheckedAt": "2026-09-24T12:02:53.470Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "initialStop": 0.06098128443806211,
+      "entryCandleOpenTime": 1790251320000,
+      "lastDeliveryError": null
     }
   },
   "history": [
@@ -125446,12 +125449,12 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-09-24T09:46:19.016Z",
+    "updatedAt": "2026-09-24T15:05:44.727Z",
     "scoredTrades": 104,
     "wins": 5,
     "losses": 99,
     "winRate": 4.81,
-    "tp1Reached": 35,
+    "tp1Reached": 36,
     "tp2Reached": 14,
     "tp3Reached": 5,
     "stopAfterTp1": 20,
@@ -125460,9 +125463,9 @@
     "expired": 8,
     "expiredBeforeEntry": 5,
     "expiredAfterEntry": 3,
-    "active": 3,
+    "active": 4,
     "waitingEntry": 0,
-    "inTrade": 3,
+    "inTrade": 4,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 45,
@@ -125496,9 +125499,9 @@
         "expired": 2,
         "expiredBeforeEntry": 1,
         "expiredAfterEntry": 1,
-        "active": 0,
+        "active": 1,
         "waitingEntry": 0,
-        "inTrade": 0
+        "inTrade": 1
       },
       "15m": {
         "scoredTrades": 22,
@@ -125523,7 +125526,7 @@
         "wins": 0,
         "losses": 11,
         "winRate": 0,
-        "tp1Reached": 3,
+        "tp1Reached": 4,
         "tp2Reached": 1,
         "tp3Reached": 0,
         "stopAfterTp1": 2,
@@ -125576,8 +125579,8 @@
     "rc562": {
       "setupVersion": "RC5.62_ORHAN_VOLUME_IMPULSE",
       "targetSignals": 20,
-      "signalsSeen": 0,
-      "targetProgressPct": 0,
+      "signalsSeen": 1,
+      "targetProgressPct": 5,
       "completedTrades": 0,
       "readyForReview": false,
       "fullReviewReady": false,
@@ -125594,9 +125597,9 @@
       "expired": 0,
       "expiredBeforeEntry": 0,
       "expiredAfterEntry": 0,
-      "active": 0,
+      "active": 1,
       "waitingEntry": 0,
-      "inTrade": 0,
+      "inTrade": 1,
       "byTimeframe": {
         "1m": {
           "scoredTrades": 0,
@@ -125630,9 +125633,9 @@
           "expired": 0,
           "expiredBeforeEntry": 0,
           "expiredAfterEntry": 0,
-          "active": 0,
+          "active": 1,
           "waitingEntry": 0,
-          "inTrade": 0
+          "inTrade": 1
         },
         "15m": {
           "scoredTrades": 0,
