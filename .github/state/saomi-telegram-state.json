@@ -57538,14 +57538,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "USELESSUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-24T06:23:44.536Z",
+            "candleCloseTime": 1790229599999,
+            "price": 0.29624,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 92,
+            "lowerTrend": {
+              "ema200": 0.2946229205300274,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790215200000,
+                "index": 491,
+                "ageBars": 7
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790217000000,
+                "price": 0.30179,
+                "index": 492,
+                "breakClose": 0.30494,
+                "ageBars": 6
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790217000000,
+                "price": 0.30179,
+                "index": 492,
+                "breakClose": 0.30494,
+                "ageBars": 6
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "USELESSUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790227799999,
+        "lastCandleCloseTime": 1790229599999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -58222,14 +58268,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "VTHOUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↔ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-24T06:23:47.506Z",
+            "candleCloseTime": 1790229599999,
+            "price": 0.0007755,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 92,
+            "lowerTrend": {
+              "ema200": 0.0006994976851970472,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "LONG",
+              "ema200Cross": {
+                "side": "UP",
+                "time": 1790197200000,
+                "index": 481,
+                "ageBars": 17
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790226000000,
+                "price": 0.0007376,
+                "index": 497,
+                "breakClose": 0.000747,
+                "ageBars": 1
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790226000000,
+                "price": 0.0007376,
+                "index": 497,
+                "breakClose": 0.000747,
+                "ageBars": 1
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "VTHOUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↔ · 1D ↑ · 4H ↑ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790227799999,
+        "lastCandleCloseTime": 1790229599999,
         "summary": {
-          "same": 2,
+          "same": 3,
           "wait": 0,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -58860,14 +58952,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "XMRUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↓ · 1H ↑"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-24T06:23:50.504Z",
+            "candleCloseTime": 1790229599999,
+            "price": 552.34,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 74,
+            "currentDirection": "LONG",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 561.4821242001467,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790172000000,
+                "index": 467,
+                "ageBars": 31
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790213400000,
+                "price": 556.87,
+                "index": 490,
+                "breakClose": 558.44,
+                "ageBars": 8
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790213400000,
+                "price": 556.87,
+                "index": 490,
+                "breakClose": 558.44,
+                "ageBars": 8
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "XMRUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↓ · 1H ↔"
           }
         ],
-        "lastCandleCloseTime": 1790227799999,
+        "lastCandleCloseTime": 1790229599999,
         "summary": {
-          "same": 1,
+          "same": 2,
           "wait": 0,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
       }
     },
@@ -59507,14 +59645,60 @@
             },
             "verdict": "BEKLE",
             "commentary": "BNBUSDT 30m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↑ · 1D ↑ · 4H ↔ · 1H ↑"
+          },
+          {
+            "no": 2,
+            "checkedAt": "2026-09-24T06:23:52.988Z",
+            "candleCloseTime": 1790229599999,
+            "price": 773.2,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 90,
+            "currentDirection": "LONG",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 775.1423943667862,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790172000000,
+                "index": 467,
+                "ageBars": 31
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790217000000,
+                "price": 769.3,
+                "index": 492,
+                "breakClose": 772.84,
+                "ageBars": 6
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790217000000,
+                "price": 769.3,
+                "index": 492,
+                "breakClose": 772.84,
+                "ageBars": 6
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "BNBUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↔ · 1H ↔"
           }
         ],
-        "lastCandleCloseTime": 1790227799999,
+        "lastCandleCloseTime": 1790229599999,
         "summary": {
-          "same": 0,
+          "same": 1,
           "wait": 1,
           "opposite": 0,
-          "total": 1
+          "total": 2
         }
       }
     }
@@ -124098,51 +124282,51 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 47,
+    "cursor": 87,
     "total": 571,
-    "lastRefreshAt": "2026-09-24T05:36:21.587Z",
-    "lastBatchAt": "2026-09-24T05:36:21.587Z",
+    "lastRefreshAt": "2026-09-24T06:23:39.493Z",
+    "lastBatchAt": "2026-09-24T06:23:39.493Z",
     "lastBatch": [
-      "1000FLOKIUSDT",
-      "1000LUNCUSDT",
-      "1000PEPEUSDC",
-      "1000PEPEUSDT",
-      "1000RATSUSDT",
-      "1000SATSUSDT",
-      "1000SHIBUSDC",
-      "1000SHIBUSDT",
-      "1000XECUSDT",
-      "1INCHUSDT",
-      "1MBABYDOGEUSDT",
-      "2ZUSDT",
-      "4USDT",
-      "AAVEUSDC",
-      "AAVEUSDT",
-      "ACEUSDT",
-      "ACHUSDT",
-      "ACTUSDT",
-      "ACUUSDT",
-      "ADAUSDC",
-      "ADAUSDT",
-      "AEROUSDT",
-      "AEVOUSDT",
-      "AGLDUSDT",
-      "AGTUSDT",
-      "AIAUSDT",
-      "AIGENSYNUSDT",
-      "AINUSDT",
-      "AIOTUSDT",
-      "AIOUSDT",
-      "AIXBTUSDT",
-      "AKEUSDT",
-      "AKTUSDT",
-      "ALCHUSDT",
-      "ALGOUSDT",
-      "ALICEUSDT",
-      "ALLOUSDT",
-      "ALLUSDT",
-      "ALPINEUSDT",
-      "ALTUSDT"
+      "ANIMEUSDT",
+      "ANKRUSDT",
+      "APEUSDT",
+      "API3USDT",
+      "APRUSDT",
+      "APTUSDT",
+      "ARBUSDC",
+      "ARBUSDT",
+      "ARCUSDT",
+      "ARIAUSDT",
+      "ARKMUSDT",
+      "ARKUSDT",
+      "ARPAUSDT",
+      "ARUSDT",
+      "ARXUSDT",
+      "ASRUSDT",
+      "ASTERUSDT",
+      "ASTRUSDT",
+      "ATHUSDT",
+      "ATOMUSDT",
+      "ATUSDT",
+      "AUCTIONUSDT",
+      "AUSDT",
+      "AVAAIUSDT",
+      "AVAUSDT",
+      "AVAXUSDC",
+      "AVAXUSDT",
+      "AVNTUSDT",
+      "AWEUSDT",
+      "AXLUSDT",
+      "AXSUSDT",
+      "AZTECUSDT",
+      "B2USDT",
+      "BABYUSDT",
+      "BANANAS31USDT",
+      "BANANAUSDT",
+      "BANDUSDT",
+      "BANKUSDT",
+      "BANUSDT",
+      "BARDUSDT"
     ],
     "batchSize": 40,
     "cyclesCompleted": 3
@@ -124162,7 +124346,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-09-24T05:36:21.253Z",
+    "validatedAt": "2026-09-24T06:23:38.404Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
