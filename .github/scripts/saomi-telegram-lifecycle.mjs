@@ -13,6 +13,9 @@ const STATE_PATH='.github/state/saomi-telegram-state.json';
 const TRACKED_TFS=['1m','5m','15m','30m','1h','4h'];
 const ORHAN_ANALYSIS_VERSION='RC5.48_ORHAN_SR_BREAKOUT_CONFIRM';
 const ORHAN_SIGNAL_TAG='ORHAN_SR_BREAKOUT_CONFIRM';
+const RC562_SETUP_VERSION='RC5.62_ORHAN_VOLUME_IMPULSE';
+const RC562_COHORT_TARGET=20;
+function isRc562Signal(sig){return String(sig?.setupVersion||'')===RC562_SETUP_VERSION && !!sig?.entryTrigger?.volumeImpulse}
 function isOrhanSignal(sig){
   return String(sig?.analysisVersion||'')===ORHAN_ANALYSIS_VERSION &&
     String(sig?.signalId||'').includes('|'+ORHAN_SIGNAL_TAG+':');
@@ -368,7 +371,35 @@ function performance(state){
       active.filter(x=>String(x.timeframe||'15m').toLowerCase()===tf)
     );
   }
-  return {updatedAt:new Date().toISOString(),...all,byTimeframe}
+
+  const cohortHistory=h.filter(isRc562Signal);
+  const cohortActive=active.filter(isRc562Signal);
+  const cohortAll=statsForRows(cohortHistory,cohortActive);
+  const cohortByTimeframe={};
+  for(const tf of TRACKED_TFS){
+    cohortByTimeframe[tf]=statsForRows(
+      cohortHistory.filter(x=>String(x.timeframe||'15m').toLowerCase()===tf),
+      cohortActive.filter(x=>String(x.timeframe||'15m').toLowerCase()===tf)
+    );
+  }
+  const cohortSignals=cohortHistory.length+cohortActive.length;
+  const cohortScored=cohortAll.scoredTrades;
+  return {
+    updatedAt:new Date().toISOString(),
+    ...all,
+    byTimeframe,
+    rc562:{
+      setupVersion:RC562_SETUP_VERSION,
+      targetSignals:RC562_COHORT_TARGET,
+      signalsSeen:cohortSignals,
+      targetProgressPct:Number(Math.min(100,(cohortSignals/RC562_COHORT_TARGET)*100).toFixed(1)),
+      completedTrades:cohortScored,
+      readyForReview:cohortSignals>=10,
+      fullReviewReady:cohortSignals>=RC562_COHORT_TARGET,
+      ...cohortAll,
+      byTimeframe:cohortByTimeframe
+    }
+  }
 }
 
 const state=loadState();
