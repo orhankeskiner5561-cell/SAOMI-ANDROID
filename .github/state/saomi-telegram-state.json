@@ -58998,14 +58998,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "XMRUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↓ · 1H ↔"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-24T09:42:56.944Z",
+            "candleCloseTime": 1790242199999,
+            "price": 553.14,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 76,
+            "currentDirection": "WAIT",
+            "currentConfidence": 55,
+            "lowerTrend": {
+              "ema200": 561.1481075836844,
+              "alignment": "NEUTRAL",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790236800000,
+                "index": 496,
+                "ageBars": 2
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790229600000,
+                "price": 560.39,
+                "index": 492,
+                "breakClose": 560.58,
+                "ageBars": 6
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790229600000,
+                "price": 560.39,
+                "index": 492,
+                "breakClose": 560.58,
+                "ageBars": 6
+              }
+            },
+            "verdict": "BEKLE",
+            "commentary": "XMRUSDT 30m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↑ · 1D ↑ · 4H ↓ · 1H ↑"
           }
         ],
-        "lastCandleCloseTime": 1790229599999,
+        "lastCandleCloseTime": 1790242199999,
         "summary": {
           "same": 2,
-          "wait": 0,
+          "wait": 1,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     },
@@ -59691,14 +59737,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "BNBUSDT 30m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↔ · 1H ↔"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-09-24T09:43:00.071Z",
+            "candleCloseTime": 1790242199999,
+            "price": 767.47,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 74,
+            "currentDirection": "WAIT",
+            "currentConfidence": 55,
+            "lowerTrend": {
+              "ema200": 774.8878676300153,
+              "alignment": "NEUTRAL",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790236800000,
+                "index": 496,
+                "ageBars": 2
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790233200000,
+                "price": 776.15,
+                "index": 494,
+                "breakClose": 776.37,
+                "ageBars": 4
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1790233200000,
+                "price": 776.15,
+                "index": 494,
+                "breakClose": 776.37,
+                "ageBars": 4
+              }
+            },
+            "verdict": "BEKLE",
+            "commentary": "BNBUSDT 30m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↑ · 1D ↑ · 4H ↓ · 1H ↔"
           }
         ],
-        "lastCandleCloseTime": 1790229599999,
+        "lastCandleCloseTime": 1790242199999,
         "summary": {
           "same": 1,
-          "wait": 1,
+          "wait": 2,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     }
@@ -124282,51 +124374,51 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 87,
-    "total": 571,
-    "lastRefreshAt": "2026-09-24T06:23:39.493Z",
-    "lastBatchAt": "2026-09-24T06:23:39.493Z",
+    "cursor": 127,
+    "total": 570,
+    "lastRefreshAt": "2026-09-24T09:42:47.567Z",
+    "lastBatchAt": "2026-09-24T09:42:47.567Z",
     "lastBatch": [
-      "ANIMEUSDT",
-      "ANKRUSDT",
-      "APEUSDT",
-      "API3USDT",
-      "APRUSDT",
-      "APTUSDT",
-      "ARBUSDC",
-      "ARBUSDT",
-      "ARCUSDT",
-      "ARIAUSDT",
-      "ARKMUSDT",
-      "ARKUSDT",
-      "ARPAUSDT",
-      "ARUSDT",
-      "ARXUSDT",
-      "ASRUSDT",
-      "ASTERUSDT",
-      "ASTRUSDT",
-      "ATHUSDT",
-      "ATOMUSDT",
-      "ATUSDT",
-      "AUCTIONUSDT",
-      "AUSDT",
-      "AVAAIUSDT",
-      "AVAUSDT",
-      "AVAXUSDC",
-      "AVAXUSDT",
-      "AVNTUSDT",
-      "AWEUSDT",
-      "AXLUSDT",
-      "AXSUSDT",
-      "AZTECUSDT",
-      "B2USDT",
-      "BABYUSDT",
-      "BANANAS31USDT",
-      "BANANAUSDT",
-      "BANDUSDT",
-      "BANKUSDT",
-      "BANUSDT",
-      "BARDUSDT"
+      "BASEDUSDT",
+      "BASUSDT",
+      "BATUSDT",
+      "BBUSDT",
+      "BCHUSDC",
+      "BCHUSDT",
+      "BEAMXUSDT",
+      "BEATUSDT",
+      "BELUSDT",
+      "BERAUSDT",
+      "BICOUSDT",
+      "BIGTIMEUSDT",
+      "BILLUSDT",
+      "BIOUSDC",
+      "BIOUSDT",
+      "BIRBUSDT",
+      "BLESSUSDT",
+      "BLUAIUSDT",
+      "BLURUSDT",
+      "BMTUSDT",
+      "BNBUSDC",
+      "BNBUSDT",
+      "BNTUSDT",
+      "BOMEUSDC",
+      "BOMEUSDT",
+      "BRETTUSDT",
+      "BREVUSDT",
+      "BROCCOLI714USDT",
+      "BROCCOLIF3BUSDT",
+      "BRUSDT",
+      "BSBUSDT",
+      "BSVUSDT",
+      "BTCDOMUSDT",
+      "BTCU",
+      "BTCUSD1",
+      "BTCUSDC",
+      "BTCUSDT",
+      "BTRUSDT",
+      "BTWUSDT",
+      "BULLAUSDT"
     ],
     "batchSize": 40,
     "cyclesCompleted": 3
@@ -124346,7 +124438,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-09-24T06:23:38.404Z",
+    "validatedAt": "2026-09-24T09:42:47.046Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
