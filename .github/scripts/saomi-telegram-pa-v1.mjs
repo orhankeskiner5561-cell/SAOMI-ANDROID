@@ -13,6 +13,8 @@ const UNIVERSE_REFRESH_MS=6*60*60*1000;
 const HTF_ORDER=['1w','1d','4h','1h'];
 const HTF_WEIGHT={'1w':4,'1d':3,'4h':2,'1h':1};
 const ANALYSIS_VERSION='RC5.48_ORHAN_SR_BREAKOUT_CONFIRM';
+const SETUP_VERSION='RC5.62_ORHAN_VOLUME_IMPULSE';
+const COHORT_TARGET=20;
 const LEGACY_TELEGRAM_SYMBOLS=new Set(['BTCUSDT','ETHUSDT','XRPUSDT','SOLUSDT','BNBUSDT','DOGEUSDT','ADAUSDT']);
 const TELEGRAM_SYMBOL_POLICY='binance-usdm-trading-perpetual';
 // Production delivery stays fail-closed until a live non-legacy USD-M perpetual symbol passes the root-clean endpoint contract.
@@ -607,7 +609,7 @@ function structuralFingerprint(setup){
  return[setup.symbol,'futures',setup.timeframe,setup.direction,d.majorDirection||setup.direction,t.type||'',t.time||0,t.break?.side||'',t.break?.time||0,t.ema200Cross?.side||'',t.ema200Cross?.time||0,t.structureTrend||'',t.ema200Side||''].join('|')
 }
 function duplicateReason(state,setup){const tf=String(setup.timeframe||'15m').toLowerCase(),now=Date.now(),active=Object.values(state.activeSignals||{}).find(x=>x?.symbol===setup.symbol&&String(x.timeframe||'15m').toLowerCase()===tf&&!['TP3','STOP','EXPIRED','AMBIGUOUS','CANCELLED'].includes(x.status));if(active)return'ayni timeframe aktif sinyal var';const fp=structuralFingerprint(setup),recent=(state.history||[]).filter(x=>x?.symbol===setup.symbol&&String(x.timeframe||'15m').toLowerCase()===tf&&x.direction===setup.direction).sort((a,b)=>(Date.parse(b.closedAt||0)||0)-(Date.parse(a.closedAt||0)||0))[0];if(recent){const t=Date.parse(recent.closedAt||0),age=Number.isFinite(t)?now-t:Infinity;if(age<terminalReentryMs(tf))return'terminal sonrasi yeniden giris bekleme suresi';if((recent.fingerprint||recent.structureKey)===fp&&age<dupTtlMs(tf))return'ayni yapi terminal sonrasi tekrar etti'}const prev=state.signals?.[signalStateKey(setup.symbol,tf)];if(!prev)return null;const t=Date.parse(prev.sentAt||0),age=Number.isFinite(t)?now-t:Infinity;if(age<cooldownMs(tf))return'timeframe cooldown';if((prev.fingerprint||prev.structureKey)===fp&&age<dupTtlMs(tf))return'ayni yapisal setup';return null}
-function rememberSignal(state,setup,tg,meta){state.version=8;const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup),base={fingerprint,structureKey:fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:tg?.messageId??null,analysisVersion:ANALYSIS_VERSION,topDownContext:setup.topDownContext,lowerFrameContext:setup.lowerFrameContext,indicatorContext:setup.indicatorContext,entryTrigger:setup.entryTrigger,entrySequence:setup.entrySequence,liquidityEvidence:setup.liquidityEvidence,majorObstacle:setup.majorObstacle,riskAtr:setup.riskAtr,commentary:String(meta.commentary||''),commentaryProvider:String(meta.provider||'')};state.signals[signalStateKey(setup.symbol,setup.timeframe)]=base;state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};saveSignalState(state)}
+function rememberSignal(state,setup,tg,meta){state.version=8;const sentAt=new Date().toISOString(),fingerprint=structuralFingerprint(setup),base={fingerprint,structureKey:fingerprint,signalId:setup.signalId,symbol:setup.symbol,market:'futures',timeframe:setup.timeframe,direction:setup.direction,confidence:setup.confidence,riskReward:setup.riskReward,sentAt,entry:setup.entry,stop:setup.stop,tp1:setup.tp1,tp2:setup.tp2,tp3:setup.tp3,messageId:tg?.messageId??null,analysisVersion:ANALYSIS_VERSION,setupVersion:SETUP_VERSION,cohortTarget:COHORT_TARGET,topDownContext:setup.topDownContext,lowerFrameContext:setup.lowerFrameContext,indicatorContext:setup.indicatorContext,entryTrigger:setup.entryTrigger,entrySequence:setup.entrySequence,liquidityEvidence:setup.liquidityEvidence,majorObstacle:setup.majorObstacle,riskAtr:setup.riskAtr,commentary:String(meta.commentary||''),commentaryProvider:String(meta.provider||'')};state.signals[signalStateKey(setup.symbol,setup.timeframe)]=base;state.activeSignals[setup.signalId]={...base,status:'WAIT_ENTRY',stage:0,enteredAt:null,lastCheckedAt:sentAt,notified:{entry:false,tp1:false,tp2:false,tp3:false,stop:false,ambiguous:false}};saveSignalState(state)}
 
 const signalState=loadSignalState();
 function chooseRotatingBatch(universe,state){
@@ -712,7 +714,7 @@ async function buildSetup(symbol,tf,topDown){
  const major={...topDown.major,frames:topDown.frames},plan=buildCanonicalTradePlan(symbol,tf,base,major);if(!plan)return null;
  const decision={allowed:true,direction:plan.direction,majorDirection:topDown.major?.direction||'NEUTRAL',summary:topDown.major?.summary||'',conviction:topDown.major?.conviction||0,blockers:[],warnings:['HTF bilgi amaclidir; Orhan setup sinyalini veto etmez.'],supports:[]};
  const trigger=plan.entryTrigger||{},signalId=symbol+'|futures|'+tf+'|'+plan.direction+'|'+(trigger.type||'PA')+':'+(trigger.time||last.time);
- return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'ORHAN_SR_BREAKOUT_CONFIRM'}}
+ return{...plan,market:'futures',locked:true,lockedAt:last.time,candleCloseTime:last.closeTime,analysisVersion:ANALYSIS_VERSION,setupVersion:SETUP_VERSION,cohortTarget:COHORT_TARGET,signalId,topDownContext:{...topDown,decision},lowerFrameContext:plan.indicatorContext,mtf:{frames:[tf],status:'ORHAN_SR_BREAKOUT_CONFIRM'}}
 }
 
 let sent=0;
@@ -723,7 +725,7 @@ const rotationBatch=chooseRotatingBatch(universe,signalState);
 const hotLane=await loadHotLane(universe);
 const actives=activeSymbols(signalState);
 const scanSymbols=[...new Set([...actives,...rotationBatch,...hotLane])];
-console.log('SAOMI '+ANALYSIS_VERSION+' scan '+new Date().toISOString()+' · FUTURES universe='+universe.length+' · hotLane='+hotLane.length+' · rotating batch='+rotationBatch.length+' · active extras='+actives.length+' · SIGNAL TF='+BASE_TFS.join(',')+' · HTF='+HTF_ORDER.join('→'));
+console.log('SAOMI '+ANALYSIS_VERSION+' / '+SETUP_VERSION+' scan '+new Date().toISOString()+' · FUTURES universe='+universe.length+' · hotLane='+hotLane.length+' · rotating batch='+rotationBatch.length+' · active extras='+actives.length+' · SIGNAL TF='+BASE_TFS.join(',')+' · HTF='+HTF_ORDER.join('→'));
 console.log('HOT',hotLane.join(','));
 console.log('BATCH',rotationBatch.join(','));
 scanLoop:
@@ -772,5 +774,5 @@ for(const symbol of scanSymbols){
  }catch(e){console.error('HTF ERROR '+symbol+':',e?.message||e)}
 }
 saveSignalState(signalState);
-console.log('SAOMI '+ANALYSIS_VERSION+' finished. Sent: '+sent+' · universe='+universe.length+' · nextCursor='+signalState.scannerUniverse.cursor+' · cycles='+signalState.scannerUniverse.cyclesCompleted);console.log('REJECT_STATS',JSON.stringify(Object.fromEntries(Object.entries(rejectStats).sort((a,b)=>b[1]-a[1]))));
+console.log('SAOMI '+ANALYSIS_VERSION+' / '+SETUP_VERSION+' finished. Sent: '+sent+' · universe='+universe.length+' · nextCursor='+signalState.scannerUniverse.cursor+' · cycles='+signalState.scannerUniverse.cyclesCompleted);console.log('REJECT_STATS',JSON.stringify(Object.fromEntries(Object.entries(rejectStats).sort((a,b)=>b[1]-a[1]))));
 if(!telegramReady)throw new Error('TELEGRAM_TRANSPORT_NOT_READY: production /api/telegram did not pass Binance USD-M TRADING/PERPETUAL root-clean probe; scan completed but delivery gate failed');
