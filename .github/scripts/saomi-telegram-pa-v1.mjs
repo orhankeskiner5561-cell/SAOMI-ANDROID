@@ -419,6 +419,45 @@ function orhanSupportBreakReclaim(c,zone,direction,av,reclaimIndex){
  };
 }
 
+function orhanVolumeImpulse(c,direction,breakoutIndex,confirmationIndex){
+ const vols=c.map(x=>Math.max(0,Number(x.volume)||0));
+ const up=direction==='LONG';
+ const assess=(idx)=>{
+   if(idx==null||idx<0||!c[idx])return null;
+   const k=c[idx],baseRows=vols.slice(Math.max(0,idx-20),idx);
+   const avg=baseRows.length?baseRows.reduce((a,b)=>a+b,0)/baseRows.length:0;
+   const rvol=avg>0?vols[idx]/avg:1;
+   const range=Math.max(k.high-k.low,1e-12);
+   const body=Math.abs(k.close-k.open);
+   const bodyRatio=body/range;
+   const bullish=k.close>k.open,bearish=k.close<k.open;
+   const buy=finite(k.takerBuyVolume)?Math.max(0,Number(k.takerBuyVolume)):null;
+   const deltaPct=buy==null||vols[idx]<=0?null:((buy-(vols[idx]-buy))/vols[idx])*100;
+   return {index:idx,time:k.time,rvol:Number(rvol.toFixed(2)),bodyRatio:Number(bodyRatio.toFixed(2)),bullish,bearish,deltaPct:deltaPct==null?null:Number(deltaPct.toFixed(1)),volume:vols[idx],average:avg};
+ };
+ const br=assess(breakoutIndex),cf=assess(confirmationIndex);
+ if(!br||!cf)return {ok:false,reason:'VOLUME_DATA_MISSING',breakout:br,confirmation:cf};
+ const breakDir=up?br.bullish:br.bearish;
+ const confirmDir=up?cf.bullish:cf.bearish;
+ const breakDeltaOk=br.deltaPct==null?true:(up?br.deltaPct>=5:br.deltaPct<=-5);
+ const confirmDeltaOk=cf.deltaPct==null?true:(up?cf.deltaPct>=0:cf.deltaPct<=0);
+ const impulseOk=breakDir&&br.rvol>=1.25&&br.bodyRatio>=.50&&breakDeltaOk;
+ const confirmOk=confirmDir&&cf.rvol>=.85&&cf.bodyRatio>=.30&&confirmDeltaOk;
+
+ // Son 6 mumdaki ters yönlü kuvvetli hacim, girişin hemen önünde duvar sayılır.
+ let opposite=null;
+ for(let i=Math.max(0,(confirmationIndex??breakoutIndex)-6);i<=Math.min(c.length-1,(confirmationIndex??breakoutIndex)+1);i++){
+   const x=assess(i); if(!x)continue;
+   const oppDir=up?x.bearish:x.bullish;
+   const oppDelta=x.deltaPct==null?true:(up?x.deltaPct<=-8:x.deltaPct>=8);
+   if(oppDir&&x.rvol>=1.45&&x.bodyRatio>=.55&&oppDelta){
+     if(!opposite||x.rvol>opposite.rvol)opposite=x;
+   }
+ }
+ const oppositeBlocks=!!opposite && (!br || opposite.index>=br.index-2);
+ return {ok:impulseOk&&confirmOk&&!oppositeBlocks,impulseOk,confirmOk,oppositeBlocks,breakout:br,confirmation:cf,opposite};
+}
+
 function buildCanonicalTradePlan(symbol,tf,c,major){
  if(!c?.length||c.length<120)return rejectReason('ORHAN_LT_120_BARS');
  const i=c.length-1,price=Number(c[i].close),av=atr(c,14).at(-1)||Math.max(price*.004,1e-8),zones=orhanRoleReversalZones(c);
@@ -438,6 +477,8 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
    const breakoutIndex=seq.breakout.index;
    const reclaim=orhanSupportBreakReclaim(c,zone,direction,av,breakoutIndex);
    if(!reclaim)continue;
+   const volumeImpulse=orhanVolumeImpulse(c,direction,breakoutIndex,seq.confirmation?.index);
+   if(!volumeImpulse.ok)continue;
    const up=direction==='LONG';
    const stop=Number(reclaim.structuralStop);
    const entry=price,risk=Math.abs(entry-stop);
@@ -457,6 +498,9 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
    confidence+=Math.min(8,Math.round(seq.breakout.bodyAtr*4));
    if(seq.confirmation)confidence+=6;
    if(seq.retest)confidence+=5;
+   if(volumeImpulse.breakout?.rvol>=1.5)confidence+=4;
+   if(volumeImpulse.breakout?.rvol>=2)confidence+=3;
+   if(volumeImpulse.confirmation?.rvol>=1.2)confidence+=2;
    confidence=clamp(Math.round(confidence),72,94);
    const candidate={symbol,timeframe:tf,direction,price:entry,entry,stop,tp1,tp2,tp3,riskReward:3,confidence,
     quality:confidence>=86?'GUCLU':'TEMIZ',
@@ -468,6 +512,7 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
       trendline,
       confluence:{zoneTrendlineGapAtr:Number(zoneLineGap.toFixed(2)),required:true},
       reclaim,
+      volumeImpulse,
       compression:comp,breakout:seq.breakout,confirmation:seq.confirmation,retest:seq.retest
     },
     entrySequence:seq,liquidityEvidence:null,majorObstacle:null,riskAtr:Number(riskAtr.toFixed(2)),
@@ -483,11 +528,14 @@ function buildCanonicalTradePlan(symbol,tf,c,major){
       'Yatay S/R + trend cizgisi ayni bolgede kesisti',
       'Cift kirilim '+direction+' (yatay seviye + trend cizgisi)',
       'Sonraki mum iki seviyenin de disinda kaldi',
+      'Kirilim hacmi güçlü: RVOL '+volumeImpulse.breakout.rvol+' · govde '+Math.round(volumeImpulse.breakout.bodyRatio*100)+'%',
+      'Onay hacmi yeterli: RVOL '+volumeImpulse.confirmation.rvol,
+      volumeImpulse.breakout.deltaPct==null?'Taker delta yok; hacim/govde ile onaylandi':'Taker delta '+volumeImpulse.breakout.deltaPct+'%',
       seq.retest?'Retest/rol degisimi tuttu':'Onay mumu seviyeleri korudu',
       'HTF sadece bilgi; veto degil'
     ],
     invalidation:up?'Sikisma dibi / destek bolgesi alti':'Sikisma tepesi / direnc bolgesi ustu',
-    orhanSetup:{zone,compression:comp,sequence:seq,reclaim,stopAnchor:reclaim.liquiditySweep,htfContext:major?.summary||null}
+    orhanSetup:{zone,compression:comp,sequence:seq,reclaim,volumeImpulse,stopAnchor:reclaim.liquiditySweep,htfContext:major?.summary||null}
    };
    if(!chosen||candidate.confidence>chosen.confidence)chosen=candidate;
   }
