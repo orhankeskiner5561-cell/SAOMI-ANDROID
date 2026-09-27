@@ -1,4 +1,4 @@
-name: SAOMI Trade RC6.12 Build
+name: SAOMI Trade RC6.13 Build
 
 on:
   push:
@@ -61,8 +61,8 @@ jobs:
               applicationId 'com.saomi.tradeai'
               minSdk 26
               targetSdk 35
-              versionCode 613
-              versionName 'RC6.12-RC607-REBUILT'
+              versionCode 614
+              versionName 'RC6.13-RC607-CLEAN-CORE'
             }
             buildTypes {
               release {
@@ -83,6 +83,10 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
             <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            <queries>
+              <intent><action android:name="android.speech.action.RECOGNIZE_SPEECH" /></intent>
+            </queries>
             <application
               android:allowBackup="true"
               android:usesCleartextTraffic="false"
@@ -134,9 +138,10 @@ jobs:
           for i in range((len(src)+chunk-1)//chunk):
               (out/f'part{i:02d}.txt').write_bytes(src[i*chunk:(i+1)*chunk])
           assert len(src) > 240000
-          assert b'RC6.12' in src
+          assert b'RC6.13' in src
           assert b'btCommandIntent' in src
           assert b'btLastCursorRendered' in src
+          assert b'yerel i\xc5\x9flem plan\xc4\xb1 devreye girdi' in src
           PY
 
       - name: Build unsigned release
@@ -153,5 +158,5 @@ jobs:
       - name: Upload unsigned APK
         uses: actions/upload-artifact@v4
         with:
-          name: SAOMI-TRADE-AI-RC6.12-UNSIGNED
+          name: SAOMI-TRADE-AI-RC6.13-UNSIGNED
           path: /tmp/saomi-rc612/app/build/outputs/apk/release/app-release-unsigned.apk
