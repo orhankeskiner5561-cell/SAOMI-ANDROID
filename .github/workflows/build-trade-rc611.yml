@@ -1,0 +1,38 @@
+name: SAOMI Trade RC6.11 Build
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'tradeapp/rc611_android.zip'
+      - '.github/workflows/build-trade-rc611.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu al
+        uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: RC6.11 kaynak paketini ac
+        run: |
+          rm -rf /tmp/saomi-rc611
+          mkdir -p /tmp/saomi-rc611
+          unzip -q tradeapp/rc611_android.zip -d /tmp/saomi-rc611
+      - name: APK derle
+        working-directory: /tmp/saomi-rc611/android
+        run: gradle assembleDebug --no-daemon
+      - name: APK yukle
+        uses: actions/upload-artifact@v4
+        with:
+          name: SAOMI-TRADE-AI-RC6.11-debug
+          path: /tmp/saomi-rc611/android/app/build/outputs/apk/debug/app-debug.apk
