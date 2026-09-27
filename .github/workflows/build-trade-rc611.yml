@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'tradeapp/rc611_android.zip'
+      - 'tradeapp/rc611_android.b64.part*'
       - '.github/workflows/build-trade-rc611.yml'
   workflow_dispatch:
 
@@ -27,7 +27,8 @@ jobs:
         run: |
           rm -rf /tmp/saomi-rc611
           mkdir -p /tmp/saomi-rc611
-          unzip -q tradeapp/rc611_android.zip -d /tmp/saomi-rc611
+          cat tradeapp/rc611_android.b64.part* | base64 -d > /tmp/rc611_android.zip
+          unzip -q /tmp/rc611_android.zip -d /tmp/saomi-rc611
       - name: APK derle
         working-directory: /tmp/saomi-rc611/android
         run: gradle assembleDebug --no-daemon
