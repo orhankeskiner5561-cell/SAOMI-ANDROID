@@ -1,0 +1,157 @@
+name: SAOMI Trade RC6.12 Build
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'tradeapp/rc612/**'
+      - '.github/workflows/build-trade-rc612.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Create Android project
+        shell: bash
+        run: |
+          set -euxo pipefail
+          ROOT=/tmp/saomi-rc612
+          rm -rf "$ROOT"
+          mkdir -p "$ROOT/app/src/main/java/com/saomi/tradeai" "$ROOT/app/src/main/assets" "$ROOT/app/src/main/res/values" "$ROOT/app/src/main/res/drawable"
+
+          cat > "$ROOT/settings.gradle" <<'EOF'
+          pluginManagement {
+            repositories { google(); mavenCentral(); gradlePluginPortal() }
+          }
+          dependencyResolutionManagement {
+            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+            repositories { google(); mavenCentral() }
+          }
+          rootProject.name='SAOMI-RC612'
+          include ':app'
+          EOF
+
+          cat > "$ROOT/build.gradle" <<'EOF'
+          plugins {
+            id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > "$ROOT/app/build.gradle" <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'com.saomi.tradeai'
+            compileSdk 35
+            defaultConfig {
+              applicationId 'com.saomi.tradeai'
+              minSdk 26
+              targetSdk 35
+              versionCode 613
+              versionName 'RC6.12-RC607-REBUILT'
+            }
+            buildTypes {
+              release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+              }
+            }
+            compileOptions {
+              sourceCompatibility JavaVersion.VERSION_17
+              targetCompatibility JavaVersion.VERSION_17
+            }
+          }
+          EOF
+
+          echo "" > "$ROOT/app/proguard-rules.pro"
+
+          cat > "$ROOT/app/src/main/AndroidManifest.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <application
+              android:allowBackup="true"
+              android:usesCleartextTraffic="false"
+              android:theme="@style/AppTheme"
+              android:label="ŞAOMİ TRADE AI MASTER"
+              android:icon="@drawable/ic_launcher"
+              android:roundIcon="@drawable/ic_launcher">
+              <activity
+                android:name=".MainActivity"
+                android:screenOrientation="unspecified"
+                android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|uiMode"
+                android:exported="true">
+                <intent-filter>
+                  <action android:name="android.intent.action.MAIN" />
+                  <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          EOF
+
+          cat > "$ROOT/app/src/main/res/values/styles.xml" <<'EOF'
+          <resources>
+            <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
+              <item name="android:fontFamily">sans</item>
+              <item name="android:windowLightStatusBar">false</item>
+              <item name="android:colorAccent">#20D49D</item>
+              <item name="android:navigationBarColor">#070B12</item>
+              <item name="android:statusBarColor">#070B12</item>
+            </style>
+          </resources>
+          EOF
+
+          cat > "$ROOT/app/src/main/res/drawable/ic_launcher.xml" <<'EOF'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="48dp" android:height="48dp" android:viewportWidth="48" android:viewportHeight="48">
+            <path android:fillColor="#F0B90B" android:pathData="M8,4h32a4,4 0,0 1,4 4v32a4,4 0,0 1,-4 4h-32a4,4 0,0 1,-4 -4v-32a4,4 0,0 1,4 -4z"/>
+            <path android:fillColor="#111111" android:pathData="M20,12h5v4h3c5,0 8,3 8,7 0,3 -2,5 -4,6 3,1 5,3 5,7 0,5 -4,8 -10,8h-2v4h-5v-4h-5v-5h3v-22h-3v-5h5zM25,21v6h3c2,0 3,-1 3,-3s-1,-3 -3,-3zM25,32v7h3c3,0 4,-1 4,-3.5S31,32 28,32z"/>
+          </vector>
+          EOF
+
+          cp tradeapp/rc612/MainActivity.java "$ROOT/app/src/main/java/com/saomi/tradeai/MainActivity.java"
+          cp tradeapp/rc612/app.html "$ROOT/app/src/main/assets/master.html"
+
+          python3 - <<'PY'
+          from pathlib import Path
+          src=Path('/tmp/saomi-rc612/app/src/main/assets/master.html').read_bytes()
+          out=Path('/tmp/saomi-rc612/app/src/main/assets')
+          chunk=58000
+          for i in range((len(src)+chunk-1)//chunk):
+              (out/f'part{i:02d}.txt').write_bytes(src[i*chunk:(i+1)*chunk])
+          assert len(src) > 240000
+          assert b'RC6.12' in src
+          assert b'btCommandIntent' in src
+          assert b'btLastCursorRendered' in src
+          PY
+
+      - name: Build unsigned release
+        working-directory: /tmp/saomi-rc612
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Verify native bridge markers
+        shell: bash
+        run: |
+          unzip -p /tmp/saomi-rc612/app/build/outputs/apk/release/app-release-unsigned.apk classes.dex | strings | grep -q startVoiceInput
+          unzip -p /tmp/saomi-rc612/app/build/outputs/apk/release/app-release-unsigned.apk classes.dex | strings | grep -q SaomiAndroid
+          unzip -p /tmp/saomi-rc612/app/build/outputs/apk/release/app-release-unsigned.apk assets/part00.txt | grep -q 'ŞAOMİ TRADE AI MASTER'
+
+      - name: Upload unsigned APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SAOMI-TRADE-AI-RC6.12-UNSIGNED
+          path: /tmp/saomi-rc612/app/build/outputs/apk/release/app-release-unsigned.apk
