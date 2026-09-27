@@ -1,4 +1,4 @@
-name: SAOMI Trade RC6.13 Build
+name: SAOMI Trade RC6.15 Build
 
 on:
   push:
@@ -61,8 +61,8 @@ jobs:
               applicationId 'com.saomi.tradeai'
               minSdk 26
               targetSdk 35
-              versionCode 614
-              versionName 'RC6.13-RC607-CLEAN-CORE'
+              versionCode 615
+              versionName 'RC6.15-RC607-CLEAN-CORE'
             }
             buildTypes {
               release {
@@ -138,7 +138,7 @@ jobs:
           for i in range((len(src)+chunk-1)//chunk):
               (out/f'part{i:02d}.txt').write_bytes(src[i*chunk:(i+1)*chunk])
           assert len(src) > 240000
-          assert b'RC6.13' in src
+          assert b'RC6.15' in src
           assert b'btCommandIntent' in src
           assert b'btLastCursorRendered' in src
           assert b'yerel i\xc5\x9flem plan\xc4\xb1 devreye girdi' in src
@@ -158,5 +158,5 @@ jobs:
       - name: Upload unsigned APK
         uses: actions/upload-artifact@v4
         with:
-          name: SAOMI-TRADE-AI-RC6.13-UNSIGNED
+          name: SAOMI-TRADE-AI-RC6.15-UNSIGNED
           path: /tmp/saomi-rc612/app/build/outputs/apk/release/app-release-unsigned.apk
