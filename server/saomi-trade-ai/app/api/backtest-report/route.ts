@@ -79,7 +79,8 @@ export async function POST(req:NextRequest){
 export async function GET(req:NextRequest){
   try{
     const device=cleanDevice(req.nextUrl.searchParams.get('device'));
-    const row=await readBlob(device);
+    let row:any=null;
+    try{row=await readBlob(device)}catch(e){console.warn('SAOMI_BT_BLOB_READ_FAIL',e instanceof Error?e.message:e)}
     if(row) return NextResponse.json(row,{headers:HEADERS});
     return NextResponse.json({ok:false,error:'Kalıcı Blob raporu yok; runtime log kaydı kullanılmalı',device},{status:404,headers:HEADERS});
   }catch(e){
