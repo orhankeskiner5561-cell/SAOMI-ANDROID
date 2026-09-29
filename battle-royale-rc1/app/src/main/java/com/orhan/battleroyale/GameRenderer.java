@@ -18,7 +18,7 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     private final float[] proj=new float[16],view=new float[16],model=new float[16],mvp=new float[16],tmp=new float[16];
 
     private float px=0,pz=9,yaw=180,pitch=-10,moveX=0,moveY=0,hp=100;
-    private int ammo=30, selectedCharacter=0;
+    private int ammo=30, selectedCharacter=0, wardrobeSlot=0, teamMode=0;
     private boolean running=false,fire=false,ended=false;
     private long lastMs=0,nextShot=0;
     private float previewSpin=0;
@@ -233,6 +233,10 @@ public class GameRenderer implements GLSurfaceView.Renderer {
     }
 
     public void selectCharacter(int i){ if(!running) selectedCharacter=(i==1?1:0); }
+    public void setWardrobe(int slot){ if(!running) wardrobeSlot=Math.max(0,Math.min(8,slot)); }
+    public int getWardrobe(){ return wardrobeSlot; }
+    public void setTeamMode(int mode){ if(!running) teamMode=(mode==1?1:0); }
+    public int getTeamMode(){ return teamMode; }
 
     public void startMatch(){
         enemies.clear();
