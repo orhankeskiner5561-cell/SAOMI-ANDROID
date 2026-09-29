@@ -37,29 +37,14 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
-      - name: Fetch Babylon 3D engine
+      - name: Fetch Babylon engine and clothed animated male
         working-directory: male-3d-demo-android/app/src/main/assets
         run: |
+          set -e
           curl -L --fail -o babylon.js https://cdn.jsdelivr.net/npm/babylonjs@8.32.0/babylon.js
           curl -L --fail -o babylonjs.loaders.min.js https://cdn.jsdelivr.net/npm/babylonjs-loaders@8.32.0/babylonjs.loaders.min.js
-
-      - name: Fetch rigged male 3D model
-        shell: bash
-        run: |
-          set -e
-          rm -rf /tmp/quaternius
-          git clone --depth 1 https://github.com/NafisRayan/Animate-Rigged-Humanoid-No-Blender.git /tmp/quaternius
-          SRC="/tmp/quaternius/Universal Base Characters[Standard]/Universal Base Characters[Standard]/Base Characters/Godot - UE"
-          DST="male-3d-demo-android/app/src/main/assets"
-          cp "$SRC/Superhero_Male_FullBody.gltf" "$DST/"
-          cp "$SRC/Superhero_Male_FullBody.bin" "$DST/"
-          cp "$SRC/T_Hair_1_Normal.png" "$DST/T_Hair_1_Normal_png.png"
-          cp "$SRC/T_Hair_1_BaseColor.png" "$DST/T_Hair_1_BaseColor.png"
-          cp "$SRC/T_Eye_Normal.png" "$DST/T_Eye_Normal_png.png"
-          cp "$SRC/T_Eye_Brown.png" "$DST/T_Eye_Brown.png"
-          cp "$SRC/T_Superhero_Male_Normal.png" "$DST/T_Superhero_Male_Normal.png"
-          cp "$SRC/T_Superhero_Male_Dark.png" "$DST/T_Superhero_Male_Dark.png"
-          cp "$SRC/T_Superhero_Male_Roughness.png" "$DST/T_Superhero_Male_Roughness.png"
+          curl -L --fail -o Soldier.glb https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb
+          ls -lh Soldier.glb
 
       - name: Build APK
         working-directory: male-3d-demo-android
@@ -68,6 +53,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Saomi-Real-3D-Male-APK
+          name: Saomi-3D-Male-Idle-Clothed-APK
           path: male-3d-demo-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
