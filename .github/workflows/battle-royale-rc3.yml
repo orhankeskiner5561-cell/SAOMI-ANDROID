@@ -26,7 +26,6 @@ jobs:
           SRC="/tmp/quaternius/Universal Base Characters[Standard]/Universal Base Characters[Standard]/Base Characters/Godot - UE"
           DST="battle-royale-rc3/assets/characters"
           mkdir -p "$DST"
-
           cp "$SRC/Superhero_Male_FullBody.gltf" "$DST/"
           cp "$SRC/Superhero_Male_FullBody.bin" "$DST/"
           cp "$SRC/T_Hair_1_Normal.png" "$DST/T_Hair_1_Normal_png.png"
@@ -37,15 +36,23 @@ jobs:
           cp "$SRC/T_Superhero_Male_Dark.png" "$DST/T_Superhero_Male_Dark.png"
           cp "$SRC/T_Superhero_Male_Roughness.png" "$DST/T_Superhero_Male_Roughness.png"
 
-      - name: Import project and 3D character
+      - name: Import Godot project
         working-directory: battle-royale-rc3
         run: HOME=/root godot --headless --editor --quit-after 25
 
+      - name: Install Android build template
+        working-directory: battle-royale-rc3
+        run: HOME=/root godot --headless --path . --install-android-build-template
+
       - name: Export Android APK
         working-directory: battle-royale-rc3
+        env:
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /root/debug.keystore
+          GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
         run: |
           mkdir -p build
-          HOME=/root godot --headless --verbose --export-debug "Android" build/Saomi-3D-Male-Demo.apk
+          HOME=/root godot --headless --path . --verbose --export-debug "Android" build/Saomi-3D-Male-Demo.apk
           ls -lh build/Saomi-3D-Male-Demo.apk
 
       - name: Upload APK
