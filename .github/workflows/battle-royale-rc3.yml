@@ -11,66 +11,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.4.1
+
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Install Android SDK
-        shell: bash
-        run: |
-          set -e
-          ANDROID_HOME="$HOME/android-sdk"
-          mkdir -p "$ANDROID_HOME/cmdline-tools"
-          curl -L -o /tmp/cmdline-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
-          unzip -q /tmp/cmdline-tools.zip -d /tmp/android-tools
-          mv /tmp/android-tools/cmdline-tools "$ANDROID_HOME/cmdline-tools/latest"
-          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
-          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
-          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
-          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "platforms;android-35" "build-tools;34.0.0" "build-tools;35.0.0" "platform-tools"
-
-      - name: Install Godot 4.4.1 and Android export templates
-        shell: bash
-        run: |
-          set -e
-          curl -L -o /tmp/godot.zip "https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip"
-          unzip -q /tmp/godot.zip -d /tmp/godot
-          sudo install -m 755 /tmp/godot/Godot_v4.4.1-stable_linux.x86_64 /usr/local/bin/godot
-
-          curl -L -o /tmp/templates.tpz "https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz"
-          mkdir -p "$HOME/.local/share/godot/export_templates/4.4.1.stable"
-          unzip -q /tmp/templates.tpz -d /tmp/templates
-          cp -R /tmp/templates/templates/* "$HOME/.local/share/godot/export_templates/4.4.1.stable/"
-
-      - name: Configure Godot Android editor settings
-        shell: bash
-        run: |
-          set -e
-          mkdir -p "$HOME/.config/godot"
-          keytool -genkeypair -v -keystore "$HOME/debug.keystore" -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=OpenAI,C=US"
-          cat > "$HOME/.config/godot/editor_settings-4.4.tres" <<EOF
-          [gd_resource type="EditorSettings" format=3]
-
-          [resource]
-          export/android/android_sdk_path = "$ANDROID_HOME"
-          export/android/java_sdk_path = "$JAVA_HOME"
-          export/android/debug_keystore = "$HOME/debug.keystore"
-          export/android/debug_keystore_user = "androiddebugkey"
-          export/android/debug_keystore_pass = "android"
-          export/android/force_system_user = false
-          export/android/shutdown_adb_on_exit = false
-          EOF
 
       - name: Fetch CC0 rigged male and female 3D characters
         shell: bash
         run: |
           set -e
+          rm -rf /tmp/quaternius
           git clone --depth 1 https://github.com/NafisRayan/Animate-Rigged-Humanoid-No-Blender.git /tmp/quaternius
           SRC="/tmp/quaternius/Universal Base Characters[Standard]/Universal Base Characters[Standard]/Base Characters/Godot - UE"
           DST="battle-royale-rc3/assets/characters"
@@ -93,22 +44,22 @@ jobs:
           cp "$SRC/T_Superhero_Female_Normal.png" "$DST/T_Superhero_Female_Normal.png"
           cp "$SRC/T_Superhero_Female_Dark_BaseColor.png" "$DST/T_Superhero_Female_Dark_BaseColor.png"
           cp "$SRC/T_Superhero_Female_Roughness.png" "$DST/T_Superhero_Female_Roughness.png"
-
           cp "/tmp/quaternius/Universal Base Characters[Standard]/Universal Base Characters[Standard]/License_Standard.txt" "$DST/QUATERNIUS_LICENSE.txt"
 
-      - name: Import Godot project
+      - name: Import RC3 Godot project
         working-directory: battle-royale-rc3
         run: godot --headless --editor --quit-after 20
 
-      - name: Export Android APK
+      - name: Export RC3 Android APK
         working-directory: battle-royale-rc3
         run: |
           mkdir -p build
-          godot --headless --export-debug Android build/Saomi-Battle-Royale-RC3.apk
+          godot --headless --verbose --export-debug "Android" build/Saomi-Battle-Royale-RC3.apk
+          ls -lh build/Saomi-Battle-Royale-RC3.apk
 
       - name: Upload RC3 APK
         uses: actions/upload-artifact@v4
         with:
-          name: Saomi-Battle-Royale-RC3-APK
+          name: Saomi-Battle-Royale-RC3-GODOT-APK
           path: battle-royale-rc3/build/Saomi-Battle-Royale-RC3.apk
           if-no-files-found: error
