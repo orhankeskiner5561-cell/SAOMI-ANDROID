@@ -42,7 +42,14 @@ jobs:
 
       - name: Install Android build template
         working-directory: battle-royale-rc3
-        run: timeout 30s sh -c 'HOME=/root godot --headless --path . --install-android-build-template' || true
+        shell: bash
+        run: |
+          set -e
+          TEMPLATE=$(find /root/.local/share/godot/export_templates -name android_source.zip | head -1)
+          echo "Using template: $TEMPLATE"
+          test -f "$TEMPLATE"
+          unzip -q "$TEMPLATE" -d .
+          find android -maxdepth 3 -type f | head -40
 
       - name: Export Android APK
         working-directory: battle-royale-rc3
