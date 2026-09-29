@@ -4,107 +4,228 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <style>
-html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#07090d;touch-action:none}
+html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#07090d;touch-action:none;font-family:Arial,sans-serif}
 #renderCanvas{display:block;outline:none}
-#title{position:fixed;left:24px;top:18px;color:white;font:700 24px Arial,sans-serif;z-index:5;text-shadow:0 2px 8px #000}
-#hint{position:fixed;left:24px;bottom:18px;color:#ddd;font:15px Arial,sans-serif;z-index:5;text-shadow:0 2px 8px #000}
-#badge{position:fixed;right:24px;top:20px;color:#e7bd67;font:700 15px Arial,sans-serif;z-index:5}
-#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:white;font:700 22px Arial,sans-serif;background:#07090d;z-index:9}
+#title{position:fixed;left:22px;top:16px;color:white;font-weight:700;font-size:22px;z-index:5;text-shadow:0 2px 8px #000}
+#hint{position:fixed;left:22px;bottom:14px;color:#d6d6d6;font-size:14px;z-index:5;text-shadow:0 2px 8px #000}
+#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:22px;background:#07090d;z-index:20}
+#gear{position:fixed;right:18px;top:72px;width:180px;z-index:7;background:#11151dcc;border:1px solid #ffffff22;border-radius:16px;padding:12px;backdrop-filter:blur(6px)}
+#gear h3{margin:0 0 8px;color:#e7bd67;font-size:15px}
+.gearBtn{width:100%;margin:5px 0;padding:10px 8px;border:1px solid #ffffff22;border-radius:10px;background:#262c37;color:#fff;font-weight:700;font-size:13px}
+.gearBtn.on{background:#9a6a24;border-color:#e7bd67}
+#joy{position:fixed;left:28px;bottom:55px;width:160px;height:160px;border-radius:50%;background:#ffffff18;border:2px solid #ffffff28;z-index:8;touch-action:none}
+#knob{position:absolute;left:50%;top:50%;width:70px;height:70px;margin:-35px;border-radius:50%;background:#ffffff38;border:2px solid #ffffff55;transform:translate(0,0)}
 </style>
 </head>
 <body>
 <div id="title">ŞAOMİ — 3D ERKEK KARAKTER</div>
-<div id="badge">IDLE + KIYAFET AKTİF</div>
-<div id="hint">Parmağınla çevir: 360° • İki parmakla yakınlaştır / uzaklaştır</div>
+<div id="hint">Sol joystick: hareket • İki parmak: yakınlaştır / uzaklaştır</div>
+<div id="gear">
+  <h3>KIYAFET & EKİPMAN</h3>
+  <button class="gearBtn" data-gear="coat">MONT</button>
+  <button class="gearBtn" data-gear="vest">ZIRH YELEĞİ</button>
+  <button class="gearBtn" data-gear="helmet">KASK</button>
+  <button class="gearBtn" data-gear="boots">BOT</button>
+  <button class="gearBtn" data-gear="pack">ÇANTA</button>
+  <h3 style="margin-top:12px">SİLAHLAR</h3>
+  <button class="gearBtn" data-gear="rifle">TÜFEK</button>
+  <button class="gearBtn" data-gear="pistol">TABANCA</button>
+</div>
+<div id="joy"><div id="knob"></div></div>
 <div id="loading">3D karakter hazırlanıyor…</div>
 <canvas id="renderCanvas"></canvas>
+
 <script src="babylon.js"></script>
 <script src="babylonjs.loaders.min.js"></script>
 <script>
 const canvas=document.getElementById("renderCanvas");
 const engine=new BABYLON.Engine(canvas,true,{preserveDrawingBuffer:true,stencil:true});
 const scene=new BABYLON.Scene(engine);
-scene.clearColor=new BABYLON.Color4(0.018,0.022,0.032,1);
+scene.clearColor=new BABYLON.Color4(.018,.022,.032,1);
 
 const camera=new BABYLON.ArcRotateCamera("cam",Math.PI/2,Math.PI/2.08,3.45,new BABYLON.Vector3(0,1.05,0),scene);
-camera.lowerRadiusLimit=1.65;
-camera.upperRadiusLimit=5.2;
-camera.lowerBetaLimit=0.45;
-camera.upperBetaLimit=2.65;
+camera.lowerRadiusLimit=1.7;
+camera.upperRadiusLimit=5.3;
+camera.lowerBetaLimit=.55;
+camera.upperBetaLimit=2.45;
 camera.panningSensibility=0;
-camera.pinchPrecision=60;
-camera.angularSensibilityX=650;
-camera.angularSensibilityY=650;
-camera.attachControl(canvas,true);
 
 const hemi=new BABYLON.HemisphericLight("hemi",new BABYLON.Vector3(0,1,0),scene);
-hemi.intensity=.7;
-hemi.diffuse=new BABYLON.Color3(.52,.6,.82);
-
+hemi.intensity=.72; hemi.diffuse=new BABYLON.Color3(.52,.6,.82);
 const key=new BABYLON.DirectionalLight("key",new BABYLON.Vector3(-.35,-1,-.35),scene);
-key.position=new BABYLON.Vector3(3,4,3);
-key.intensity=2.0;
-key.diffuse=new BABYLON.Color3(1,.84,.72);
-
+key.position=new BABYLON.Vector3(3,4,3);key.intensity=2.0;key.diffuse=new BABYLON.Color3(1,.84,.72);
 const rim=new BABYLON.PointLight("rim",new BABYLON.Vector3(-2.7,2,-2.2),scene);
-rim.intensity=1.55;
-rim.diffuse=new BABYLON.Color3(.18,.32,1);
-
+rim.intensity=1.55;rim.diffuse=new BABYLON.Color3(.18,.32,1);
 const warm=new BABYLON.PointLight("warm",new BABYLON.Vector3(2.3,1.6,-1.8),scene);
-warm.intensity=1.2;
-warm.diffuse=new BABYLON.Color3(1,.12,.08);
+warm.intensity=1.1;warm.diffuse=new BABYLON.Color3(1,.12,.08);
 
-const ground=BABYLON.MeshBuilder.CreateGround("ground",{width:8,height:8},scene);
+const ground=BABYLON.MeshBuilder.CreateGround("ground",{width:14,height:14},scene);
 const gm=new BABYLON.PBRMaterial("gm",scene);
-gm.albedoColor=new BABYLON.Color3(.03,.035,.045);
-gm.metallic=.45;gm.roughness=.38;ground.material=gm;
+gm.albedoColor=new BABYLON.Color3(.03,.035,.045);gm.metallic=.45;gm.roughness=.38;ground.material=gm;
 
-const podium=BABYLON.MeshBuilder.CreateCylinder("podium",{height:.16,diameterTop:2.1,diameterBottom:2.4,tessellation:64},scene);
-podium.position.y=.08;
-const pm=new BABYLON.PBRMaterial("pm",scene);
-pm.albedoColor=new BABYLON.Color3(.09,.10,.13);
-pm.metallic=.85;pm.roughness=.18;podium.material=pm;
+let modelRoot=null, scale=1, idle=null, walk=null, activeAnim=null;
+let moveX=0,moveY=0,gearRoot=null;
+const gear={};
+
+function mat(name,c,metal=.15,rough=.48){
+ const m=new BABYLON.PBRMaterial(name,scene);m.albedoColor=c;m.metallic=metal;m.roughness=rough;return m;
+}
+const black=mat("black",new BABYLON.Color3(.025,.03,.04),.35,.3);
+const cloth=mat("cloth",new BABYLON.Color3(.035,.06,.11),.12,.58);
+const armor=mat("armor",new BABYLON.Color3(.08,.09,.11),.65,.28);
+const leather=mat("leather",new BABYLON.Color3(.08,.045,.025),.18,.6);
+const gunmat=mat("gun",new BABYLON.Color3(.035,.04,.045),.78,.22);
+
+function box(n,size,pos,material,parent){
+ const m=BABYLON.MeshBuilder.CreateBox(n,{width:size[0],height:size[1],depth:size[2]},scene);
+ m.position=new BABYLON.Vector3(...pos);m.material=material;m.parent=parent;return m;
+}
+function cyl(n,h,d,pos,rot,material,parent){
+ const m=BABYLON.MeshBuilder.CreateCylinder(n,{height:h,diameter:d,tessellation:20},scene);
+ m.position=new BABYLON.Vector3(...pos);m.rotation=new BABYLON.Vector3(...rot);m.material=material;m.parent=parent;return m;
+}
+
+function buildGear(root){
+ gearRoot=new BABYLON.TransformNode("gearRoot",scene);gearRoot.parent=root;
+
+ let g=new BABYLON.TransformNode("coat",scene);g.parent=gearRoot;
+ box("coatBody",[.76,.82,.22],[0,1.43,.02],cloth,g);
+ box("coatTailL",[.28,.72,.12],[-.19,.72,.08],cloth,g);
+ box("coatTailR",[.28,.72,.12],[.19,.72,.08],cloth,g);
+ gear.coat=g;
+
+ g=new BABYLON.TransformNode("vest",scene);g.parent=gearRoot;
+ box("vestFront",[.70,.58,.18],[0,1.43,.15],armor,g);
+ box("vestBack",[.70,.58,.16],[0,1.43,-.16],armor,g);
+ gear.vest=g;
+
+ g=new BABYLON.TransformNode("helmet",scene);g.parent=gearRoot;
+ const hs=BABYLON.MeshBuilder.CreateSphere("helmetShell",{diameter:.52,segments:24,slice:.56},scene);
+ hs.scaling.y=.78;hs.position.y=2.37;hs.material=armor;hs.parent=g;
+ const brim=box("helmetBrim",[.55,.06,.52],[0,2.19,.01],armor,g);
+ gear.helmet=g;
+
+ g=new BABYLON.TransformNode("boots",scene);g.parent=gearRoot;
+ box("bootL",[.22,.34,.34],[-.17,.18,.02],leather,g);
+ box("bootR",[.22,.34,.34],[.17,.18,.02],leather,g);
+ gear.boots=g;
+
+ g=new BABYLON.TransformNode("pack",scene);g.parent=gearRoot;
+ box("packBody",[.58,.72,.28],[0,1.32,-.28],leather,g);
+ cyl("packRoll",.62,.18,[0,.99,-.34],[0,0,Math.PI/2],cloth,g);
+ gear.pack=g;
+
+ g=new BABYLON.TransformNode("rifle",scene);g.parent=gearRoot;
+ box("rifleBody",[.16,.18,.85],[.34,1.48,-.28],gunmat,g).rotation.z=-.22;
+ cyl("rifleBarrel",.72,.055,[.40,1.86,-.26],[Math.PI/2,0,0],gunmat,g).rotation.z=-.22;
+ gear.rifle=g;
+
+ g=new BABYLON.TransformNode("pistol",scene);g.parent=gearRoot;
+ box("pistolBody",[.12,.18,.38],[-.38,1.02,.11],gunmat,g);
+ box("pistolGrip",[.11,.26,.12],[-.38,.86,.10],leather,g).rotation.z=.18;
+ gear.pistol=g;
+
+ Object.values(gear).forEach(n=>n.setEnabled(false));
+}
+
+function play(group){
+ if(activeAnim===group)return;
+ if(activeAnim)activeAnim.stop();
+ activeAnim=group;
+ if(activeAnim)activeAnim.start(true,1,activeAnim.from,activeAnim.to,false);
+}
 
 BABYLON.SceneLoader.ImportMeshAsync("","./","Soldier.glb",scene).then(result=>{
-  const roots=result.meshes.filter(m=>!m.parent);
-  const root=roots[0] || result.meshes[0];
+ const roots=result.meshes.filter(m=>!m.parent);
+ modelRoot=roots[0]||result.meshes[0];
+ let min=new BABYLON.Vector3(999,999,999),max=new BABYLON.Vector3(-999,-999,-999);
+ result.meshes.forEach(m=>{if(!m.getBoundingInfo)return;const b=m.getBoundingInfo().boundingBox;min=BABYLON.Vector3.Minimize(min,b.minimumWorld);max=BABYLON.Vector3.Maximize(max,b.maximumWorld);});
+ const h=max.y-min.y;scale=2.45/Math.max(h,.001);
+ modelRoot.scaling=new BABYLON.Vector3(scale,scale,scale);modelRoot.computeWorldMatrix(true);
+ min=new BABYLON.Vector3(999,999,999);
+ result.meshes.forEach(m=>{if(!m.getBoundingInfo)return;const b=m.getBoundingInfo().boundingBox;min=BABYLON.Vector3.Minimize(min,b.minimumWorld);});
+ modelRoot.position.y=.02-min.y;
+ modelRoot.rotationQuaternion=null;modelRoot.rotation.y=Math.PI;
 
-  let min=new BABYLON.Vector3(999,999,999), max=new BABYLON.Vector3(-999,-999,-999);
-  result.meshes.forEach(m=>{
-    if(!m.getBoundingInfo)return;
-    const b=m.getBoundingInfo().boundingBox;
-    min=BABYLON.Vector3.Minimize(min,b.minimumWorld);
-    max=BABYLON.Vector3.Maximize(max,b.maximumWorld);
-  });
+ idle=result.animationGroups.find(a=>/idle/i.test(a.name))||result.animationGroups[0];
+ walk=result.animationGroups.find(a=>/walk/i.test(a.name))||result.animationGroups.find(a=>/run/i.test(a.name));
+ result.animationGroups.forEach(a=>a.stop());
+ play(idle);
 
-  const h=max.y-min.y;
-  const scale=2.45/Math.max(h,.001);
-  root.scaling=new BABYLON.Vector3(scale,scale,scale);
-  root.computeWorldMatrix(true);
+ buildGear(modelRoot);
+ camera.target=new BABYLON.Vector3(modelRoot.position.x,1.15,modelRoot.position.z);
+ document.getElementById("loading").style.display="none";
+}).catch(e=>{document.getElementById("loading").textContent="3D karakter yüklenemedi";console.error(e)});
 
-  min=new BABYLON.Vector3(999,999,999);max=new BABYLON.Vector3(-999,-999,-999);
-  result.meshes.forEach(m=>{
-    if(!m.getBoundingInfo)return;
-    const b=m.getBoundingInfo().boundingBox;
-    min=BABYLON.Vector3.Minimize(min,b.minimumWorld);
-    max=BABYLON.Vector3.Maximize(max,b.maximumWorld);
-  });
-  root.position.y=.16-min.y;
-  root.rotationQuaternion=null;
-  root.rotation.y=Math.PI;
-
-  const idle=result.animationGroups.find(a=>/idle/i.test(a.name)) || result.animationGroups[0];
-  result.animationGroups.forEach(a=>a.stop());
-  if(idle){idle.start(true,1.0,idle.from,idle.to,false);}
-
-  camera.target=new BABYLON.Vector3(0,1.18,0);
-  document.getElementById("loading").style.display="none";
-}).catch(err=>{
-  document.getElementById("loading").textContent="3D karakter yüklenemedi";
-  console.error(err);
+// Gear toggle
+document.querySelectorAll(".gearBtn").forEach(btn=>{
+ btn.addEventListener("click",ev=>{
+   ev.stopPropagation();
+   const k=btn.dataset.gear;
+   if(!gear[k])return;
+   const next=!gear[k].isEnabled();
+   gear[k].setEnabled(next);
+   btn.classList.toggle("on",next);
+ });
 });
 
-engine.runRenderLoop(()=>scene.render());
+// 360-degree movement joystick
+const joy=document.getElementById("joy"),knob=document.getElementById("knob");
+let joyId=null;
+function updateJoy(e){
+ const r=joy.getBoundingClientRect();
+ const cx=r.left+r.width/2,cy=r.top+r.height/2;
+ let dx=(e.clientX-cx)/(r.width*.5),dy=(e.clientY-cy)/(r.height*.5);
+ const len=Math.hypot(dx,dy);if(len>1){dx/=len;dy/=len;}
+ moveX=dx;moveY=-dy;
+ knob.style.transform=`translate(${dx*43}px,${dy*43}px)`;
+}
+joy.addEventListener("pointerdown",e=>{joyId=e.pointerId;joy.setPointerCapture(joyId);updateJoy(e);e.preventDefault();});
+joy.addEventListener("pointermove",e=>{if(e.pointerId===joyId){updateJoy(e);e.preventDefault();}});
+function resetJoy(e){if(joyId===null||e.pointerId===joyId){joyId=null;moveX=moveY=0;knob.style.transform="translate(0,0)";}}
+joy.addEventListener("pointerup",resetJoy);joy.addEventListener("pointercancel",resetJoy);
+
+// Pinch zoom only. One-finger scene rotation intentionally disabled.
+const touches=new Map();
+canvas.addEventListener("pointerdown",e=>{touches.set(e.pointerId,{x:e.clientX,y:e.clientY});canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener("pointermove",e=>{
+ if(!touches.has(e.pointerId))return;
+ touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(touches.size===2){
+   const p=[...touches.values()];
+   const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+   if(canvas._lastPinch){
+     camera.radius=Math.max(camera.lowerRadiusLimit,Math.min(camera.upperRadiusLimit,camera.radius-(d-canvas._lastPinch)*.008));
+   }
+   canvas._lastPinch=d;
+ }
+});
+function endTouch(e){touches.delete(e.pointerId);if(touches.size<2)canvas._lastPinch=0;}
+canvas.addEventListener("pointerup",endTouch);canvas.addEventListener("pointercancel",endTouch);
+
+engine.runRenderLoop(()=>{
+ if(modelRoot){
+   const mag=Math.hypot(moveX,moveY);
+   if(mag>.08){
+     const dt=engine.getDeltaTime()/1000;
+     const speed=1.15;
+     // Fixed camera: up = forward into scene, horizontal = left/right.
+     modelRoot.position.x+=moveX*speed*dt;
+     modelRoot.position.z+=(-moveY)*speed*dt;
+     const targetYaw=Math.atan2(moveX,-moveY);
+     let current=modelRoot.rotation.y;
+     let diff=Math.atan2(Math.sin(targetYaw-current),Math.cos(targetYaw-current));
+     modelRoot.rotation.y=current+diff*Math.min(1,dt*9);
+     play(walk||idle);
+   } else {
+     play(idle);
+   }
+   camera.target.x=modelRoot.position.x;
+   camera.target.z=modelRoot.position.z;
+   camera.target.y=1.15;
+ }
+ scene.render();
+});
 window.addEventListener("resize",()=>engine.resize());
 </script>
 </body>
