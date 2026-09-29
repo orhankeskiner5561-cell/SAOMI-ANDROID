@@ -53,6 +53,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Saomi-3D-Male-Idle-Clothed-APK
+          name: Saomi-3D-Male-Gear-Joystick-APK
           path: male-3d-demo-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
