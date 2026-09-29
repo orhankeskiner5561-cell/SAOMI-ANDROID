@@ -1,8 +1,8 @@
-name: Build Battle Royale RC3 Godot APK
+name: Build SAOMI 3D Male APK
 
 on:
   push:
-    branches: [ "battle-royale-rc3" ]
+    branches: [ "male-3d-demo" ]
     paths:
       - "battle-royale-rc3/**"
       - ".github/workflows/battle-royale-rc3.yml"
@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch CC0 rigged male and female 3D characters
+      - name: Fetch rigged male 3D character
         shell: bash
         run: |
           set -e
@@ -29,37 +29,28 @@ jobs:
 
           cp "$SRC/Superhero_Male_FullBody.gltf" "$DST/"
           cp "$SRC/Superhero_Male_FullBody.bin" "$DST/"
-          cp "$SRC/Superhero_Female_FullBody.gltf" "$DST/"
-          cp "$SRC/Superhero_Female_FullBody.bin" "$DST/"
-
           cp "$SRC/T_Hair_1_Normal.png" "$DST/T_Hair_1_Normal_png.png"
           cp "$SRC/T_Hair_1_BaseColor.png" "$DST/T_Hair_1_BaseColor.png"
-          cp "$SRC/T_Hair_2_Normal.png" "$DST/T_Hair_2_Normal.png"
-          cp "$SRC/T_Hair_2_BaseColor.png" "$DST/T_Hair_2_BaseColor.png"
           cp "$SRC/T_Eye_Normal.png" "$DST/T_Eye_Normal_png.png"
           cp "$SRC/T_Eye_Brown.png" "$DST/T_Eye_Brown.png"
           cp "$SRC/T_Superhero_Male_Normal.png" "$DST/T_Superhero_Male_Normal.png"
           cp "$SRC/T_Superhero_Male_Dark.png" "$DST/T_Superhero_Male_Dark.png"
           cp "$SRC/T_Superhero_Male_Roughness.png" "$DST/T_Superhero_Male_Roughness.png"
-          cp "$SRC/T_Superhero_Female_Normal.png" "$DST/T_Superhero_Female_Normal.png"
-          cp "$SRC/T_Superhero_Female_Dark_BaseColor.png" "$DST/T_Superhero_Female_Dark_BaseColor.png"
-          cp "$SRC/T_Superhero_Female_Roughness.png" "$DST/T_Superhero_Female_Roughness.png"
-          cp "/tmp/quaternius/Universal Base Characters[Standard]/Universal Base Characters[Standard]/License_Standard.txt" "$DST/QUATERNIUS_LICENSE.txt"
 
-      - name: Import RC3 Godot project
+      - name: Import project and 3D character
         working-directory: battle-royale-rc3
-        run: HOME=/root godot --headless --editor --quit-after 20
+        run: HOME=/root godot --headless --editor --quit-after 25
 
-      - name: Export RC3 Android APK
+      - name: Export Android APK
         working-directory: battle-royale-rc3
         run: |
           mkdir -p build
-          HOME=/root godot --headless --verbose --export-debug "Android" build/Saomi-Battle-Royale-RC3.apk
-          ls -lh build/Saomi-Battle-Royale-RC3.apk
+          HOME=/root godot --headless --verbose --export-debug "Android" build/Saomi-3D-Male-Demo.apk
+          ls -lh build/Saomi-3D-Male-Demo.apk
 
-      - name: Upload RC3 APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Saomi-Battle-Royale-RC3-GODOT-APK
-          path: battle-royale-rc3/build/Saomi-Battle-Royale-RC3.apk
+          name: Saomi-3D-Male-Demo-APK
+          path: battle-royale-rc3/build/Saomi-3D-Male-Demo.apk
           if-no-files-found: error
