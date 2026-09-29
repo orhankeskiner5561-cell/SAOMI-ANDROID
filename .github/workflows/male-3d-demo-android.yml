@@ -33,6 +33,28 @@ jobs:
           curl -L --fail -o babylonjs.loaders.min.js https://cdn.jsdelivr.net/npm/babylonjs-loaders@8.32.0/babylonjs.loaders.min.js
           curl -L --fail -o hoodie.glb https://raw.githubusercontent.com/twinkling-reality/exulanica/main/assets/characters/quaternius-modular-v2/hoodie.glb
           ls -lh hoodie.glb
+          curl -L --fail -o Soldier.glb https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb
+          python3 - <<'PY'
+import json,struct
+p='Soldier.glb'
+b=open(p,'rb').read()
+magic,ver,total=struct.unpack_from('<III',b,0)
+off=12
+names=[]
+while off<len(b):
+    ln,typ=struct.unpack_from('<II',b,off); off+=8
+    chunk=b[off:off+ln]; off+=ln
+    if typ==0x4E4F534A:
+        j=json.loads(chunk.decode('utf-8').rstrip('\x00 '))
+        for n in j.get('nodes',[]):
+            if 'name' in n: names.append(('node',n['name']))
+        for m in j.get('meshes',[]):
+            if 'name' in m: names.append(('mesh',m['name']))
+        break
+print('SOLDIER_NAMES_START')
+for t,n in names: print(t,n)
+print('SOLDIER_NAMES_END')
+PY
       - name: Build APK
         working-directory: male-3d-demo-android
         run: gradle :app:assembleDebug --stacktrace
