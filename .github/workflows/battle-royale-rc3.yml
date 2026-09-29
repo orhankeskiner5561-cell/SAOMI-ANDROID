@@ -48,13 +48,13 @@ jobs:
 
       - name: Import RC3 Godot project
         working-directory: battle-royale-rc3
-        run: godot --headless --editor --quit-after 20
+        run: HOME=/root godot --headless --editor --quit-after 20
 
       - name: Export RC3 Android APK
         working-directory: battle-royale-rc3
         run: |
           mkdir -p build
-          godot --headless --verbose --export-debug "Android" build/Saomi-Battle-Royale-RC3.apk
+          HOME=/root godot --headless --verbose --export-debug "Android" build/Saomi-Battle-Royale-RC3.apk
           ls -lh build/Saomi-Battle-Royale-RC3.apk
 
       - name: Upload RC3 APK
