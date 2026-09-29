@@ -4,95 +4,103 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <style>
-html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#080a0f;touch-action:none}
+html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:#07090d;touch-action:none}
 #renderCanvas{display:block;outline:none}
 #title{position:fixed;left:24px;top:18px;color:white;font:700 24px Arial,sans-serif;z-index:5;text-shadow:0 2px 8px #000}
 #hint{position:fixed;left:24px;bottom:18px;color:#ddd;font:15px Arial,sans-serif;z-index:5;text-shadow:0 2px 8px #000}
-#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:white;font:700 22px Arial,sans-serif;background:#080a0f;z-index:9}
+#badge{position:fixed;right:24px;top:20px;color:#e7bd67;font:700 15px Arial,sans-serif;z-index:5}
+#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:white;font:700 22px Arial,sans-serif;background:#07090d;z-index:9}
 </style>
 </head>
 <body>
 <div id="title">ŞAOMİ — 3D ERKEK KARAKTER</div>
+<div id="badge">IDLE + KIYAFET AKTİF</div>
 <div id="hint">Parmağınla çevir: 360° • İki parmakla yakınlaştır / uzaklaştır</div>
-<div id="loading">3D karakter yükleniyor…</div>
+<div id="loading">3D karakter hazırlanıyor…</div>
 <canvas id="renderCanvas"></canvas>
 <script src="babylon.js"></script>
 <script src="babylonjs.loaders.min.js"></script>
 <script>
 const canvas=document.getElementById("renderCanvas");
-const engine=new BABYLON.Engine(canvas,true,{preserveDrawingBuffer:true,stencil:true,disableWebGL2Support:false});
+const engine=new BABYLON.Engine(canvas,true,{preserveDrawingBuffer:true,stencil:true});
 const scene=new BABYLON.Scene(engine);
-scene.clearColor=new BABYLON.Color4(0.025,0.03,0.045,1);
+scene.clearColor=new BABYLON.Color4(0.018,0.022,0.032,1);
 
-const camera=new BABYLON.ArcRotateCamera("cam",Math.PI/2,Math.PI/2.15,3.4,new BABYLON.Vector3(0,1.05,0),scene);
-camera.lowerRadiusLimit=1.7;
-camera.upperRadiusLimit=5.5;
-camera.lowerBetaLimit=0.35;
-camera.upperBetaLimit=Math.PI-0.35;
+const camera=new BABYLON.ArcRotateCamera("cam",Math.PI/2,Math.PI/2.08,3.45,new BABYLON.Vector3(0,1.05,0),scene);
+camera.lowerRadiusLimit=1.65;
+camera.upperRadiusLimit=5.2;
+camera.lowerBetaLimit=0.45;
+camera.upperBetaLimit=2.65;
 camera.panningSensibility=0;
-camera.wheelPrecision=40;
-camera.pinchPrecision=55;
+camera.pinchPrecision=60;
 camera.angularSensibilityX=650;
 camera.angularSensibilityY=650;
 camera.attachControl(canvas,true);
 
 const hemi=new BABYLON.HemisphericLight("hemi",new BABYLON.Vector3(0,1,0),scene);
-hemi.intensity=0.65;
-hemi.diffuse=new BABYLON.Color3(0.55,0.62,0.8);
+hemi.intensity=.7;
+hemi.diffuse=new BABYLON.Color3(.52,.6,.82);
 
-const key=new BABYLON.DirectionalLight("key",new BABYLON.Vector3(-0.4,-1,-0.35),scene);
-key.position=new BABYLON.Vector3(2.5,4,3);
-key.intensity=2.3;
-key.diffuse=new BABYLON.Color3(1,0.83,0.72);
+const key=new BABYLON.DirectionalLight("key",new BABYLON.Vector3(-.35,-1,-.35),scene);
+key.position=new BABYLON.Vector3(3,4,3);
+key.intensity=2.0;
+key.diffuse=new BABYLON.Color3(1,.84,.72);
 
-const rim=new BABYLON.PointLight("rim",new BABYLON.Vector3(-2.5,2,-2),scene);
-rim.intensity=1.8;
-rim.diffuse=new BABYLON.Color3(0.24,0.36,1);
+const rim=new BABYLON.PointLight("rim",new BABYLON.Vector3(-2.7,2,-2.2),scene);
+rim.intensity=1.55;
+rim.diffuse=new BABYLON.Color3(.18,.32,1);
 
-const red=new BABYLON.PointLight("red",new BABYLON.Vector3(2.5,1.8,-1.5),scene);
-red.intensity=1.15;
-red.diffuse=new BABYLON.Color3(1,0.08,0.06);
+const warm=new BABYLON.PointLight("warm",new BABYLON.Vector3(2.3,1.6,-1.8),scene);
+warm.intensity=1.2;
+warm.diffuse=new BABYLON.Color3(1,.12,.08);
 
 const ground=BABYLON.MeshBuilder.CreateGround("ground",{width:8,height:8},scene);
 const gm=new BABYLON.PBRMaterial("gm",scene);
-gm.albedoColor=new BABYLON.Color3(0.035,0.04,0.055);
-gm.metallic=0.55; gm.roughness=0.38;
-ground.material=gm;
+gm.albedoColor=new BABYLON.Color3(.03,.035,.045);
+gm.metallic=.45;gm.roughness=.38;ground.material=gm;
 
-const podium=BABYLON.MeshBuilder.CreateCylinder("podium",{height:0.16,diameterTop:2.1,diameterBottom:2.4,tessellation:64},scene);
-podium.position.y=0.08;
+const podium=BABYLON.MeshBuilder.CreateCylinder("podium",{height:.16,diameterTop:2.1,diameterBottom:2.4,tessellation:64},scene);
+podium.position.y=.08;
 const pm=new BABYLON.PBRMaterial("pm",scene);
-pm.albedoColor=new BABYLON.Color3(0.11,0.12,0.16);
-pm.metallic=0.85; pm.roughness=0.22;
-podium.material=pm;
+pm.albedoColor=new BABYLON.Color3(.09,.10,.13);
+pm.metallic=.85;pm.roughness=.18;podium.material=pm;
 
-let modelRoot=null, baseY=0, t=0;
+BABYLON.SceneLoader.ImportMeshAsync("","./","Soldier.glb",scene).then(result=>{
+  const roots=result.meshes.filter(m=>!m.parent);
+  const root=roots[0] || result.meshes[0];
 
-BABYLON.SceneLoader.ImportMeshAsync("","./","Superhero_Male_FullBody.gltf",scene).then(result=>{
-  modelRoot=result.meshes[0];
-  const bounds=modelRoot.getHierarchyBoundingVectors(true);
-  const h=bounds.max.y-bounds.min.y;
-  const scale=2.55/Math.max(h,0.001);
-  modelRoot.scaling=new BABYLON.Vector3(scale,scale,scale);
-  modelRoot.computeWorldMatrix(true);
-  const b2=modelRoot.getHierarchyBoundingVectors(true);
-  baseY=0.16-b2.min.y;
-  modelRoot.position.y=baseY;
-  modelRoot.rotationQuaternion=null;
-  modelRoot.rotation.y=Math.PI;
-
-  // Character is rigged. Keep a subtle idle motion while the user orbits around it.
-  scene.onBeforeRenderObservable.add(()=>{
-    const dt=engine.getDeltaTime()/1000;
-    t+=dt;
-    modelRoot.position.y=baseY+Math.sin(t*1.8)*0.006;
-    const pulse=1+Math.sin(t*1.8)*0.0018;
-    modelRoot.scaling.y=scale*pulse;
+  let min=new BABYLON.Vector3(999,999,999), max=new BABYLON.Vector3(-999,-999,-999);
+  result.meshes.forEach(m=>{
+    if(!m.getBoundingInfo)return;
+    const b=m.getBoundingInfo().boundingBox;
+    min=BABYLON.Vector3.Minimize(min,b.minimumWorld);
+    max=BABYLON.Vector3.Maximize(max,b.maximumWorld);
   });
 
+  const h=max.y-min.y;
+  const scale=2.45/Math.max(h,.001);
+  root.scaling=new BABYLON.Vector3(scale,scale,scale);
+  root.computeWorldMatrix(true);
+
+  min=new BABYLON.Vector3(999,999,999);max=new BABYLON.Vector3(-999,-999,-999);
+  result.meshes.forEach(m=>{
+    if(!m.getBoundingInfo)return;
+    const b=m.getBoundingInfo().boundingBox;
+    min=BABYLON.Vector3.Minimize(min,b.minimumWorld);
+    max=BABYLON.Vector3.Maximize(max,b.maximumWorld);
+  });
+  root.position.y=.16-min.y;
+  root.rotationQuaternion=null;
+  root.rotation.y=Math.PI;
+
+  const idle=result.animationGroups.find(a=>/idle/i.test(a.name)) || result.animationGroups[0];
+  result.animationGroups.forEach(a=>a.stop());
+  if(idle){idle.start(true,1.0,idle.from,idle.to,false);}
+
+  camera.target=new BABYLON.Vector3(0,1.18,0);
   document.getElementById("loading").style.display="none";
 }).catch(err=>{
-  document.getElementById("loading").textContent="3D model yüklenemedi";
+  document.getElementById("loading").textContent="3D karakter yüklenemedi";
   console.error(err);
 });
 
