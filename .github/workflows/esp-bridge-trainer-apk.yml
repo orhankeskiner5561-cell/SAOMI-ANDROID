@@ -1,0 +1,56 @@
+name: ESP Bridge Trainer APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ESPBridgeTrainer/**"
+      - ".github/workflows/esp-bridge-trainer-apk.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ESPBridgeTrainer
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build debug APK
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/debug/app-debug.apk ESPBridgeTrainer-v1-debug.apk
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ESPBridgeTrainer-APK
+          path: ESPBridgeTrainer/ESPBridgeTrainer-v1-debug.apk
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: esp-trainer-build-${{ github.run_number }}
+          name: ESP Bridge Trainer Build ${{ github.run_number }}
+          prerelease: true
+          files: ESPBridgeTrainer/ESPBridgeTrainer-v1-debug.apk
+          body: |
+            Otomatik Android derlemesi.
+            Bu APK yalnızca ESP Bridge desteği eklenmiş kendi oyunlarınızla çalışacak şekilde tasarlanmıştır.
