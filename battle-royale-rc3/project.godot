@@ -1,8 +1,8 @@
 [application]
-config/name="ŞAOMİ Battle Royale RC3"
+config/name="ŞAOMİ 3D Male Demo"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
-boot_splash/bg_color=Color(0.015, 0.018, 0.028, 1)
+boot_splash/bg_color=Color(0.012, 0.015, 0.024, 1)
 
 [display]
 window/size/viewport_width=1920
@@ -16,9 +16,3 @@ window/handheld/orientation=1
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/default_filters/use_nearest_mipmap_filter=false
-
-[input]
-ui_accept={
-"deadzone": 0.5,
-"events": [Object(InputEventKey,"physical_keycode":32)]
-}
