@@ -62,10 +62,18 @@ jobs:
           cp "$SRC/Superhero_Female_FullBody.gltf" "$DST/"
           cp "$SRC/Superhero_Female_FullBody.bin" "$DST/"
 
-          for F in             T_Hair_1_Normal_png.png T_Hair_1_BaseColor.png             T_Hair_2_Normal.png T_Hair_2_BaseColor.png             T_Eye_Normal_png.png T_Eye_Brown.png             T_Superhero_Male_Normal.png T_Superhero_Male_Dark.png T_Superhero_Male_Roughness.png             T_Superhero_Female_Normal.png T_Superhero_Female_Dark_BaseColor.png T_Superhero_Female_Roughness.png
-          do
-            cp "$SRC/$F" "$DST/"
-          done
+          cp "$SRC/T_Hair_1_Normal.png" "$DST/T_Hair_1_Normal_png.png"
+          cp "$SRC/T_Hair_1_BaseColor.png" "$DST/T_Hair_1_BaseColor.png"
+          cp "$SRC/T_Hair_2_Normal.png" "$DST/T_Hair_2_Normal.png"
+          cp "$SRC/T_Hair_2_BaseColor.png" "$DST/T_Hair_2_BaseColor.png"
+          cp "$SRC/T_Eye_Normal.png" "$DST/T_Eye_Normal_png.png"
+          cp "$SRC/T_Eye_Brown.png" "$DST/T_Eye_Brown.png"
+          cp "$SRC/T_Superhero_Male_Normal.png" "$DST/T_Superhero_Male_Normal.png"
+          cp "$SRC/T_Superhero_Male_Dark.png" "$DST/T_Superhero_Male_Dark.png"
+          cp "$SRC/T_Superhero_Male_Roughness.png" "$DST/T_Superhero_Male_Roughness.png"
+          cp "$SRC/T_Superhero_Female_Normal.png" "$DST/T_Superhero_Female_Normal.png"
+          cp "$SRC/T_Superhero_Female_Dark_BaseColor.png" "$DST/T_Superhero_Female_Dark_BaseColor.png"
+          cp "$SRC/T_Superhero_Female_Roughness.png" "$DST/T_Superhero_Female_Roughness.png"
 
           cp "/tmp/quaternius/Universal Base Characters[Standard]/Universal Base Characters[Standard]/License_Standard.txt" "$DST/QUATERNIUS_LICENSE.txt"
 
