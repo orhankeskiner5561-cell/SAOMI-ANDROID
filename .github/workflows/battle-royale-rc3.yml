@@ -48,8 +48,10 @@ jobs:
           TEMPLATE=$(find /root/.local/share/godot/export_templates -name android_source.zip | head -1)
           echo "Using template: $TEMPLATE"
           test -f "$TEMPLATE"
-          unzip -q "$TEMPLATE" -d .
-          find android -maxdepth 3 -type f | head -40
+          rm -rf android/build
+          mkdir -p android/build
+          unzip -q "$TEMPLATE" -d android/build
+          find android/build -maxdepth 3 -type f | head -40
 
       - name: Export Android APK
         working-directory: battle-royale-rc3
