@@ -1,0 +1,73 @@
+name: Build SAOMI Real 3D Male APK
+
+on:
+  push:
+    branches: [ "male-3d-demo" ]
+    paths:
+      - "male-3d-demo-android/**"
+      - ".github/workflows/male-3d-demo-android.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Install Android SDK
+        shell: bash
+        run: |
+          set -e
+          ANDROID_HOME="$HOME/android-sdk"
+          mkdir -p "$ANDROID_HOME/cmdline-tools"
+          curl -L -o /tmp/cmdline-tools.zip "https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+          unzip -q /tmp/cmdline-tools.zip -d /tmp/android-tools
+          mv /tmp/android-tools/cmdline-tools "$ANDROID_HOME/cmdline-tools/latest"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+
+      - name: Fetch Babylon 3D engine
+        working-directory: male-3d-demo-android/app/src/main/assets
+        run: |
+          curl -L --fail -o babylon.js https://cdn.jsdelivr.net/npm/babylonjs@8.32.0/babylon.js
+          curl -L --fail -o babylonjs.loaders.min.js https://cdn.jsdelivr.net/npm/babylonjs-loaders@8.32.0/babylonjs.loaders.min.js
+
+      - name: Fetch rigged male 3D model
+        shell: bash
+        run: |
+          set -e
+          rm -rf /tmp/quaternius
+          git clone --depth 1 https://github.com/NafisRayan/Animate-Rigged-Humanoid-No-Blender.git /tmp/quaternius
+          SRC="/tmp/quaternius/Universal Base Characters[Standard]/Universal Base Characters[Standard]/Base Characters/Godot - UE"
+          DST="male-3d-demo-android/app/src/main/assets"
+          cp "$SRC/Superhero_Male_FullBody.gltf" "$DST/"
+          cp "$SRC/Superhero_Male_FullBody.bin" "$DST/"
+          cp "$SRC/T_Hair_1_Normal.png" "$DST/T_Hair_1_Normal_png.png"
+          cp "$SRC/T_Hair_1_BaseColor.png" "$DST/T_Hair_1_BaseColor.png"
+          cp "$SRC/T_Eye_Normal.png" "$DST/T_Eye_Normal_png.png"
+          cp "$SRC/T_Eye_Brown.png" "$DST/T_Eye_Brown.png"
+          cp "$SRC/T_Superhero_Male_Normal.png" "$DST/T_Superhero_Male_Normal.png"
+          cp "$SRC/T_Superhero_Male_Dark.png" "$DST/T_Superhero_Male_Dark.png"
+          cp "$SRC/T_Superhero_Male_Roughness.png" "$DST/T_Superhero_Male_Roughness.png"
+
+      - name: Build APK
+        working-directory: male-3d-demo-android
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Saomi-Real-3D-Male-APK
+          path: male-3d-demo-android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
