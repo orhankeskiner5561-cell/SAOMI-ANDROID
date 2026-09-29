@@ -1,28 +1,18 @@
-name: Build SAOMI Real 3D Male APK
-
+name: Build SAOMI Modular 3D Male APK
 on:
   push:
     branches: [ "male-3d-demo" ]
-    paths:
-      - "male-3d-demo-android/**"
-      - ".github/workflows/male-3d-demo-android.yml"
+    paths: [ "male-3d-demo-android/**", ".github/workflows/male-3d-demo-android.yml" ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
+        with: { distribution: temurin, java-version: '17' }
       - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
-
+        with: { gradle-version: '8.9' }
       - name: Install Android SDK
         shell: bash
         run: |
@@ -36,23 +26,18 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
-
-      - name: Fetch Babylon engine and clothed animated male
+      - name: Fetch Babylon engine and modular male
         working-directory: male-3d-demo-android/app/src/main/assets
         run: |
-          set -e
           curl -L --fail -o babylon.js https://cdn.jsdelivr.net/npm/babylonjs@8.32.0/babylon.js
           curl -L --fail -o babylonjs.loaders.min.js https://cdn.jsdelivr.net/npm/babylonjs-loaders@8.32.0/babylonjs.loaders.min.js
-          curl -L --fail -o Soldier.glb https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb
-          ls -lh Soldier.glb
-
+          curl -L --fail -o hoodie.glb https://raw.githubusercontent.com/twinkling-reality/exulanica/main/assets/characters/quaternius-modular-v2/hoodie.glb
+          ls -lh hoodie.glb
       - name: Build APK
         working-directory: male-3d-demo-android
         run: gradle :app:assembleDebug --stacktrace
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: Saomi-3D-Male-Gear-Joystick-APK
+          name: Saomi-Modular-3D-Male-APK
           path: male-3d-demo-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
