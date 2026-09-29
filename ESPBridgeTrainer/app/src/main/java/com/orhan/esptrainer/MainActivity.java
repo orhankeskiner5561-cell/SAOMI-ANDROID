@@ -1,6 +1,10 @@
 package com.orhan.esptrainer;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -15,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -27,9 +32,10 @@ public class MainActivity extends Activity implements ScriptEngine.Target {
     private final List<GameEndpoint> games = new ArrayList<>();
     private ArrayAdapter<GameEndpoint> adapter;
     private TextView status, log;
-    private EditText editor, endpointInput, jsonInput;
+    private EditText editor, endpointInput, jsonInput, sourceViewer;
     private RadarView radar;
-    private Spinner gameSpinner, modeSpinner;
+    private Spinner gameSpinner, modeSpinner, sourceSpinner;
+    private SharedPreferences sourcePrefs;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +49,19 @@ public class MainActivity extends Activity implements ScriptEngine.Target {
         radar = findViewById(R.id.radarView);
         gameSpinner = findViewById(R.id.gameSpinner);
         modeSpinner = findViewById(R.id.modeSpinner);
+        sourceSpinner = findViewById(R.id.sourceSpinner);
+        sourceViewer = findViewById(R.id.sourceViewer);
+        sourcePrefs = getSharedPreferences("source_workspace", MODE_PRIVATE);
 
         Button scan = findViewById(R.id.scanButton);
         Button pair = findViewById(R.id.pairButton);
         Button run = findViewById(R.id.runButton);
+        Button paste = findViewById(R.id.pasteButton);
+        Button loadSource = findViewById(R.id.loadSourceButton);
+        Button saveSource = findViewById(R.id.saveSourceButton);
+        Button clearSource = findViewById(R.id.clearSourceButton);
+        Button resetSource = findViewById(R.id.resetSourceButton);
+        Button copySource = findViewById(R.id.copySourceButton);
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, games);
         gameSpinner.setAdapter(adapter);
@@ -54,11 +69,20 @@ public class MainActivity extends Activity implements ScriptEngine.Target {
         String[] modes = {"Otomatik", "ESP Bridge", "Local API", "Manuel JSON"};
         modeSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, modes));
 
+        String[] sources = {"MainActivity.java", "ScriptEngine.java", "RadarView.java", "AndroidManifest.xml"};
+        sourceSpinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, sources));
+
         scan.setOnClickListener(v -> scanInstalledApps());
         pair.setOnClickListener(v -> connectSelected());
         run.setOnClickListener(v ->
                 log.setText("Log:\n" + ScriptEngine.run(editor.getText().toString(), this))
         );
+        paste.setOnClickListener(v -> pasteIntoEditor());
+        loadSource.setOnClickListener(v -> loadSourceFile(false));
+        saveSource.setOnClickListener(v -> saveSourceWorkspace());
+        clearSource.setOnClickListener(v -> sourceViewer.setText(""));
+        resetSource.setOnClickListener(v -> loadSourceFile(true));
+        copySource.setOnClickListener(v -> copySourceToClipboard());
     }
 
     private void scanInstalledApps() {
@@ -208,6 +232,70 @@ public class MainActivity extends Activity implements ScriptEngine.Target {
             points.add(new EnemyPoint(x, z, d));
         }
         return points;
+    }
+
+
+    private String selectedSourceName() {
+        Object selected = sourceSpinner.getSelectedItem();
+        return selected == null ? "MainActivity.java" : selected.toString();
+    }
+
+    private String assetPathForSource(String name) {
+        if ("MainActivity.java".equals(name)) return "source/MainActivity.java.txt";
+        if ("ScriptEngine.java".equals(name)) return "source/ScriptEngine.java.txt";
+        if ("RadarView.java".equals(name)) return "source/RadarView.java.txt";
+        return "source/AndroidManifest.xml.txt";
+    }
+
+    private String readBundledSource(String name) throws Exception {
+        InputStream in = getAssets().open(assetPathForSource(name));
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) sb.append(line).append('\n');
+        br.close();
+        return sb.toString();
+    }
+
+    private void loadSourceFile(boolean forceBundled) {
+        String name = selectedSourceName();
+        try {
+            String saved = sourcePrefs.getString(name, null);
+            if (!forceBundled && saved != null) {
+                sourceViewer.setText(saved);
+                status.setText("Çalışma kopyası açıldı: " + name);
+            } else {
+                sourceViewer.setText(readBundledSource(name));
+                status.setText(forceBundled ? "Orijinal kaynak geri yüklendi: " + name : "Kaynak açıldı: " + name);
+                if (forceBundled) sourcePrefs.edit().remove(name).apply();
+            }
+        } catch (Exception e) {
+            status.setText("Kaynak açılamadı: " + e.getMessage());
+        }
+    }
+
+    private void saveSourceWorkspace() {
+        String name = selectedSourceName();
+        sourcePrefs.edit().putString(name, sourceViewer.getText().toString()).apply();
+        status.setText("Düzenleme kaydedildi: " + name + "\nNot: Java/XML değişiklikleri yeni APK derlenince çalışan koda geçer.");
+    }
+
+    private void copySourceToClipboard() {
+        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        cm.setPrimaryClip(ClipData.newPlainText(selectedSourceName(), sourceViewer.getText().toString()));
+        status.setText("Kaynak panoya kopyalandı: " + selectedSourceName());
+    }
+
+    private void pasteIntoEditor() {
+        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (cm != null && cm.hasPrimaryClip() && cm.getPrimaryClip().getItemCount() > 0) {
+            CharSequence text = cm.getPrimaryClip().getItemAt(0).coerceToText(this);
+            int start = Math.max(editor.getSelectionStart(), 0);
+            int end = Math.max(editor.getSelectionEnd(), 0);
+            editor.getText().replace(Math.min(start, end), Math.max(start, end), text);
+        } else {
+            status.setText("Panoda yapıştırılacak metin yok.");
+        }
     }
 
     @Override public void setRadar(boolean enabled) { radar.setRadarEnabled(enabled); }
