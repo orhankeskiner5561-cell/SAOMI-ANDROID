@@ -149,8 +149,8 @@ func _fit_model(inst:Node3D):
 	inst.rotation_degrees.y = 180
 
 func _apply_character_style():
-	var outfit := outfit_colors[current_outfit % outfit_colors.size()]
-	var hair := hair_colors[current_hair % hair_colors.size()]
+	var outfit: Color = outfit_colors[current_outfit % outfit_colors.size()]
+	var hair: Color = hair_colors[current_hair % hair_colors.size()]
 	_apply_materials_recursive(character_root, outfit, hair)
 
 func _apply_materials_recursive(n:Node, outfit:Color, hair:Color):
