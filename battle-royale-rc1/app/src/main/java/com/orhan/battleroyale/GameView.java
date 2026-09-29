@@ -18,12 +18,15 @@ public class GameView extends GLSurfaceView {
         setPreserveEGLContextOnPause(true);
     }
 
+    public GameRenderer getGameRenderer(){ return renderer; }
+
+    public void selectCharacter(int index){ queueEvent(() -> renderer.selectCharacter(index)); }
+    public void startSelectedCharacter(){ queueEvent(renderer::startMatch); }
+
     @Override public boolean onTouchEvent(MotionEvent e) {
+        if (!renderer.isRunning()) return false;
+
         int a=e.getActionMasked(), idx=e.getActionIndex(), id=e.getPointerId(idx);
-        if (!renderer.isRunning() && a==MotionEvent.ACTION_DOWN) {
-            renderer.startMatch();
-            return true;
-        }
 
         if (a==MotionEvent.ACTION_DOWN || a==MotionEvent.ACTION_POINTER_DOWN) {
             float x=e.getX(idx), y=e.getY(idx);
