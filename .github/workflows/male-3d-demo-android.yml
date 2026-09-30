@@ -35,16 +35,13 @@ jobs:
           curl -L --fail -o babylon.js https://cdn.jsdelivr.net/npm/babylonjs@8.32.0/babylon.js
           curl -L --fail -o babylonjs.loaders.min.js https://cdn.jsdelivr.net/npm/babylonjs-loaders@8.32.0/babylonjs.loaders.min.js
           curl -L --fail -o Soldier.glb https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb
-          curl -L --fail -o rifle.glb https://raw.githubusercontent.com/turingfp/surfskinew/be9b9f8e057b133740834b7553b991211edeed66/assets/models/rifle.glb
-          curl -L --fail -o pistol.glb https://raw.githubusercontent.com/turingfp/surfskinew/be9b9f8e057b133740834b7553b991211edeed66/assets/models/pistol.glb
           curl -L --fail -o backpack.glb https://raw.githubusercontent.com/nucleodeestudosmbdevelopment-ux/nucleodeestudosmb-site/6c5a0a46b6aca872acbad6dce6d2ec8b10138ace/public/models/backpack.glb
-          curl -L --fail -o helmet.glb https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb
-          ls -lh Soldier.glb helmet.glb backpack.glb rifle.glb pistol.glb
+          ls -lh Soldier.glb backpack.glb
       - name: Build APK
         working-directory: male-3d-demo-android
         run: gradle :app:assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: Saomi-Soldier-Equipment-v8-APK
+          name: Saomi-Soldier-Backpack-v9-APK
           path: male-3d-demo-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
