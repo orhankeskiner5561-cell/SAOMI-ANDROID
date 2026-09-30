@@ -1,5 +1,4 @@
 name: Build SAOMI Soldier Equipment APK
-
 on:
   push:
     branches: [ "male-3d-demo" ]
@@ -7,22 +6,15 @@ on:
       - "male-3d-demo-android/**"
       - ".github/workflows/male-3d-demo-android.yml"
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
+        with: { distribution: temurin, java-version: '17' }
       - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
-
+        with: { gradle-version: '8.9' }
       - name: Install Android SDK
         shell: bash
         run: |
@@ -36,7 +28,6 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
-
       - name: Fetch 3D engine and assets
         working-directory: male-3d-demo-android/app/src/main/assets
         run: |
@@ -47,34 +38,13 @@ jobs:
           curl -L --fail -o rifle.glb https://raw.githubusercontent.com/turingfp/surfskinew/be9b9f8e057b133740834b7553b991211edeed66/assets/models/rifle.glb
           curl -L --fail -o pistol.glb https://raw.githubusercontent.com/turingfp/surfskinew/be9b9f8e057b133740834b7553b991211edeed66/assets/models/pistol.glb
           curl -L --fail -o backpack.glb https://raw.githubusercontent.com/nucleodeestudosmbdevelopment-ux/nucleodeestudosmb-site/6c5a0a46b6aca872acbad6dce6d2ec8b10138ace/public/models/backpack.glb
-          ls -lh Soldier.glb rifle.glb pistol.glb backpack.glb
-          python3 - <<'PY'
-import json,struct,os
-for p in ["Soldier.glb","rifle.glb","pistol.glb","backpack.glb"]:
-    b=open(p,"rb").read()
-    magic,ver,total=struct.unpack_from("<III",b,0)
-    off=12;j=None
-    while off<len(b):
-        ln,typ=struct.unpack_from("<II",b,off);off+=8
-        chunk=b[off:off+ln];off+=ln
-        if typ==0x4E4F534A:
-            j=json.loads(chunk.decode("utf-8").rstrip("\x00 "))
-            break
-    print("====",p,"====")
-    if not j:
-        print("NO JSON"); continue
-    print("nodes",[n.get("name") for n in j.get("nodes",[]) if n.get("name")])
-    print("meshes",[m.get("name") for m in j.get("meshes",[]) if m.get("name")])
-    print("skins",j.get("skins",[]))
-PY
-
+          curl -L --fail -o helmet.glb https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/DamagedHelmet/glTF-Binary/DamagedHelmet.glb
+          ls -lh Soldier.glb helmet.glb backpack.glb rifle.glb pistol.glb
       - name: Build APK
         working-directory: male-3d-demo-android
         run: gradle :app:assembleDebug --stacktrace
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: Saomi-Soldier-Real-Equipment-APK
+          name: Saomi-Soldier-Equipment-v8-APK
           path: male-3d-demo-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
