@@ -125,7 +125,7 @@ func _build_player() -> void:
     if packed:
         var model := packed.instantiate()
         visual_root.add_child(model)
-        visual_root.rotation.y = PI
+        visual_root.rotation.y = 0.0
         animation_player = _find_animation_player(model)
         if animation_player:
             _index_animations()
@@ -157,7 +157,7 @@ func _build_hud() -> void:
     add_child(layer)
 
     var title := Label.new()
-    title.text = "ŞAOMİ BATTLE ROYALE  •  M1 NATIVE ENGINE"
+    title.text = "ŞAOMİ BATTLE ROYALE  •  M1.2 DIRECTION FIX"
     title.position = Vector2(24, 20)
     title.add_theme_font_size_override("font_size", 24)
     layer.add_child(title)
@@ -269,8 +269,11 @@ func _physics_process(delta: float) -> void:
 
     var input_len := move_vec.length()
     if input_len > 0.06:
-        var forward := Vector3(-sin(yaw), 0, -cos(yaw))
-        var right := Vector3(cos(yaw), 0, -sin(yaw))
+        # Correct mobile TPS basis:
+        # joystick up = screen/camera forward
+        # joystick right = screen/camera right
+        var forward := Vector3(sin(yaw), 0, cos(yaw))
+        var right := Vector3(-cos(yaw), 0, sin(yaw))
         var dir := right * move_vec.x + forward * move_vec.y
         if dir.length() > 1.0:
             dir = dir.normalized()
