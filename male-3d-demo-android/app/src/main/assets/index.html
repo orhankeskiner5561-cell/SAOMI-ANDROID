@@ -30,7 +30,7 @@ html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidde
 <div id="panel">
   <div id="head"><div id="pt">GİYDİR / ÇIKAR</div><button id="closeBtn">X</button></div>
 
-  <div class="section">GİYDİR / ÇIKAR</div>
+  
   <button class="itemBtn on ready" data-item="visor">VİZÖR <span class="state">TAKILI</span></button>
   <button class="itemBtn" data-item="backpack">ÇANTA <span class="state">YÜKLENİYOR</span></button>
 </div>
@@ -130,7 +130,7 @@ BABYLON.SceneLoader.ImportMeshAsync("","./","Soldier.glb",scene).then(async resu
 
  // First lock the backpack correctly to the Soldier body before adding anything else.
  try{
-   await loadRootAccessory("backpack.glb","backpack",.54,[0,1.27,.34],[0,Math.PI,0]);
+   await loadRootAccessory("backpack.glb","backpack",.48,[0,1.21,.18],[0,Math.PI,0]);
  }catch(e){console.error(e);}
 
  camera.target=new BABYLON.Vector3(modelRoot.position.x,1.15,modelRoot.position.z);
