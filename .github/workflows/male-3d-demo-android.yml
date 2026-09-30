@@ -42,6 +42,6 @@ jobs:
         run: gradle :app:assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: Saomi-Soldier-Backpack-v9-APK
+          name: Saomi-Soldier-Backpack-v10-APK
           path: male-3d-demo-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
