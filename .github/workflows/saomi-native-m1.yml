@@ -70,6 +70,14 @@ jobs:
           rm -f debug.keystore
           keytool -genkeypair -v -keystore debug.keystore             -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000             -storepass android -keypass android             -dname "CN=Android Debug,O=SAOMI,C=TR"
 
+      - name: Configure export keystore path
+        working-directory: saomi-battle-royale-native
+        shell: bash
+        run: |
+          set -e
+          sed -i 's#keystore/debug=""#keystore/debug="'"$GITHUB_WORKSPACE"'/saomi-battle-royale-native/debug.keystore"#' export_presets.cfg
+          grep -E 'keystore/debug|architectures/arm64' export_presets.cfg
+
       - name: Import native project
         working-directory: saomi-battle-royale-native
         shell: bash
