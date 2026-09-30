@@ -20,6 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install CI utilities
+        shell: bash
+        run: |
+          apt-get update
+          apt-get install -y curl unzip
+
       - name: Setup Godot export templates
         shell: bash
         run: |
