@@ -125,7 +125,7 @@ func _build_player() -> void:
     if packed:
         var model := packed.instantiate()
         visual_root.add_child(model)
-        visual_root.rotation.y = 0.0
+        visual_root.rotation.y = PI
         animation_player = _find_animation_player(model)
         if animation_player:
             _index_animations()
@@ -134,8 +134,8 @@ func _build_player() -> void:
 func _build_camera() -> void:
     camera_pivot = Node3D.new()
     camera_pivot.name = "CameraPivot"
-    player.add_child(camera_pivot)
-    camera_pivot.position = Vector3(0, 1.28, 0)
+    add_child(camera_pivot)
+    camera_pivot.global_position = player.global_position + Vector3(0, 1.28, 0)
     camera_pivot.rotation = Vector3(pitch, yaw, 0)
 
     spring_arm = SpringArm3D.new()
@@ -157,7 +157,7 @@ func _build_hud() -> void:
     add_child(layer)
 
     var title := Label.new()
-    title.text = "ŞAOMİ BATTLE ROYALE  •  M1.2 DIRECTION FIX"
+    title.text = "ŞAOMİ BATTLE ROYALE  •  M1.3 360 TPS FIX"
     title.position = Vector2(24, 20)
     title.add_theme_font_size_override("font_size", 24)
     layer.add_child(title)
@@ -269,11 +269,11 @@ func _physics_process(delta: float) -> void:
 
     var input_len := move_vec.length()
     if input_len > 0.06:
-        # Correct mobile TPS basis:
-        # joystick up = screen/camera forward
-        # joystick right = screen/camera right
-        var forward := Vector3(sin(yaw), 0, cos(yaw))
-        var right := Vector3(-cos(yaw), 0, sin(yaw))
+        # Camera-relative TPS movement:
+        # up = camera forward, down = camera backward,
+        # right = screen right, left = screen left.
+        var forward := Vector3(-sin(yaw), 0, -cos(yaw))
+        var right := Vector3(cos(yaw), 0, -sin(yaw))
         var dir := right * move_vec.x + forward * move_vec.y
         if dir.length() > 1.0:
             dir = dir.normalized()
@@ -303,6 +303,7 @@ func _physics_process(delta: float) -> void:
         state_label.text = "IDLE"
 
     player.move_and_slide()
+    camera_pivot.global_position = player.global_position + Vector3(0, 1.28, 0)
 
 func _find_animation_player(node: Node) -> AnimationPlayer:
     if node is AnimationPlayer:
