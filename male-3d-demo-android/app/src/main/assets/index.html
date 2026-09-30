@@ -10,14 +10,15 @@ html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidde
 #hint{position:fixed;left:22px;bottom:14px;color:#d6d6d6;font-size:14px;z-index:5;text-shadow:0 2px 8px #000}
 #loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;background:#07090d;z-index:20}
 #listOpen{position:fixed;right:18px;top:20px;z-index:9;border:1px solid #ffffff33;border-radius:12px;background:#242b36;color:#fff;padding:11px 18px;font-weight:700;font-size:14px}
-#panel{position:fixed;right:18px;top:68px;width:215px;z-index:9;background:#11151dee;border:1px solid #ffffff22;border-radius:16px;padding:12px;display:none}
+#panel{position:fixed;right:18px;top:68px;width:230px;max-height:82vh;overflow:auto;z-index:9;background:#11151dee;border:1px solid #ffffff22;border-radius:16px;padding:12px;display:none}
 #head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 #pt{color:#e7bd67;font-weight:700;font-size:15px}
 #closeBtn{width:34px;height:34px;border-radius:9px;border:1px solid #ffffff30;background:#2a303b;color:#fff;font-size:18px;font-weight:700}
-.itemBtn{width:100%;margin:5px 0;padding:10px;border:1px solid #ffffff22;border-radius:10px;background:#2a3039;color:#fff;font-weight:700;font-size:13px;text-align:left}
+.section{color:#9fa9b7;font-size:11px;font-weight:700;margin:10px 0 4px;letter-spacing:.8px}
+.itemBtn{width:100%;margin:4px 0;padding:10px;border:1px solid #ffffff22;border-radius:10px;background:#2a3039;color:#fff;font-weight:700;font-size:13px;text-align:left}
 .itemBtn.ready{border-color:#4e9b67}
 .itemBtn.on{background:#8e6425;border-color:#e7bd67}
-.itemBtn .state{float:right;font-size:11px;color:#b9c1cc}
+.state{float:right;font-size:11px;color:#b9c1cc}
 .itemBtn.on .state{color:#fff}
 #joy{position:fixed;left:28px;bottom:55px;width:160px;height:160px;border-radius:50%;background:#ffffff18;border:2px solid #ffffff28;z-index:8;touch-action:none}
 #knob{position:absolute;left:50%;top:50%;width:70px;height:70px;margin:-35px;border-radius:50%;background:#ffffff38;border:2px solid #ffffff55;transform:translate(0,0)}
@@ -27,12 +28,20 @@ html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidde
 <div id="title">ŞAOMİ — 3D ERKEK KARAKTER</div>
 <button id="listOpen">LİSTE</button>
 <div id="panel">
-  <div id="head"><div id="pt">3D EKİPMANLAR</div><button id="closeBtn">X</button></div>
+  <div id="head"><div id="pt">GİYDİR / ÇIKAR</div><button id="closeBtn">X</button></div>
+
+  <div class="section">KIYAFET / BAŞ</div>
   <button class="itemBtn on ready" data-item="visor">VİZÖR <span class="state">TAKILI</span></button>
+  <button class="itemBtn" data-item="helmet">KASK <span class="state">YÜKLENİYOR</span></button>
+
+  <div class="section">EKİPMAN</div>
   <button class="itemBtn" data-item="backpack">ÇANTA <span class="state">YÜKLENİYOR</span></button>
+
+  <div class="section">SİLAHLAR</div>
   <button class="itemBtn" data-item="rifle">TÜFEK <span class="state">YÜKLENİYOR</span></button>
   <button class="itemBtn" data-item="pistol">TABANCA <span class="state">YÜKLENİYOR</span></button>
 </div>
+
 <div id="hint">Sol joystick: 360° hareket • İki parmak: yakınlaştır / uzaklaştır</div>
 <div id="joy"><div id="knob"></div></div>
 <div id="loading">3D karakter hazırlanıyor…</div>
@@ -47,253 +56,171 @@ const scene=new BABYLON.Scene(engine);
 scene.clearColor=new BABYLON.Color4(.018,.022,.032,1);
 
 const camera=new BABYLON.ArcRotateCamera("cam",Math.PI/2,Math.PI/2.08,3.45,new BABYLON.Vector3(0,1.05,0),scene);
-camera.lowerRadiusLimit=1.7;
-camera.upperRadiusLimit=5.3;
-camera.lowerBetaLimit=.55;
-camera.upperBetaLimit=2.45;
-camera.panningSensibility=0;
+camera.lowerRadiusLimit=1.7;camera.upperRadiusLimit=5.3;camera.lowerBetaLimit=.55;camera.upperBetaLimit=2.45;camera.panningSensibility=0;
 
 const hemi=new BABYLON.HemisphericLight("hemi",new BABYLON.Vector3(0,1,0),scene);
-hemi.intensity=.72; hemi.diffuse=new BABYLON.Color3(.52,.6,.82);
-
+hemi.intensity=.72;hemi.diffuse=new BABYLON.Color3(.52,.6,.82);
 const key=new BABYLON.DirectionalLight("key",new BABYLON.Vector3(-.35,-1,-.35),scene);
-key.position=new BABYLON.Vector3(3,4,3);
-key.intensity=2.0;
-key.diffuse=new BABYLON.Color3(1,.84,.72);
-
+key.position=new BABYLON.Vector3(3,4,3);key.intensity=2.0;key.diffuse=new BABYLON.Color3(1,.84,.72);
 const rim=new BABYLON.PointLight("rim",new BABYLON.Vector3(-2.7,2,-2.2),scene);
-rim.intensity=1.55;
-rim.diffuse=new BABYLON.Color3(.18,.32,1);
-
+rim.intensity=1.55;rim.diffuse=new BABYLON.Color3(.18,.32,1);
 const warm=new BABYLON.PointLight("warm",new BABYLON.Vector3(2.3,1.6,-1.8),scene);
-warm.intensity=1.1;
-warm.diffuse=new BABYLON.Color3(1,.12,.08);
+warm.intensity=1.1;warm.diffuse=new BABYLON.Color3(1,.12,.08);
 
 const ground=BABYLON.MeshBuilder.CreateGround("ground",{width:14,height:14},scene);
 const gm=new BABYLON.PBRMaterial("gm",scene);
-gm.albedoColor=new BABYLON.Color3(.03,.035,.045);
-gm.metallic=.45;
-gm.roughness=.38;
-ground.material=gm;
+gm.albedoColor=new BABYLON.Color3(.03,.035,.045);gm.metallic=.45;gm.roughness=.38;ground.material=gm;
 
-let modelRoot=null, idle=null, walk=null, activeAnim=null;
-let soldierScale=1.0;
-let moveX=0, moveY=0;
-const equipment={visor:null,backpack:null,rifle:null,pistol:null};
-const equipmentState={visor:true,backpack:false,rifle:false,pistol:false};
+let modelRoot=null,idle=null,walk=null,activeAnim=null,soldierScale=1;
+let moveX=0,moveY=0;
+const equipment={visor:null,helmet:null,backpack:null,rifle:null,pistol:null};
+const equipmentState={visor:true,helmet:false,backpack:false,rifle:false,pistol:false};
 
 function play(group){
-  if(activeAnim===group)return;
-  if(activeAnim)activeAnim.stop();
-  activeAnim=group;
-  if(activeAnim)activeAnim.start(true,1,activeAnim.from,activeAnim.to,false);
+ if(activeAnim===group)return;
+ if(activeAnim)activeAnim.stop();
+ activeAnim=group;
+ if(activeAnim)activeAnim.start(true,1,activeAnim.from,activeAnim.to,false);
 }
-
-function getHierarchyBounds(root){
-  let min=new BABYLON.Vector3(999,999,999), max=new BABYLON.Vector3(-999,-999,-999);
-  root.getChildMeshes(false).concat(root instanceof BABYLON.AbstractMesh?[root]:[]).forEach(m=>{
-    if(!m.getBoundingInfo)return;
-    m.computeWorldMatrix(true);
-    const b=m.getBoundingInfo().boundingBox;
-    min=BABYLON.Vector3.Minimize(min,b.minimumWorld);
-    max=BABYLON.Vector3.Maximize(max,b.maximumWorld);
-  });
-  return {min,max,size:max.subtract(min)};
+function getBounds(root){
+ let min=new BABYLON.Vector3(999,999,999),max=new BABYLON.Vector3(-999,-999,-999);
+ const meshes=(root.getChildMeshes?root.getChildMeshes(false):[]).concat(root instanceof BABYLON.AbstractMesh?[root]:[]);
+ meshes.forEach(m=>{if(!m.getBoundingInfo)return;m.computeWorldMatrix(true);const b=m.getBoundingInfo().boundingBox;min=BABYLON.Vector3.Minimize(min,b.minimumWorld);max=BABYLON.Vector3.Maximize(max,b.maximumWorld);});
+ return {min,max,size:max.subtract(min)};
 }
-
-async function loadAccessory(file,key,targetSize,bone,bodyMesh,pos,rot){
-  const result=await BABYLON.SceneLoader.ImportMeshAsync("","./",file,scene);
-  const roots=result.meshes.filter(m=>!m.parent);
-  const root=roots[0]||result.meshes[0];
-  root.rotationQuaternion=null;
-
-  // Normalize in world space before attaching.
-  let b=getHierarchyBounds(root);
-  const maxDim=Math.max(b.size.x,b.size.y,b.size.z,.0001);
-  const normalizedScale=targetSize/maxDim;
-
-  // Soldier root is scaled down after import. Bone-attached accessories inherit that
-  // scale, so compensate once here instead of becoming tiny/invisible.
-  const correctedScale=normalizedScale/Math.max(soldierScale,.0001);
-  root.scaling=root.scaling.scale(correctedScale);
-
-  root.attachToBone(bone,bodyMesh);
-  root.position=new BABYLON.Vector3(pos[0],pos[1],pos[2]);
-  root.rotation=new BABYLON.Vector3(rot[0],rot[1],rot[2]);
-  root.setEnabled(false);
-
-  equipment[key]=root;
-
-  const btn=document.querySelector('[data-item="'+key+'"]');
-  if(btn){
-    btn.classList.add("ready");
-    const st=btn.querySelector(".state");
-    if(st)st.textContent="HAZIR";
-  }
+function markReady(key){
+ const btn=document.querySelector('[data-item="'+key+'"]');
+ if(btn){btn.classList.add("ready");const s=btn.querySelector(".state");if(s)s.textContent="HAZIR";}
 }
+async function loadRootAccessory(file,key,targetMax,pos,rot){
+ const result=await BABYLON.SceneLoader.ImportMeshAsync("","./",file,scene);
+ const root=result.meshes.find(m=>!m.parent)||result.meshes[0];
+ root.rotationQuaternion=null;
 
+ let b=getBounds(root);
+ const maxDim=Math.max(b.size.x,b.size.y,b.size.z,.0001);
+ const worldScale=targetMax/maxDim;
+
+ // Parent to Soldier root, then compensate only once for Soldier's own scale.
+ root.parent=modelRoot;
+ root.scaling=root.scaling.scale(worldScale/Math.max(soldierScale,.0001));
+ root.position=new BABYLON.Vector3(pos[0],pos[1],pos[2]);
+ root.rotation=new BABYLON.Vector3(rot[0],rot[1],rot[2]);
+
+ root.setEnabled(false);
+ equipment[key]=root;
+ markReady(key);
+}
 
 BABYLON.SceneLoader.ImportMeshAsync("","./","Soldier.glb",scene).then(async result=>{
-  const roots=result.meshes.filter(m=>!m.parent);
-  modelRoot=roots[0]||result.meshes[0];
+ modelRoot=result.meshes.find(m=>!m.parent)||result.meshes[0];
 
-  let min=new BABYLON.Vector3(999,999,999),max=new BABYLON.Vector3(-999,-999,-999);
-  result.meshes.forEach(m=>{
-    if(!m.getBoundingInfo)return;
-    const b=m.getBoundingInfo().boundingBox;
-    min=BABYLON.Vector3.Minimize(min,b.minimumWorld);
-    max=BABYLON.Vector3.Maximize(max,b.maximumWorld);
-  });
+ let min=new BABYLON.Vector3(999,999,999),max=new BABYLON.Vector3(-999,-999,-999);
+ result.meshes.forEach(m=>{if(!m.getBoundingInfo)return;const b=m.getBoundingInfo().boundingBox;min=BABYLON.Vector3.Minimize(min,b.minimumWorld);max=BABYLON.Vector3.Maximize(max,b.maximumWorld);});
+ const h=max.y-min.y;
+ soldierScale=2.45/Math.max(h,.001);
+ modelRoot.scaling=new BABYLON.Vector3(soldierScale,soldierScale,soldierScale);
+ modelRoot.computeWorldMatrix(true);
 
-  const h=max.y-min.y;
-  const scale=2.45/Math.max(h,.001);
-  soldierScale=scale;
-  modelRoot.scaling=new BABYLON.Vector3(scale,scale,scale);
-  modelRoot.computeWorldMatrix(true);
+ min=new BABYLON.Vector3(999,999,999);
+ result.meshes.forEach(m=>{if(!m.getBoundingInfo)return;const b=m.getBoundingInfo().boundingBox;min=BABYLON.Vector3.Minimize(min,b.minimumWorld);});
+ modelRoot.position.y=.02-min.y;
+ modelRoot.rotationQuaternion=null;
+ modelRoot.rotation.y=Math.PI;
 
-  min=new BABYLON.Vector3(999,999,999);
-  result.meshes.forEach(m=>{
-    if(!m.getBoundingInfo)return;
-    const b=m.getBoundingInfo().boundingBox;
-    min=BABYLON.Vector3.Minimize(min,b.minimumWorld);
-  });
+ idle=result.animationGroups.find(a=>/idle/i.test(a.name))||result.animationGroups[0];
+ walk=result.animationGroups.find(a=>/walk/i.test(a.name))||result.animationGroups.find(a=>/run/i.test(a.name));
+ result.animationGroups.forEach(a=>a.stop());
+ play(idle);
 
-  modelRoot.position.y=.02-min.y;
-  modelRoot.rotationQuaternion=null;
-  modelRoot.rotation.y=Math.PI;
+ equipment.visor=result.meshes.find(m=>m.name==="vanguard_visor")||scene.getMeshByName("vanguard_visor");
 
-  idle=result.animationGroups.find(a=>/idle/i.test(a.name))||result.animationGroups[0];
-  walk=result.animationGroups.find(a=>/walk/i.test(a.name))||result.animationGroups.find(a=>/run/i.test(a.name));
-  result.animationGroups.forEach(a=>a.stop());
-  play(idle);
+ // These positions are Soldier-local. They follow the character reliably.
+ try{
+   await loadRootAccessory("helmet.glb","helmet",.52,[0,2.18,.02],[0,0,0]);
+   await loadRootAccessory("backpack.glb","backpack",.72,[0,1.32,-.28],[0,Math.PI,0]);
+   await loadRootAccessory("rifle.glb","rifle",1.15,[.32,1.34,-.31],[0,Math.PI/2,-.5]);
+   await loadRootAccessory("pistol.glb","pistol",.34,[-.34,.94,.10],[0,Math.PI/2,.08]);
+ }catch(e){console.error(e);}
 
-  equipment.visor=result.meshes.find(m=>m.name==="vanguard_visor")||scene.getMeshByName("vanguard_visor");
-
-  const skeleton=result.skeletons && result.skeletons[0];
-  const bodyMesh=result.meshes.find(m=>m.name==="vanguard_Mesh")||result.meshes.find(m=>m.skeleton);
-  const bone=(name)=>skeleton ? skeleton.bones.find(b=>b.name===name) : null;
-
-  try{
-    const spine2=bone("mixamorigSpine2")||bone("mixamorigSpine1")||bone("mixamorigSpine");
-    const rightLeg=bone("mixamorigRightUpLeg")||bone("mixamorigRightLeg");
-
-    if(spine2 && bodyMesh){
-      await loadAccessory("backpack.glb","backpack",.72,spine2,bodyMesh,[0,.02,-.38],[0,Math.PI,0]);
-      await loadAccessory("rifle.glb","rifle",1.18,spine2,bodyMesh,[.28,.08,-.42],[0,Math.PI/2,-.55]);
-    }
-    if(rightLeg && bodyMesh){
-      await loadAccessory("pistol.glb","pistol",.34,rightLeg,bodyMesh,[.18,-.28,.12],[0,Math.PI/2,.12]);
-    }
-  }catch(e){
-    console.error("Accessory load error",e);
-  }
-
-  camera.target=new BABYLON.Vector3(modelRoot.position.x,1.15,modelRoot.position.z);
-  document.getElementById("loading").style.display="none";
+ camera.target=new BABYLON.Vector3(modelRoot.position.x,1.15,modelRoot.position.z);
+ document.getElementById("loading").style.display="none";
 }).catch(e=>{
-  document.getElementById("loading").textContent="3D karakter yüklenemedi";
-  console.error(e);
+ document.getElementById("loading").textContent="3D karakter yüklenemedi";
+ console.error(e);
 });
 
 const panel=document.getElementById("panel");
-document.getElementById("listOpen").onclick=()=>{panel.style.display="block";};
-document.getElementById("closeBtn").onclick=()=>{panel.style.display="none";};
+document.getElementById("listOpen").onclick=()=>panel.style.display="block";
+document.getElementById("closeBtn").onclick=()=>panel.style.display="none";
 
 document.querySelectorAll(".itemBtn").forEach(btn=>{
-  btn.addEventListener("click",e=>{
-    e.stopPropagation();
-    const key=btn.dataset.item;
-    const obj=equipment[key];
-    if(!obj)return;
+ btn.onclick=e=>{
+   e.stopPropagation();
+   const k=btn.dataset.item,obj=equipment[k];
+   if(!obj)return;
 
-    // Only one weapon at a time.
-    if((key==="rifle" || key==="pistol") && !equipmentState[key]){
-      for(const other of ["rifle","pistol"]){
-        if(other!==key && equipment[other]){
-          equipmentState[other]=false;
-          equipment[other].setEnabled(false);
-          const otherBtn=document.querySelector('[data-item="'+other+'"]');
-          if(otherBtn)otherBtn.classList.remove("on");
-        }
-      }
-    }
+   if((k==="rifle"||k==="pistol")&&!equipmentState[k]){
+     ["rifle","pistol"].forEach(other=>{
+       if(other!==k&&equipment[other]){
+         equipmentState[other]=false;
+         equipment[other].setEnabled(false);
+         const ob=document.querySelector('[data-item="'+other+'"]');
+         if(ob){ob.classList.remove("on");const st=ob.querySelector(".state");if(st)st.textContent="ÇIKARILDI";}
+       }
+     });
+   }
 
-    equipmentState[key]=!equipmentState[key];
-    obj.setEnabled(equipmentState[key]);
-    btn.classList.toggle("on",equipmentState[key]);
-    const st=btn.querySelector(".state");
-    if(st)st.textContent=equipmentState[key]?"TAKILI":"ÇIKARILDI";
-  });
+   equipmentState[k]=!equipmentState[k];
+   obj.setEnabled(equipmentState[k]);
+   btn.classList.toggle("on",equipmentState[k]);
+   const st=btn.querySelector(".state");
+   if(st)st.textContent=equipmentState[k]?"TAKILI":"ÇIKARILDI";
+ };
 });
 
-// Joystick
-const joy=document.getElementById("joy"),knob=document.getElementById("knob");
-let joyId=null;
-function updateJoy(e){
-  const r=joy.getBoundingClientRect();
-  const cx=r.left+r.width/2,cy=r.top+r.height/2;
-  let dx=(e.clientX-cx)/(r.width*.5),dy=(e.clientY-cy)/(r.height*.5);
-  const len=Math.hypot(dx,dy);
-  if(len>1){dx/=len;dy/=len;}
-  moveX=dx; moveY=-dy;
-  knob.style.transform=`translate(${dx*43}px,${dy*43}px)`;
+const joy=document.getElementById("joy"),knob=document.getElementById("knob");let joyId=null;
+function uj(e){
+ const r=joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+ let dx=(e.clientX-cx)/(r.width*.5),dy=(e.clientY-cy)/(r.height*.5);
+ const len=Math.hypot(dx,dy);if(len>1){dx/=len;dy/=len;}
+ moveX=dx;moveY=-dy;knob.style.transform=`translate(${dx*43}px,${dy*43}px)`;
 }
-joy.addEventListener("pointerdown",e=>{joyId=e.pointerId;joy.setPointerCapture(joyId);updateJoy(e);e.preventDefault();});
-joy.addEventListener("pointermove",e=>{if(e.pointerId===joyId){updateJoy(e);e.preventDefault();}});
-function resetJoy(e){
-  if(joyId===null||e.pointerId===joyId){
-    joyId=null;moveX=moveY=0;
-    knob.style.transform="translate(0,0)";
-  }
-}
-joy.addEventListener("pointerup",resetJoy);
-joy.addEventListener("pointercancel",resetJoy);
+joy.onpointerdown=e=>{joyId=e.pointerId;joy.setPointerCapture(joyId);uj(e);e.preventDefault()};
+joy.onpointermove=e=>{if(e.pointerId===joyId){uj(e);e.preventDefault()}};
+function rj(e){if(joyId===null||e.pointerId===joyId){joyId=null;moveX=moveY=0;knob.style.transform="translate(0,0)"}}
+joy.onpointerup=rj;joy.onpointercancel=rj;
 
-// Pinch zoom only
 const touches=new Map();
-canvas.addEventListener("pointerdown",e=>{
-  touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  canvas.setPointerCapture(e.pointerId);
-});
-canvas.addEventListener("pointermove",e=>{
-  if(!touches.has(e.pointerId))return;
-  touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(touches.size===2){
-    const p=[...touches.values()];
-    const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
-    if(canvas._lastPinch){
-      camera.radius=Math.max(camera.lowerRadiusLimit,Math.min(camera.upperRadiusLimit,camera.radius-(d-canvas._lastPinch)*.008));
-    }
-    canvas._lastPinch=d;
-  }
-});
-function endTouch(e){touches.delete(e.pointerId);if(touches.size<2)canvas._lastPinch=0;}
-canvas.addEventListener("pointerup",endTouch);
-canvas.addEventListener("pointercancel",endTouch);
+canvas.onpointerdown=e=>{touches.set(e.pointerId,{x:e.clientX,y:e.clientY});canvas.setPointerCapture(e.pointerId)};
+canvas.onpointermove=e=>{
+ if(!touches.has(e.pointerId))return;
+ touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(touches.size===2){
+   const p=[...touches.values()],d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+   if(canvas._lp)camera.radius=Math.max(camera.lowerRadiusLimit,Math.min(camera.upperRadiusLimit,camera.radius-(d-canvas._lp)*.008));
+   canvas._lp=d;
+ }
+};
+function et(e){touches.delete(e.pointerId);if(touches.size<2)canvas._lp=0}
+canvas.onpointerup=et;canvas.onpointercancel=et;
 
 engine.runRenderLoop(()=>{
-  if(modelRoot){
-    const mag=Math.hypot(moveX,moveY);
-    if(mag>.08){
-      const dt=engine.getDeltaTime()/1000;
-      const speed=1.15;
-      modelRoot.position.x+=moveX*speed*dt;
-      modelRoot.position.z+=(-moveY)*speed*dt;
-      const targetYaw=Math.atan2(moveX,-moveY);
-      let current=modelRoot.rotation.y;
-      const diff=Math.atan2(Math.sin(targetYaw-current),Math.cos(targetYaw-current));
-      modelRoot.rotation.y=current+diff*Math.min(1,dt*9);
-      play(walk||idle);
-    }else{
-      play(idle);
-    }
-    camera.target.x=modelRoot.position.x;
-    camera.target.z=modelRoot.position.z;
-    camera.target.y=1.15;
-  }
-  scene.render();
+ if(modelRoot){
+   const mag=Math.hypot(moveX,moveY);
+   if(mag>.08){
+     const dt=engine.getDeltaTime()/1000,speed=1.15;
+     modelRoot.position.x+=moveX*speed*dt;
+     modelRoot.position.z+=(-moveY)*speed*dt;
+     const ty=Math.atan2(moveX,-moveY),cur=modelRoot.rotation.y,diff=Math.atan2(Math.sin(ty-cur),Math.cos(ty-cur));
+     modelRoot.rotation.y=cur+diff*Math.min(1,dt*9);
+     play(walk||idle);
+   }else play(idle);
+   camera.target.x=modelRoot.position.x;camera.target.z=modelRoot.position.z;camera.target.y=1.15;
+ }
+ scene.render();
 });
-window.addEventListener("resize",()=>engine.resize());
+window.onresize=()=>engine.resize();
 </script>
 </body>
 </html>
