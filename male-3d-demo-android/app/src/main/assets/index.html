@@ -14,8 +14,11 @@ html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidde
 #head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 #pt{color:#e7bd67;font-weight:700;font-size:15px}
 #closeBtn{width:34px;height:34px;border-radius:9px;border:1px solid #ffffff30;background:#2a303b;color:#fff;font-size:18px;font-weight:700}
-.itemBtn{width:100%;margin:5px 0;padding:10px;border:1px solid #ffffff22;border-radius:10px;background:#2a3039;color:#fff;font-weight:700;font-size:13px}
+.itemBtn{width:100%;margin:5px 0;padding:10px;border:1px solid #ffffff22;border-radius:10px;background:#2a3039;color:#fff;font-weight:700;font-size:13px;text-align:left}
+.itemBtn.ready{border-color:#4e9b67}
 .itemBtn.on{background:#8e6425;border-color:#e7bd67}
+.itemBtn .state{float:right;font-size:11px;color:#b9c1cc}
+.itemBtn.on .state{color:#fff}
 #joy{position:fixed;left:28px;bottom:55px;width:160px;height:160px;border-radius:50%;background:#ffffff18;border:2px solid #ffffff28;z-index:8;touch-action:none}
 #knob{position:absolute;left:50%;top:50%;width:70px;height:70px;margin:-35px;border-radius:50%;background:#ffffff38;border:2px solid #ffffff55;transform:translate(0,0)}
 </style>
@@ -25,10 +28,10 @@ html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidde
 <button id="listOpen">LİSTE</button>
 <div id="panel">
   <div id="head"><div id="pt">3D EKİPMANLAR</div><button id="closeBtn">X</button></div>
-  <button class="itemBtn on" data-item="visor">VİZÖR</button>
-  <button class="itemBtn" data-item="backpack">ÇANTA</button>
-  <button class="itemBtn" data-item="rifle">TÜFEK</button>
-  <button class="itemBtn" data-item="pistol">TABANCA</button>
+  <button class="itemBtn on ready" data-item="visor">VİZÖR <span class="state">TAKILI</span></button>
+  <button class="itemBtn" data-item="backpack">ÇANTA <span class="state">YÜKLENİYOR</span></button>
+  <button class="itemBtn" data-item="rifle">TÜFEK <span class="state">YÜKLENİYOR</span></button>
+  <button class="itemBtn" data-item="pistol">TABANCA <span class="state">YÜKLENİYOR</span></button>
 </div>
 <div id="hint">Sol joystick: 360° hareket • İki parmak: yakınlaştır / uzaklaştır</div>
 <div id="joy"><div id="knob"></div></div>
@@ -74,6 +77,7 @@ gm.roughness=.38;
 ground.material=gm;
 
 let modelRoot=null, idle=null, walk=null, activeAnim=null;
+let soldierScale=1.0;
 let moveX=0, moveY=0;
 const equipment={visor:null,backpack:null,rifle:null,pistol:null};
 const equipmentState={visor:true,backpack:false,rifle:false,pistol:false};
@@ -103,32 +107,31 @@ async function loadAccessory(file,key,targetSize,bone,bodyMesh,pos,rot){
   const root=roots[0]||result.meshes[0];
   root.rotationQuaternion=null;
 
-  // Normalize the imported object BEFORE attaching it to the animated skeleton.
+  // Normalize in world space before attaching.
   let b=getHierarchyBounds(root);
   const maxDim=Math.max(b.size.x,b.size.y,b.size.z,.0001);
-  const s=targetSize/maxDim;
-  root.scaling=root.scaling.scale(s);
-  root.computeWorldMatrix(true);
+  const normalizedScale=targetSize/maxDim;
 
-  // Center the accessory around its own origin so bone offsets are predictable.
-  b=getHierarchyBounds(root);
-  const center=b.min.add(b.max).scale(.5);
-  root.position=root.position.subtract(center);
+  // Soldier root is scaled down after import. Bone-attached accessories inherit that
+  // scale, so compensate once here instead of becoming tiny/invisible.
+  const correctedScale=normalizedScale/Math.max(soldierScale,.0001);
+  root.scaling=root.scaling.scale(correctedScale);
 
-  // Real bone attachment: the accessory now follows walking/idle animation.
-  const anchor=BABYLON.MeshBuilder.CreateBox(key+"_anchor",{size:.001},scene);
-  anchor.isVisible=false;
-  anchor.rotationQuaternion=null;
-  anchor.attachToBone(bone,bodyMesh);
-
-  root.parent=anchor;
-  root.position=BABYLON.Vector3.Zero();
+  root.attachToBone(bone,bodyMesh);
+  root.position=new BABYLON.Vector3(pos[0],pos[1],pos[2]);
   root.rotation=new BABYLON.Vector3(rot[0],rot[1],rot[2]);
-  anchor.position=new BABYLON.Vector3(pos[0],pos[1],pos[2]);
-
   root.setEnabled(false);
+
   equipment[key]=root;
+
+  const btn=document.querySelector('[data-item="'+key+'"]');
+  if(btn){
+    btn.classList.add("ready");
+    const st=btn.querySelector(".state");
+    if(st)st.textContent="HAZIR";
+  }
 }
+
 
 BABYLON.SceneLoader.ImportMeshAsync("","./","Soldier.glb",scene).then(async result=>{
   const roots=result.meshes.filter(m=>!m.parent);
@@ -144,6 +147,7 @@ BABYLON.SceneLoader.ImportMeshAsync("","./","Soldier.glb",scene).then(async resu
 
   const h=max.y-min.y;
   const scale=2.45/Math.max(h,.001);
+  soldierScale=scale;
   modelRoot.scaling=new BABYLON.Vector3(scale,scale,scale);
   modelRoot.computeWorldMatrix(true);
 
@@ -174,11 +178,11 @@ BABYLON.SceneLoader.ImportMeshAsync("","./","Soldier.glb",scene).then(async resu
     const rightLeg=bone("mixamorigRightUpLeg")||bone("mixamorigRightLeg");
 
     if(spine2 && bodyMesh){
-      await loadAccessory("backpack.glb","backpack",.58,spine2,bodyMesh,[0,-.02,-.24],[0,Math.PI,0]);
-      await loadAccessory("rifle.glb","rifle",1.00,spine2,bodyMesh,[.18,.04,-.30],[0,Math.PI/2,-.55]);
+      await loadAccessory("backpack.glb","backpack",.72,spine2,bodyMesh,[0,.02,-.38],[0,Math.PI,0]);
+      await loadAccessory("rifle.glb","rifle",1.18,spine2,bodyMesh,[.28,.08,-.42],[0,Math.PI/2,-.55]);
     }
     if(rightLeg && bodyMesh){
-      await loadAccessory("pistol.glb","pistol",.28,rightLeg,bodyMesh,[.13,-.18,.08],[0,Math.PI/2,.12]);
+      await loadAccessory("pistol.glb","pistol",.34,rightLeg,bodyMesh,[.18,-.28,.12],[0,Math.PI/2,.12]);
     }
   }catch(e){
     console.error("Accessory load error",e);
@@ -217,6 +221,8 @@ document.querySelectorAll(".itemBtn").forEach(btn=>{
     equipmentState[key]=!equipmentState[key];
     obj.setEnabled(equipmentState[key]);
     btn.classList.toggle("on",equipmentState[key]);
+    const st=btn.querySelector(".state");
+    if(st)st.textContent=equipmentState[key]?"TAKILI":"ÇIKARILDI";
   });
 });
 
