@@ -30,16 +30,9 @@ html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidde
 <div id="panel">
   <div id="head"><div id="pt">GİYDİR / ÇIKAR</div><button id="closeBtn">X</button></div>
 
-  <div class="section">KIYAFET / BAŞ</div>
+  <div class="section">GİYDİR / ÇIKAR</div>
   <button class="itemBtn on ready" data-item="visor">VİZÖR <span class="state">TAKILI</span></button>
-  <button class="itemBtn" data-item="helmet">KASK <span class="state">YÜKLENİYOR</span></button>
-
-  <div class="section">EKİPMAN</div>
   <button class="itemBtn" data-item="backpack">ÇANTA <span class="state">YÜKLENİYOR</span></button>
-
-  <div class="section">SİLAHLAR</div>
-  <button class="itemBtn" data-item="rifle">TÜFEK <span class="state">YÜKLENİYOR</span></button>
-  <button class="itemBtn" data-item="pistol">TABANCA <span class="state">YÜKLENİYOR</span></button>
 </div>
 
 <div id="hint">Sol joystick: 360° hareket • İki parmak: yakınlaştır / uzaklaştır</div>
@@ -73,8 +66,8 @@ gm.albedoColor=new BABYLON.Color3(.03,.035,.045);gm.metallic=.45;gm.roughness=.3
 
 let modelRoot=null,idle=null,walk=null,activeAnim=null,soldierScale=1;
 let moveX=0,moveY=0;
-const equipment={visor:null,helmet:null,backpack:null,rifle:null,pistol:null};
-const equipmentState={visor:true,helmet:false,backpack:false,rifle:false,pistol:false};
+const equipment={visor:null,backpack:null};
+const equipmentState={visor:true,backpack:false};
 
 function play(group){
  if(activeAnim===group)return;
@@ -135,12 +128,9 @@ BABYLON.SceneLoader.ImportMeshAsync("","./","Soldier.glb",scene).then(async resu
 
  equipment.visor=result.meshes.find(m=>m.name==="vanguard_visor")||scene.getMeshByName("vanguard_visor");
 
- // These positions are Soldier-local. They follow the character reliably.
+ // First lock the backpack correctly to the Soldier body before adding anything else.
  try{
-   await loadRootAccessory("helmet.glb","helmet",.52,[0,2.18,.02],[0,0,0]);
-   await loadRootAccessory("backpack.glb","backpack",.72,[0,1.32,-.28],[0,Math.PI,0]);
-   await loadRootAccessory("rifle.glb","rifle",1.15,[.32,1.34,-.31],[0,Math.PI/2,-.5]);
-   await loadRootAccessory("pistol.glb","pistol",.34,[-.34,.94,.10],[0,Math.PI/2,.08]);
+   await loadRootAccessory("backpack.glb","backpack",.54,[0,1.27,.34],[0,Math.PI,0]);
  }catch(e){console.error(e);}
 
  camera.target=new BABYLON.Vector3(modelRoot.position.x,1.15,modelRoot.position.z);
@@ -159,17 +149,6 @@ document.querySelectorAll(".itemBtn").forEach(btn=>{
    e.stopPropagation();
    const k=btn.dataset.item,obj=equipment[k];
    if(!obj)return;
-
-   if((k==="rifle"||k==="pistol")&&!equipmentState[k]){
-     ["rifle","pistol"].forEach(other=>{
-       if(other!==k&&equipment[other]){
-         equipmentState[other]=false;
-         equipment[other].setEnabled(false);
-         const ob=document.querySelector('[data-item="'+other+'"]');
-         if(ob){ob.classList.remove("on");const st=ob.querySelector(".state");if(st)st.textContent="ÇIKARILDI";}
-       }
-     });
-   }
 
    equipmentState[k]=!equipmentState[k];
    obj.setEnabled(equipmentState[k]);
