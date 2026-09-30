@@ -36,12 +36,31 @@ jobs:
           curl -L --fail -o babylonjs.loaders.min.js https://cdn.jsdelivr.net/npm/babylonjs-loaders@8.32.0/babylonjs.loaders.min.js
           curl -L --fail -o Soldier.glb https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb
           curl -L --fail -o backpack.glb https://raw.githubusercontent.com/nucleodeestudosmbdevelopment-ux/nucleodeestudosmb-site/6c5a0a46b6aca872acbad6dce6d2ec8b10138ace/public/models/backpack.glb
-          ls -lh Soldier.glb backpack.glb
+
+          # CC0 KayKit buildings + tree (gltf/bin/texture)
+          curl -L --fail -o houseA.gltf https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/main/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_home_A_blue.gltf
+          curl -L --fail -o building_home_A_blue.bin https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/main/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_home_A_blue.bin
+          curl -L --fail -o houseB.gltf https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/main/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_home_B_blue.gltf
+          curl -L --fail -o building_home_B_blue.bin https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/main/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/building_home_B_blue.bin
+          curl -L --fail -o hexagons_medieval.png https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/main/addons/kaykit_medieval_hexagon_pack/Assets/gltf/buildings/blue/hexagons_medieval.png
+
+          curl -L --fail -o tree.gltf https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/main/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_A.gltf
+          curl -L --fail -o tree_single_A.bin https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/main/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/tree_single_A.bin
+          curl -L --fail -o hexagons_medieval_nature.png https://raw.githubusercontent.com/KayKit-Game-Assets/KayKit-Medieval-Hexagon-Pack-1.0/main/addons/kaykit_medieval_hexagon_pack/Assets/gltf/decoration/nature/hexagons_medieval.png
+
+          # Fix relative URIs in downloaded glTF files
+          sed -i 's/building_home_A_blue.bin/building_home_A_blue.bin/g; s/hexagons_medieval.png/hexagons_medieval.png/g' houseA.gltf
+          sed -i 's/building_home_B_blue.bin/building_home_B_blue.bin/g; s/hexagons_medieval.png/hexagons_medieval.png/g' houseB.gltf
+          sed -i 's/tree_single_A.bin/tree_single_A.bin/g; s/hexagons_medieval.png/hexagons_medieval_nature.png/g' tree.gltf
+
+          # CC0 ToyCar
+          curl -L --fail -o ToyCar.glb https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/ToyCar/glTF-Binary/ToyCar.glb
+          ls -lh Soldier.glb backpack.glb houseA.gltf houseB.gltf tree.gltf ToyCar.glb
       - name: Build APK
         working-directory: male-3d-demo-android
         run: gradle :app:assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: Saomi-Soldier-Backpack-v10-APK
+          name: Saomi-3D-Test-Map-v11-APK
           path: male-3d-demo-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
