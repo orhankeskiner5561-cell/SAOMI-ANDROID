@@ -135,20 +135,20 @@ func _build_camera() -> void:
     camera_pivot = Node3D.new()
     camera_pivot.name = "CameraPivot"
     player.add_child(camera_pivot)
-    camera_pivot.position = Vector3(0, 1.45, 0)
+    camera_pivot.position = Vector3(0, 1.28, 0)
     camera_pivot.rotation = Vector3(pitch, yaw, 0)
 
     spring_arm = SpringArm3D.new()
     spring_arm.name = "SpringArm"
-    spring_arm.spring_length = 4.1
+    spring_arm.spring_length = 2.95
     spring_arm.margin = 0.12
     spring_arm.collision_mask = 1
     camera_pivot.add_child(spring_arm)
 
     camera = Camera3D.new()
     camera.name = "ShoulderCamera"
-    camera.fov = 72.0
-    camera.position.x = 0.58
+    camera.fov = 68.0
+    camera.position.x = 0.46
     camera.current = true
     spring_arm.add_child(camera)
 
