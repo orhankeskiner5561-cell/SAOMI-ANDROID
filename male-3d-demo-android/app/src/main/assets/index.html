@@ -22,6 +22,9 @@ html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidde
 .itemBtn.on .state{color:#fff}
 #joy{position:fixed;left:28px;bottom:55px;width:160px;height:160px;border-radius:50%;background:#ffffff18;border:2px solid #ffffff28;z-index:8;touch-action:none}
 #knob{position:absolute;left:50%;top:50%;width:70px;height:70px;margin:-35px;border-radius:50%;background:#ffffff38;border:2px solid #ffffff55;transform:translate(0,0)}
+#look{position:fixed;right:32px;bottom:58px;width:150px;height:150px;border-radius:50%;background:#ffffff10;border:2px solid #ffffff24;z-index:8;touch-action:none}
+#look::after{content:"BAKIŞ";position:absolute;left:0;right:0;top:-28px;text-align:center;color:#ffffff88;font-size:12px;font-weight:700}
+#lookKnob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px;border-radius:50%;background:#ffffff2d;border:2px solid #ffffff48;transform:translate(0,0)}
 </style>
 </head>
 <body>
@@ -35,8 +38,9 @@ html,body,#renderCanvas{width:100%;height:100%;margin:0;padding:0;overflow:hidde
   <button class="itemBtn" data-item="backpack">ÇANTA <span class="state">YÜKLENİYOR</span></button>
 </div>
 
-<div id="hint">Sol joystick: hareket • Kamera karakteri takip eder • İki parmak: zoom</div>
+<div id="hint">Sol joystick: hareket • Sağ kontrol: bakış/yön • İki parmak: zoom</div>
 <div id="joy"><div id="knob"></div></div>
+<div id="look"><div id="lookKnob"></div></div>
 <div id="loading">3D karakter hazırlanıyor…</div>
 <canvas id="renderCanvas"></canvas>
 
@@ -66,6 +70,7 @@ gm.albedoColor=new BABYLON.Color3(.03,.035,.045);gm.metallic=.45;gm.roughness=.3
 
 let modelRoot=null,idle=null,walk=null,activeAnim=null,soldierScale=1;
 let moveX=0,moveY=0;
+let lookId=null,lookLastX=0,lookLastY=0;
 const equipment={visor:null,backpack:null};
 const equipmentState={visor:true,backpack:false};
 const obstacles=[];
@@ -263,6 +268,35 @@ joy.onpointermove=e=>{if(e.pointerId===joyId){uj(e);e.preventDefault()}};
 function rj(e){if(joyId===null||e.pointerId===joyId){joyId=null;moveX=moveY=0;knob.style.transform="translate(0,0)"}}
 joy.onpointerup=rj;joy.onpointercancel=rj;
 
+// Sağ başparmak: serbest bakış/yön kontrolü
+const look=document.getElementById("look"),lookKnob=document.getElementById("lookKnob");
+look.onpointerdown=e=>{
+  lookId=e.pointerId;
+  look.setPointerCapture(lookId);
+  lookLastX=e.clientX;lookLastY=e.clientY;
+  e.preventDefault();
+};
+look.onpointermove=e=>{
+  if(e.pointerId!==lookId)return;
+  const dx=e.clientX-lookLastX,dy=e.clientY-lookLastY;
+  lookLastX=e.clientX;lookLastY=e.clientY;
+
+  camera.alpha-=dx*.0075;
+  camera.beta=Math.max(camera.lowerBetaLimit,Math.min(camera.upperBetaLimit,camera.beta+dy*.0055));
+
+  const kx=Math.max(-32,Math.min(32,dx*1.6));
+  const ky=Math.max(-32,Math.min(32,dy*1.6));
+  lookKnob.style.transform=`translate(${kx}px,${ky}px)`;
+  e.preventDefault();
+};
+function endLook(e){
+  if(lookId===null||e.pointerId===lookId){
+    lookId=null;
+    lookKnob.style.transform="translate(0,0)";
+  }
+}
+look.onpointerup=endLook;look.onpointercancel=endLook;
+
 const touches=new Map();
 canvas.onpointerdown=e=>{touches.set(e.pointerId,{x:e.clientX,y:e.clientY});canvas.setPointerCapture(e.pointerId)};
 canvas.onpointermove=e=>{
@@ -282,16 +316,23 @@ engine.runRenderLoop(()=>{
    const mag=Math.hypot(moveX,moveY);
    if(mag>.08){
      const dt=engine.getDeltaTime()/1000,speed=1.15;
-     const nx=modelRoot.position.x+moveX*speed*dt;
-     const nz=modelRoot.position.z+(-moveY)*speed*dt;
+     // Joystick hareketini kameranın baktığı yöne göre dünya koordinatına çevir.
+     const localX=moveX;
+     const localZ=-moveY;
+     const theta=camera.alpha-Math.PI/2;
+     const worldX=localX*Math.cos(theta)-localZ*Math.sin(theta);
+     const worldZ=localX*Math.sin(theta)+localZ*Math.cos(theta);
+
+     const nx=modelRoot.position.x+worldX*speed*dt;
+     const nz=modelRoot.position.z+worldZ*speed*dt;
      if(canStand(nx,modelRoot.position.z)) modelRoot.position.x=nx;
      if(canStand(modelRoot.position.x,nz)) modelRoot.position.z=nz;
-     const ty=Math.atan2(moveX,-moveY),cur=modelRoot.rotation.y,diff=Math.atan2(Math.sin(ty-cur),Math.cos(ty-cur));
+
+     const ty=Math.atan2(worldX,-worldZ),cur=modelRoot.rotation.y,diff=Math.atan2(Math.sin(ty-cur),Math.cos(ty-cur));
      modelRoot.rotation.y=cur+diff*Math.min(1,dt*9);
      play(walk||idle);
    }else play(idle);
    camera.target.x=modelRoot.position.x;camera.target.z=modelRoot.position.z;camera.target.y=1.25;
-   camera.alpha=modelRoot.rotation.y+Math.PI/2;
  }
  scene.render();
 });
