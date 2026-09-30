@@ -9,31 +9,35 @@ on:
   workflow_dispatch:
 
 env:
-  GODOT_VERSION: 4.4.1
+  GODOT_VERSION: 4.5
 
 jobs:
   build-android:
-    runs-on: ubuntu-22.04
-    container:
-      image: barichello/godot-ci:4.4.1
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install CI utilities
-        shell: bash
-        run: |
-          apt-get update
-          apt-get install -y curl unzip
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-      - name: Setup Godot export templates
+      - name: Install Godot and export templates
         shell: bash
         run: |
           set -e
-          mkdir -p ~/.local/share/godot/export_templates/
-          if [ -d "/root/.local/share/godot/export_templates/${GODOT_VERSION}.stable" ]; then
-            cp -a "/root/.local/share/godot/export_templates/${GODOT_VERSION}.stable" ~/.local/share/godot/export_templates/
-          fi
+          curl -fL --retry 3 -o godot.zip https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_linux.x86_64.zip
+          unzip -q godot.zip
+          chmod +x Godot_v4.5-stable_linux.x86_64
+
+          curl -fL --retry 3 -o templates.tpz https://github.com/godotengine/godot/releases/download/4.5-stable/Godot_v4.5-stable_export_templates.tpz
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.5.stable"
+          cd "$HOME/.local/share/godot/export_templates/4.5.stable"
+          unzip -q "$GITHUB_WORKSPACE/templates.tpz"
+          mv templates/* .
+          test -f android_debug.apk
 
       - name: Fetch character asset
         working-directory: saomi-battle-royale-native
@@ -44,40 +48,33 @@ jobs:
           curl -L --fail -o assets/Soldier.glb https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb
           ls -lh assets/Soldier.glb
 
-      - name: Install Android source template
-        working-directory: saomi-battle-royale-native
+      - name: Configure Android SDK and debug keystore
         shell: bash
         run: |
           set -e
-          mkdir -p android/build
-          unzip -q ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/android_source.zip -d android/build
-          echo "${GODOT_VERSION}.stable" > android/build/.build_version
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          JDK="${JAVA_HOME_17_X64:-$JAVA_HOME}"
 
-      - name: Configure Godot Android settings
-        shell: bash
-        run: |
-          set -e
-          mkdir -p ~/.config/godot
-          cat > ~/.config/godot/editor_settings-4.4.tres << 'EOF'
-          [gd_resource type="EditorSettings" load_steps=1 format=3]
+          mkdir -p "$HOME/.config/godot"
+          cat > "$HOME/.config/godot/editor_settings-4.5.tres" <<SETTINGS
+          [gd_resource type="EditorSettings" format=3]
+
           [resource]
-          export/android/android_sdk_path = "/usr/lib/android-sdk"
-          export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"
-          export/android/force_system_user = false
-          export/android/android_build_tools_ver = "33.0.2"
-          EOF
 
-      - name: Create debug keystore
-        working-directory: saomi-battle-royale-native
-        shell: bash
-        run: |
-          set -e
+          export/android/android_sdk_path = "$SDK"
+          export/android/java_sdk_path = "$JDK"
+          export/android/shutdown_adb_on_exit = true
+          SETTINGS
+
+          cd "$GITHUB_WORKSPACE/saomi-battle-royale-native"
           rm -f debug.keystore
-          keytool -genkey -v -keystore debug.keystore             -storepass android -alias androiddebugkey -keypass android             -keyalg RSA -keysize 2048 -validity 10000             -dname "CN=Android Debug,O=SAOMI,C=TR"
+          keytool -genkeypair -v -keystore debug.keystore             -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000             -storepass android -keypass android             -dname "CN=Android Debug,O=SAOMI,C=TR"
 
       - name: Import native project
         working-directory: saomi-battle-royale-native
-        run: godot --headless --import --quit-after 2
+        shell: bash
+        run: |
+          "$GITHUB_WORKSPACE/Godot_v4.5-stable_linux.x86_64" --headless --path . --import || true
 
       - name: Build Android APK
         working-directory: saomi-battle-royale-native
@@ -85,7 +82,8 @@ jobs:
         run: |
           set -e
           mkdir -p build
-          godot --headless --verbose --export-debug "Android Debug" build/SAOMI-Battle-Royale-M1.apk
+          "$GITHUB_WORKSPACE/Godot_v4.5-stable_linux.x86_64"             --headless --verbose --path .             --export-debug "Android Debug"             "$GITHUB_WORKSPACE/saomi-battle-royale-native/build/SAOMI-Battle-Royale-M1.apk"
+
           test -s build/SAOMI-Battle-Royale-M1.apk
           ls -lh build/SAOMI-Battle-Royale-M1.apk
 
