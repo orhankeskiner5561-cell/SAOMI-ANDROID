@@ -1,0 +1,91 @@
+name: Build SAOMI Battle Royale Native M1
+
+on:
+  push:
+    branches: [ "battle-royale-engine-m1" ]
+    paths:
+      - "saomi-battle-royale-native/**"
+      - ".github/workflows/saomi-native-m1.yml"
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.4.1
+
+jobs:
+  build-android:
+    runs-on: ubuntu-22.04
+    container:
+      image: barichello/godot-ci:4.4.1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Godot export templates
+        shell: bash
+        run: |
+          set -e
+          mkdir -p ~/.local/share/godot/export_templates/
+          if [ -d "/root/.local/share/godot/export_templates/${GODOT_VERSION}.stable" ]; then
+            cp -a "/root/.local/share/godot/export_templates/${GODOT_VERSION}.stable" ~/.local/share/godot/export_templates/
+          fi
+
+      - name: Fetch character asset
+        working-directory: saomi-battle-royale-native
+        shell: bash
+        run: |
+          set -e
+          mkdir -p assets
+          curl -L --fail -o assets/Soldier.glb https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb
+          ls -lh assets/Soldier.glb
+
+      - name: Install Android source template
+        working-directory: saomi-battle-royale-native
+        shell: bash
+        run: |
+          set -e
+          mkdir -p android/build
+          unzip -q ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable/android_source.zip -d android/build
+          echo "${GODOT_VERSION}.stable" > android/build/.build_version
+
+      - name: Configure Godot Android settings
+        shell: bash
+        run: |
+          set -e
+          mkdir -p ~/.config/godot
+          cat > ~/.config/godot/editor_settings-4.4.tres << 'EOF'
+          [gd_resource type="EditorSettings" load_steps=1 format=3]
+          [resource]
+          export/android/android_sdk_path = "/usr/lib/android-sdk"
+          export/android/java_sdk_path = "/usr/lib/jvm/java-17-openjdk-amd64"
+          export/android/force_system_user = false
+          export/android/android_build_tools_ver = "33.0.2"
+          EOF
+
+      - name: Create debug keystore
+        working-directory: saomi-battle-royale-native
+        shell: bash
+        run: |
+          set -e
+          rm -f debug.keystore
+          keytool -genkey -v -keystore debug.keystore             -storepass android -alias androiddebugkey -keypass android             -keyalg RSA -keysize 2048 -validity 10000             -dname "CN=Android Debug,O=SAOMI,C=TR"
+
+      - name: Import native project
+        working-directory: saomi-battle-royale-native
+        run: godot --headless --import --quit-after 2
+
+      - name: Build Android APK
+        working-directory: saomi-battle-royale-native
+        shell: bash
+        run: |
+          set -e
+          mkdir -p build
+          godot --headless --verbose --export-debug "Android Debug" build/SAOMI-Battle-Royale-M1.apk
+          test -s build/SAOMI-Battle-Royale-M1.apk
+          ls -lh build/SAOMI-Battle-Royale-M1.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SAOMI-Battle-Royale-Native-M1-APK
+          path: saomi-battle-royale-native/build/SAOMI-Battle-Royale-M1.apk
+          if-no-files-found: error
