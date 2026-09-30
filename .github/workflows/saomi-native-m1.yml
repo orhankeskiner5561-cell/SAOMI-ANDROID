@@ -8,6 +8,9 @@ on:
       - ".github/workflows/saomi-native-m1.yml"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   GODOT_VERSION: 4.5
 
@@ -101,3 +104,14 @@ jobs:
           name: SAOMI-Battle-Royale-Native-M1-APK
           path: saomi-battle-royale-native/build/SAOMI-Battle-Royale-M1.apk
           if-no-files-found: error
+
+      - name: Publish direct APK release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: saomi-native-m1.3
+          name: "ŞAOMİ Battle Royale Native M1.3"
+          target_commitish: battle-royale-engine-m1
+          prerelease: true
+          make_latest: false
+          files: saomi-battle-royale-native/build/SAOMI-Battle-Royale-M1.apk
+          fail_on_unmatched_files: true
