@@ -1,18 +1,28 @@
-name: Build SAOMI Modular 3D Male APK
+name: Build SAOMI Soldier Equipment APK
+
 on:
   push:
     branches: [ "male-3d-demo" ]
-    paths: [ "male-3d-demo-android/**", ".github/workflows/male-3d-demo-android.yml" ]
+    paths:
+      - "male-3d-demo-android/**"
+      - ".github/workflows/male-3d-demo-android.yml"
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: '17' }
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - uses: gradle/actions/setup-gradle@v4
-        with: { gradle-version: '8.9' }
+        with:
+          gradle-version: '8.9'
+
       - name: Install Android SDK
         shell: bash
         run: |
@@ -26,40 +36,26 @@ jobs:
           echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
-      - name: Fetch Babylon engine and modular male
+
+      - name: Fetch 3D engine and assets
         working-directory: male-3d-demo-android/app/src/main/assets
         run: |
+          set -e
           curl -L --fail -o babylon.js https://cdn.jsdelivr.net/npm/babylonjs@8.32.0/babylon.js
           curl -L --fail -o babylonjs.loaders.min.js https://cdn.jsdelivr.net/npm/babylonjs-loaders@8.32.0/babylonjs.loaders.min.js
-          curl -L --fail -o hoodie.glb https://raw.githubusercontent.com/twinkling-reality/exulanica/main/assets/characters/quaternius-modular-v2/hoodie.glb
-          ls -lh hoodie.glb
           curl -L --fail -o Soldier.glb https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/Soldier.glb
-          python3 - <<'PY'
-import json,struct
-p='Soldier.glb'
-b=open(p,'rb').read()
-magic,ver,total=struct.unpack_from('<III',b,0)
-off=12
-names=[]
-while off<len(b):
-    ln,typ=struct.unpack_from('<II',b,off); off+=8
-    chunk=b[off:off+ln]; off+=ln
-    if typ==0x4E4F534A:
-        j=json.loads(chunk.decode('utf-8').rstrip('\x00 '))
-        for n in j.get('nodes',[]):
-            if 'name' in n: names.append(('node',n['name']))
-        for m in j.get('meshes',[]):
-            if 'name' in m: names.append(('mesh',m['name']))
-        break
-print('SOLDIER_NAMES_START')
-for t,n in names: print(t,n)
-print('SOLDIER_NAMES_END')
-PY
+          curl -L --fail -o rifle.glb https://raw.githubusercontent.com/turingfp/surfskinew/be9b9f8e057b133740834b7553b991211edeed66/assets/models/rifle.glb
+          curl -L --fail -o pistol.glb https://raw.githubusercontent.com/turingfp/surfskinew/be9b9f8e057b133740834b7553b991211edeed66/assets/models/pistol.glb
+          curl -L --fail -o backpack.glb https://raw.githubusercontent.com/nucleodeestudosmbdevelopment-ux/nucleodeestudosmb-site/6c5a0a46b6aca872acbad6dce6d2ec8b10138ace/public/models/backpack.glb
+          ls -lh Soldier.glb rifle.glb pistol.glb backpack.glb
+
       - name: Build APK
         working-directory: male-3d-demo-android
         run: gradle :app:assembleDebug --stacktrace
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
-          name: Saomi-Modular-3D-Male-APK
+          name: Saomi-Soldier-Real-Equipment-APK
           path: male-3d-demo-android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
