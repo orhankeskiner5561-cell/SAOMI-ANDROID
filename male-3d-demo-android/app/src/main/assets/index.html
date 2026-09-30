@@ -316,19 +316,30 @@ engine.runRenderLoop(()=>{
    const mag=Math.hypot(moveX,moveY);
    if(mag>.08){
      const dt=engine.getDeltaTime()/1000,speed=1.15;
-     // Joystick hareketini kameranın baktığı yöne göre dünya koordinatına çevir.
-     const localX=moveX;
-     const localZ=-moveY;
-     const theta=camera.alpha-Math.PI/2;
-     const worldX=localX*Math.cos(theta)-localZ*Math.sin(theta);
-     const worldZ=localX*Math.sin(theta)+localZ*Math.cos(theta);
+     // Kamera-relative movement:
+     // moveY > 0 = camera forward, moveX > 0 = camera right.
+     const a=camera.alpha;
+     const forwardX=-Math.cos(a);
+     const forwardZ=-Math.sin(a);
+     const rightX=Math.sin(a);
+     const rightZ=-Math.cos(a);
+
+     let worldX=rightX*moveX + forwardX*moveY;
+     let worldZ=rightZ*moveX + forwardZ*moveY;
+
+     // Keep diagonal speed equal to straight-line speed.
+     const wl=Math.hypot(worldX,worldZ);
+     if(wl>1){worldX/=wl;worldZ/=wl;}
 
      const nx=modelRoot.position.x+worldX*speed*dt;
      const nz=modelRoot.position.z+worldZ*speed*dt;
      if(canStand(nx,modelRoot.position.z)) modelRoot.position.x=nx;
      if(canStand(modelRoot.position.x,nz)) modelRoot.position.z=nz;
 
-     const ty=Math.atan2(worldX,-worldZ),cur=modelRoot.rotation.y,diff=Math.atan2(Math.sin(ty-cur),Math.cos(ty-cur));
+     // Soldier faces the actual movement direction.
+     const ty=Math.atan2(worldX,-worldZ);
+     const cur=modelRoot.rotation.y;
+     const diff=Math.atan2(Math.sin(ty-cur),Math.cos(ty-cur));
      modelRoot.rotation.y=cur+diff*Math.min(1,dt*9);
      play(walk||idle);
    }else play(idle);
