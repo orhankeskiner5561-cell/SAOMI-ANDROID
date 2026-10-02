@@ -65781,14 +65781,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "ETHUSDC 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-10-02T19:49:56.839Z",
+            "candleCloseTime": 1790970299999,
+            "price": 2664.47,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 83,
+            "currentDirection": "SHORT",
+            "currentConfidence": 92,
+            "lowerTrend": {
+              "ema200": 2704.26794261187,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790952300000,
+                "index": 479,
+                "ageBars": 19
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790965800000,
+                "price": 2675.28,
+                "index": 494,
+                "breakClose": 2656.02,
+                "ageBars": 4
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790965800000,
+                "price": 2675.28,
+                "index": 494,
+                "breakClose": 2656.02,
+                "ageBars": 4
+              }
+            },
+            "verdict": "TERS_MINOR",
+            "commentary": "ETHUSDC 15m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↓"
           }
         ],
-        "lastCandleCloseTime": 1790952299999,
+        "lastCandleCloseTime": 1790970299999,
         "summary": {
           "same": 2,
           "wait": 0,
-          "opposite": 0,
-          "total": 2
+          "opposite": 1,
+          "total": 3
         }
       }
     },
@@ -66468,14 +66514,60 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "SOLUSDC 15m recheck: major LONG · trend/EMA200/PA LONG · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↑"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-10-02T19:49:59.276Z",
+            "candleCloseTime": 1790970299999,
+            "price": 117.99,
+            "originalDirection": "LONG",
+            "majorDirection": "LONG",
+            "majorConviction": 83,
+            "currentDirection": "SHORT",
+            "currentConfidence": 92,
+            "lowerTrend": {
+              "ema200": 119.63435479431541,
+              "alignment": "SHORT",
+              "structure": "DOWN",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1790960400000,
+                "index": 488,
+                "ageBars": 10
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790964900000,
+                "price": 119.56,
+                "index": 493,
+                "breakClose": 118.92,
+                "ageBars": 5
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "DOWN",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1790964900000,
+                "price": 119.56,
+                "index": 493,
+                "breakClose": 118.92,
+                "ageBars": 5
+              }
+            },
+            "verdict": "TERS_MINOR",
+            "commentary": "SOLUSDC 15m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↑ · 1D ↑ · 4H ↑ · 1H ↓"
           }
         ],
-        "lastCandleCloseTime": 1790952299999,
+        "lastCandleCloseTime": 1790970299999,
         "summary": {
           "same": 2,
           "wait": 0,
-          "opposite": 0,
-          "total": 2
+          "opposite": 1,
+          "total": 3
         }
       }
     }
@@ -145905,51 +145997,51 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 176,
+    "cursor": 216,
     "total": 571,
-    "lastRefreshAt": "2026-10-02T14:58:09.874Z",
-    "lastBatchAt": "2026-10-02T14:58:09.874Z",
+    "lastRefreshAt": "2026-10-02T19:49:54.554Z",
+    "lastBatchAt": "2026-10-02T19:49:54.554Z",
     "lastBatch": [
-      "CETUSUSDT",
-      "CFGUSDT",
-      "CFXUSDT",
-      "CGPTUSDT",
-      "CHILLGUYUSDT",
-      "CHIPUSDT",
-      "CHRUSDT",
-      "CHZUSDT",
-      "CKBUSDT",
-      "CLANKERUSDT",
-      "CLOUSDT",
-      "COAIUSDT",
-      "COLLECTUSDT",
-      "COMPUSDT",
-      "COOKIEUSDT",
-      "COTIUSDT",
-      "COWUSDT",
-      "CROSSUSDT",
-      "CRVUSDC",
-      "CRVUSDT",
-      "CTKUSDT",
-      "CTRUSDT",
-      "CTSIUSDT",
-      "CTUSDT",
-      "CUSDT",
-      "CVCUSDT",
-      "CVXUSDT",
-      "CYBERUSDT",
-      "CYSUSDT",
-      "DASHUSDT",
-      "DATAIPUSDC",
-      "DATAIPUSDT",
-      "DEEPUSDT",
-      "DEXEUSDT",
-      "DIAUSDT",
-      "DODOXUSDT",
-      "DOGEUSDC",
-      "DOGEUSDT",
-      "DOGSUSDT",
-      "DOLOUSDT"
+      "DOODUSDT",
+      "DOSUSDT",
+      "DOTUSDT",
+      "DRIFTUSDT",
+      "DUSKUSDT",
+      "DYDXUSDT",
+      "DYMUSDT",
+      "EDENUSDT",
+      "EDGEUSDT",
+      "EDUUSDT",
+      "EGLDUSDT",
+      "EIGENUSDT",
+      "ELSAUSDT",
+      "ENAUSDC",
+      "ENAUSDT",
+      "ENJUSDT",
+      "ENSOUSDT",
+      "ENSUSDT",
+      "EPICUSDT",
+      "ERAUSDT",
+      "ESPORTSUSDT",
+      "ESPUSDT",
+      "ETCUSDT",
+      "ETHBTC",
+      "ETHFIUSDC",
+      "ETHFIUSDT",
+      "ETHU",
+      "ETHUSD1",
+      "ETHUSDC",
+      "ETHUSDT",
+      "ETHWUSDT",
+      "EULUSDT",
+      "EVAAUSDT",
+      "FARTCOINUSDT",
+      "FETUSDT",
+      "FFUSDT",
+      "FHEUSDT",
+      "FIDAUSDT",
+      "FIGHTUSDT",
+      "FILUSDC"
     ],
     "batchSize": 40,
     "cyclesCompleted": 6
@@ -145969,7 +146061,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-10-02T14:58:08.814Z",
+    "validatedAt": "2026-10-02T19:49:53.341Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
