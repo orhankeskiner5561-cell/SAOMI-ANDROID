@@ -77503,14 +77503,55 @@
             },
             "verdict": "TERS_MAJOR",
             "commentary": "BTCUSDT 30m recheck: major LONG · trend/EMA200/PA SHORT · 1W ↑ · 1D ↓ · 4H ↑ · 1H ↓"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-10-15T20:16:34.807Z",
+            "candleCloseTime": 1792094399999,
+            "price": 82351,
+            "originalDirection": "SHORT",
+            "majorDirection": "LONG",
+            "majorConviction": 62,
+            "currentDirection": "WAIT",
+            "currentConfidence": 55,
+            "lowerTrend": {
+              "ema200": 82470.13540657767,
+              "alignment": "NEUTRAL",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1792074600000,
+                "price": 81540,
+                "index": 488,
+                "breakClose": 81840.5,
+                "ageBars": 10
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1792074600000,
+                "price": 81540,
+                "index": 488,
+                "breakClose": 81840.5,
+                "ageBars": 10
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "BTCUSDT 30m recheck: major LONG · trend/EMA200/PA WAIT · 1W ↑ · 1D ↓ · 4H ↑ · 1H ↓"
           }
         ],
-        "lastCandleCloseTime": 1792083599999,
+        "lastCandleCloseTime": 1792094399999,
         "summary": {
           "same": 1,
           "wait": 0,
-          "opposite": 1,
-          "total": 2
+          "opposite": 2,
+          "total": 3
         }
       }
     },
@@ -78180,14 +78221,55 @@
             },
             "verdict": "AYNI_YON",
             "commentary": "SOLUSDT 30m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↓ · 4H ↓ · 1H ↔"
+          },
+          {
+            "no": 3,
+            "checkedAt": "2026-10-15T20:16:36.174Z",
+            "candleCloseTime": 1792094399999,
+            "price": 105.98,
+            "originalDirection": "SHORT",
+            "majorDirection": "SHORT",
+            "majorConviction": 90,
+            "currentDirection": "WAIT",
+            "currentConfidence": 55,
+            "lowerTrend": {
+              "ema200": 106.59862856269132,
+              "alignment": "NEUTRAL",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1792074600000,
+                "price": 104.28,
+                "index": 488,
+                "breakClose": 104.76,
+                "ageBars": 10
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1792074600000,
+                "price": 104.28,
+                "index": 488,
+                "breakClose": 104.76,
+                "ageBars": 10
+              }
+            },
+            "verdict": "BEKLE",
+            "commentary": "SOLUSDT 30m recheck: major SHORT · trend/EMA200/PA WAIT · 1W ↓ · 1D ↓ · 4H ↓ · 1H ↔"
           }
         ],
-        "lastCandleCloseTime": 1792083599999,
+        "lastCandleCloseTime": 1792094399999,
         "summary": {
           "same": 2,
-          "wait": 0,
+          "wait": 1,
           "opposite": 0,
-          "total": 2
+          "total": 3
         }
       }
     }
@@ -172449,51 +172531,51 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 421,
+    "cursor": 461,
     "total": 568,
-    "lastRefreshAt": "2026-10-15T17:01:15.280Z",
-    "lastBatchAt": "2026-10-15T17:01:15.280Z",
+    "lastRefreshAt": "2026-10-15T20:16:33.108Z",
+    "lastBatchAt": "2026-10-15T20:16:33.108Z",
     "lastBatch": [
-      "PIPPINUSDT",
-      "PIXELUSDT",
-      "PLAYUSDT",
-      "PLUMEUSDT",
-      "PNUTUSDC",
-      "PNUTUSDT",
-      "POLUSDT",
-      "POLYXUSDT",
-      "PONSUSDT",
-      "POPCATUSDT",
-      "PORTALUSDT",
-      "POWERUSDT",
-      "POWRUSDT",
-      "PRLUSDT",
-      "PROMUSDT",
-      "PROVEUSDT",
-      "PTBUSDT",
-      "PUMPUSDT",
-      "PUNDIXUSDT",
-      "PYTHUSDT",
-      "QNTUSDT",
-      "QTUMUSDT",
-      "QUSDT",
-      "RAREUSDT",
-      "RAVEUSDT",
-      "RAYSOLUSDT",
-      "RECALLUSDT",
-      "REDUSDT",
-      "RENDERUSDT",
-      "RESOLVUSDT",
-      "REUSDT",
-      "REZUSDT",
-      "RIFUSDT",
-      "RIVERUSDT",
-      "RLCUSDT",
-      "ROBOUSDT",
-      "RONINUSDT",
-      "ROSEUSDT",
-      "RPLUSDT",
-      "RSRUSDT"
+      "RUNEUSDT",
+      "RVNUSDT",
+      "SAFEUSDT",
+      "SAGAUSDT",
+      "SAHARAUSDT",
+      "SANDUSDT",
+      "SANTOSUSDT",
+      "SAPIENUSDT",
+      "SCRUSDT",
+      "SEIUSDT",
+      "SENTUSDT",
+      "SFPUSDT",
+      "SHELLUSDT",
+      "SIGNUSDT",
+      "SIRENUSDT",
+      "SKLUSDT",
+      "SKRUSDT",
+      "SKYAIUSDT",
+      "SKYUSDT",
+      "SLPUSDT",
+      "SLXUSDT",
+      "SNXUSDT",
+      "SOLUSDC",
+      "SOLUSDT",
+      "SOLVUSDT",
+      "SOMIUSDT",
+      "SONICUSDT",
+      "SOONUSDT",
+      "SOPHUSDT",
+      "SPACEUSDT",
+      "SPELLUSDT",
+      "SPKUSDT",
+      "SPORTFUNUSDT",
+      "SPXUSDT",
+      "SQDUSDT",
+      "SSVUSDT",
+      "STABLEUSDT",
+      "STARUSDT",
+      "STBLUSDT",
+      "STEEMUSDT"
     ],
     "batchSize": 40,
     "cyclesCompleted": 10
@@ -172513,7 +172595,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-10-15T17:01:13.198Z",
+    "validatedAt": "2026-10-15T20:16:31.906Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
