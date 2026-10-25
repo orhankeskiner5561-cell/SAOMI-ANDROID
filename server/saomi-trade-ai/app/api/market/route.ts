@@ -5,12 +5,13 @@ export const runtime = 'nodejs';
 
 // Read-only diagnostics and market-data access. Never treat spot candles as futures candles.
 const INTERVALS = new Set(['1m','3m','5m','15m','30m','1h','2h','4h','6h','8h','12h','1d','1w','1M']);
-const FUTURES = 'https://fapi.binance.com';
+const FUTURES = 'https://www.binance.com';
+const FUTURES_ALTERNATE = 'https://fapi.binance.com';
 const SPOT = 'https://api.binance.com';
 
 async function load(base:string,symbol:string,interval:string,limit:number) {
   const q=new URLSearchParams({symbol,interval,limit:String(limit)});
-  const path=base===FUTURES?'/fapi/v1/klines':'/api/v3/klines';
+  const path=(base===FUTURES || base===FUTURES_ALTERNATE)?'/fapi/v1/klines':'/api/v3/klines';
   const res=await fetch(base+path+'?'+q,{cache:'no-store',signal:AbortSignal.timeout(10000)});
   if(!res.ok) return {ok:false,status:res.status,rows:null};
   const rows:unknown=await res.json();
@@ -26,7 +27,12 @@ export async function GET(req:NextRequest) {
     !Number.isInteger(limit)||limit<20||limit>500)
     return NextResponse.json({ok:false,error:'Invalid symbol, interval or limit'},{status:400});
   try {
-    const futures=await load(FUTURES,symbol,interval,limit);
+    let futures=await load(FUTURES,symbol,interval,limit);
+    let futuresHost='www.binance.com';
+    if(!futures.ok && (futures.status===451 || futures.status===403 || futures.status===502)) {
+      const alternate=await load(FUTURES_ALTERNATE,symbol,interval,limit);
+      if(alternate.ok){futures=alternate;futuresHost='fapi.binance.com';}
+    }
     let selected=futures;
     let market='USD-M FUTURES';
     if(!futures.ok && allowSpot) {
@@ -34,7 +40,7 @@ export async function GET(req:NextRequest) {
       if(spot.ok){selected=spot;market='SPOT';}
     }
     if(!selected.ok || !selected.rows)
-      return NextResponse.json({ok:false,error:'Binance market data unavailable',futuresStatus:futures.status,
+      return NextResponse.json({ok:false,error:'Binance market data unavailable',futuresStatus:futures.status,futuresHost,
         status:selected.status,market:'USD-M FUTURES',signalAllowed:false,
         note:futures.status===451?'Futures API returned HTTP 451; access restriction must be resolved with the provider. No proxy bypass is attempted.':'Upstream request failed.'},
         {status:503,headers:{'cache-control':'no-store'}});
@@ -50,7 +56,7 @@ export async function GET(req:NextRequest) {
       ok:true,source:'Binance public market data',market,symbol,interval,
       fetchedAt:new Date(now).toISOString(),lastCandleCloseTime:last?.closeTime,
       stale,signalAllowed:market==='USD-M FUTURES'&&!stale,
-      futuresStatus:futures.status,candles,
+      futuresStatus:futures.status,futuresHost,candles,
       warning:market==='SPOT'?'SPOT FALLBACK ONLY. Do not use spot prices as futures entry/stop levels.':
         'Unclosed candles may change. Data does not constitute a trade signal.'
     },{headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
