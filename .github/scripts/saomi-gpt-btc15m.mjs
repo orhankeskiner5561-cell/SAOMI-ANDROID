@@ -7,7 +7,9 @@ const INTERVAL='15m';
 const MAX_CANDLE_AGE=20*60*1000;
 const MODEL=String(process.env.SAOMI_GPT_MODEL||'gpt-6.1-sol').trim();
 const KEY=String(process.env.OPENAI_API_KEY||'').trim();
-const ENABLED=process.env.SAOMI_GPT_TELEGRAM_ENABLED==='true';
+const WATCH_ENABLED=process.env.SAOMI_GPT_MONITOR_ENABLED==='true';
+const RUN_ONCE=process.env.SAOMI_GPT_RUN_ONCE==='true';
+const ENABLED=process.env.SAOMI_GPT_TELEGRAM_ENABLED==='true'&&!RUN_ONCE;
 const TOKEN=String(process.env.TELEGRAM_BOT_TOKEN||process.env.TELEGRAM_TOKEN||'').trim();
 const CHAT=String(process.env.TELEGRAM_CHANNEL_ID||process.env.TELEGRAM_CHAT_ID||'').trim();
 
@@ -160,6 +162,7 @@ async function send(d,a,ev){
  return data.result?.message_id??null;
 }
 async function main(){
+ if(!WATCH_ENABLED&&!RUN_ONCE){console.log('GPT_BTC15M_SHADOW_DISABLED: monitoring variable is not enabled; no OpenAI charges incurred.');return}
  if(!KEY){console.log('GPT_BTC15M_NOT_ENABLED: OPENAI_API_KEY secret missing. Existing scanner unchanged.');return}
  const [analysis,market]=await Promise.all([load('/api/analysis'),load('/api/market')]);
  const closed=verify(analysis,market);
