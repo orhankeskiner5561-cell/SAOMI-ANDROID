@@ -1,0 +1,63 @@
+name: SAOMI FREE BTC 15M Shadow Scanner
+
+on:
+  schedule:
+    # 2 minutes after each 15m Binance candle. Schedules may be delayed.
+    - cron: '2,17,32,47 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/saomi-free-btc15m.yml'
+      - '.github/scripts/saomi-free-btc15m.mjs'
+      - '.github/scripts/saomi-free-btc15m.test.mjs'
+
+concurrency:
+  group: saomi-free-btc15m
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Syntax and deterministic tests
+        run: |
+          node --check .github/scripts/saomi-free-btc15m.mjs
+          node --test .github/scripts/saomi-free-btc15m.test.mjs
+
+      - name: Free Binance analysis (Telegram disabled unless explicitly activated)
+        env:
+          SAOMI_FREE_MONITOR_ENABLED: 'true'
+          SAOMI_FREE_RUN_ONCE: ${{ github.event_name != 'schedule' }}
+          SAOMI_FREE_TELEGRAM_ENABLED: ${{ vars.SAOMI_FREE_TELEGRAM_ENABLED || 'false' }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        run: node .github/scripts/saomi-free-btc15m.mjs
+
+      - name: Save dedupe state only after actual Telegram delivery
+        if: success()
+        shell: bash
+        run: |
+          if [ -f .github/state/saomi-free-btc15m-state.json ]; then
+            git config user.name "saomi-free-scanner"
+            git config user.email "saomi-actions@users.noreply.github.com"
+            git add .github/state/saomi-free-btc15m-state.json
+            if ! git diff --cached --quiet; then
+              git commit -m "Update free scanner signal delivery state [skip ci]"
+              git pull --rebase origin main
+              git push origin main
+            fi
+          else
+            echo 'Shadow analysis: no state commit or Telegram message.'
+          fi
