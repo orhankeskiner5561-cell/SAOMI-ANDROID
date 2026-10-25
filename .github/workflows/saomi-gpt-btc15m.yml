@@ -35,6 +35,8 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SAOMI_GPT_MODEL: ${{ vars.SAOMI_GPT_MODEL || 'gpt-6.1-sol' }}
+          SAOMI_GPT_MONITOR_ENABLED: ${{ vars.SAOMI_GPT_MONITOR_ENABLED || 'false' }}
+          SAOMI_GPT_RUN_ONCE: ${{ github.event_name == 'workflow_dispatch' }}
           # Safe default: shadow mode. Only send when repository variable is explicitly true.
           SAOMI_GPT_TELEGRAM_ENABLED: ${{ vars.SAOMI_GPT_TELEGRAM_ENABLED || 'false' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
