@@ -1,0 +1,51 @@
+name: SAOMI GPT BTC 15M Signal Watch
+
+on:
+  schedule:
+    # Two minutes after each 15m candle boundary. GitHub-hosted schedules can be delayed.
+    - cron: '2,17,32,47 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: saomi-gpt-btc15m-signal
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Validate GPT watcher syntax
+        run: node --check .github/scripts/saomi-gpt-btc15m.mjs
+
+      - name: Independent GPT assessment, optional Telegram alert
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SAOMI_GPT_MODEL: ${{ vars.SAOMI_GPT_MODEL || 'gpt-6.1-sol' }}
+          # Safe default: shadow mode. Only send when repository variable is explicitly true.
+          SAOMI_GPT_TELEGRAM_ENABLED: ${{ vars.SAOMI_GPT_TELEGRAM_ENABLED || 'false' }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        run: node .github/scripts/saomi-gpt-btc15m.mjs
+
+      - name: Persist closed-candle evaluation state
+        if: success()
+        run: |
+          git config user.name "saomi-gpt-watcher"
+          git config user.email "saomi-actions@users.noreply.github.com"
+          git add .github/state/saomi-gpt-btc15m-state.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update GPT BTC15m evaluation state [skip ci]"
+            git pull --rebase origin main
+            git push origin main
+          fi
