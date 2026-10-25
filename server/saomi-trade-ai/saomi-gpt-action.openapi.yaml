@@ -1,0 +1,59 @@
+openapi: 3.1.0
+info:
+  title: SAOMI Binance Futures Read-Only Market Data
+  version: 1.0.0
+  description: Public read-only Binance USD-M futures candles; never places orders.
+servers:
+  - url: https://saomi-trade-ai.vercel.app
+paths:
+  /api/market:
+    get:
+      operationId: getSaomiFuturesCandles
+      summary: Get live Binance USD-M Futures candlesticks
+      description: Returns OHLCV candles and freshness metadata. Never interpret SPOT fallback as FUTURES.
+      parameters:
+        - in: query
+          name: symbol
+          required: true
+          schema: { type: string, default: BTCUSDT }
+        - in: query
+          name: interval
+          required: true
+          schema:
+            type: string
+            enum: [1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 1w, 1M]
+        - in: query
+          name: limit
+          required: false
+          schema: { type: integer, minimum: 20, maximum: 500, default: 300 }
+      responses:
+        '200':
+          description: OHLCV and source/freshness metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  symbol: { type: string }
+                  interval: { type: string }
+                  market: { type: string }
+                  source: { type: string }
+                  fetchedAt: { type: string }
+                  stale: { type: boolean }
+                  signalAllowed: { type: boolean }
+                  candles:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        openTime: { type: number }
+                        open: { type: number }
+                        high: { type: number }
+                        low: { type: number }
+                        close: { type: number }
+                        volume: { type: number }
+                        closeTime: { type: number }
+                        closed: { type: boolean }
+        '503':
+          description: Upstream data unavailable; no trade signal should be issued.
