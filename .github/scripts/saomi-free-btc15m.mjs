@@ -82,7 +82,7 @@ export function evaluate(c,d){
  if(barriers.length&&(direction==='LONG'?Math.min(...barriers)<tp1:Math.max(...barriers)>tp1))
   reason.push('Opposing prior structure ahead of TP1');
  if(reason.length)return {decision:'BEKLE',reason:reason.join('; '),checks:{structure:true,momentum,volume}};
- return {decision,reason:'Breakout + retest, aligned momentum, and volume independently confirmed',
+ return {decision:direction,reason:'Breakout + retest, aligned momentum, and volume independently confirmed',
   breakTime:e.at,level:round(e.level),entry:round(entry),stop:round(stop),tp1:round(tp1),tp2:round(tp2),
   tp3:round(tp3),riskReward:2,volumeRatio:round(e.ratio),checks:{structure:true,momentum:true,volume:true}};
 }
