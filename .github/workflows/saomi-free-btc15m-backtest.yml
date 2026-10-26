@@ -1,0 +1,26 @@
+name: SAOMI FREE BTC 15M Historical Backtest
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/saomi-free-btc15m-backtest.yml'
+      - '.github/scripts/saomi-free-btc15m-backtest.mjs'
+permissions:
+  contents: read
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Syntax and scanner unit tests
+        run: |
+          node --check .github/scripts/saomi-free-btc15m-backtest.mjs
+          node --test .github/scripts/saomi-free-btc15m.test.mjs
+      - name: Historical Binance BTCUSDT 15m backtest (no alerts, no orders)
+        env:
+          BACKTEST_CANDLES: '1500'
+          BACKTEST_FEE_BPS: '5'
+        run: node .github/scripts/saomi-free-btc15m-backtest.mjs
