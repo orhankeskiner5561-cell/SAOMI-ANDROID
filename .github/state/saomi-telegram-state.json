@@ -92755,7 +92755,8 @@
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "initialStop": 583.0174940890694
     }
   },
   "history": [
@@ -207204,7 +207205,7 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-10-29T23:14:50.595Z",
+    "updatedAt": "2026-10-30T08:56:15.719Z",
     "scoredTrades": 164,
     "wins": 8,
     "losses": 156,
@@ -207218,8 +207219,8 @@
     "expired": 21,
     "expiredBeforeEntry": 6,
     "expiredAfterEntry": 15,
-    "active": 0,
-    "waitingEntry": 0,
+    "active": 1,
+    "waitingEntry": 1,
     "inTrade": 0,
     "byTimeframe": {
       "1m": {
@@ -207272,8 +207273,8 @@
         "expired": 5,
         "expiredBeforeEntry": 2,
         "expiredAfterEntry": 3,
-        "active": 0,
-        "waitingEntry": 0,
+        "active": 1,
+        "waitingEntry": 1,
         "inTrade": 0
       },
       "30m": {
@@ -207334,7 +207335,7 @@
     "rc562": {
       "setupVersion": "RC5.62_ORHAN_VOLUME_IMPULSE",
       "targetSignals": 20,
-      "signalsSeen": 70,
+      "signalsSeen": 71,
       "targetProgressPct": 100,
       "completedTrades": 59,
       "readyForReview": true,
@@ -207352,8 +207353,8 @@
       "expired": 11,
       "expiredBeforeEntry": 1,
       "expiredAfterEntry": 10,
-      "active": 0,
-      "waitingEntry": 0,
+      "active": 1,
+      "waitingEntry": 1,
       "inTrade": 0,
       "byTimeframe": {
         "1m": {
@@ -207406,8 +207407,8 @@
           "expired": 4,
           "expiredBeforeEntry": 1,
           "expiredAfterEntry": 3,
-          "active": 0,
-          "waitingEntry": 0,
+          "active": 1,
+          "waitingEntry": 1,
           "inTrade": 0
         },
         "30m": {
