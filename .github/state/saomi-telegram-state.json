@@ -96498,18 +96498,21 @@
       "riskAtr": 6.1,
       "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↑ · 1D ↓ · 4H ↓ · 1H ↑. Bolge 0.0139509–0.0139691 · temas 50 · rol degisimi EVET · sikisma 4/4. LONG giris 0.01405. STOP 0.0137941 · TP1 0.0143698 · TP2 0.0145617 · TP3 0.0148176. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
       "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-10-31T19:09:59.167Z",
       "lastCheckedAt": "2026-10-31T19:09:11.869Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "initialStop": 0.013794129629615372,
+      "entryCandleOpenTime": 1793473740000,
+      "lastDeliveryError": null
     }
   },
   "history": [
@@ -217205,7 +217208,7 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-10-31T08:45:25.462Z",
+    "updatedAt": "2026-10-31T21:53:35.624Z",
     "scoredTrades": 169,
     "wins": 8,
     "losses": 161,
@@ -217219,9 +217222,9 @@
     "expired": 25,
     "expiredBeforeEntry": 6,
     "expiredAfterEntry": 19,
-    "active": 0,
+    "active": 1,
     "waitingEntry": 0,
-    "inTrade": 0,
+    "inTrade": 1,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 63,
@@ -217255,9 +217258,9 @@
         "expired": 9,
         "expiredBeforeEntry": 1,
         "expiredAfterEntry": 8,
-        "active": 0,
+        "active": 1,
         "waitingEntry": 0,
-        "inTrade": 0
+        "inTrade": 1
       },
       "15m": {
         "scoredTrades": 40,
@@ -217335,7 +217338,7 @@
     "rc562": {
       "setupVersion": "RC5.62_ORHAN_VOLUME_IMPULSE",
       "targetSignals": 20,
-      "signalsSeen": 79,
+      "signalsSeen": 80,
       "targetProgressPct": 100,
       "completedTrades": 64,
       "readyForReview": true,
@@ -217353,9 +217356,9 @@
       "expired": 15,
       "expiredBeforeEntry": 1,
       "expiredAfterEntry": 14,
-      "active": 0,
+      "active": 1,
       "waitingEntry": 0,
-      "inTrade": 0,
+      "inTrade": 1,
       "byTimeframe": {
         "1m": {
           "scoredTrades": 18,
@@ -217389,9 +217392,9 @@
           "expired": 7,
           "expiredBeforeEntry": 0,
           "expiredAfterEntry": 7,
-          "active": 0,
+          "active": 1,
           "waitingEntry": 0,
-          "inTrade": 0
+          "inTrade": 1
         },
         "15m": {
           "scoredTrades": 18,
