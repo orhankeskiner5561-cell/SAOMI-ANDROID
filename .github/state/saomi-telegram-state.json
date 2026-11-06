@@ -98341,18 +98341,21 @@
       "riskAtr": 4.72,
       "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↔ · 1D ↓ · 4H ↓ · 1H ↓. Bolge 89.5505–89.6895 · temas 40 · rol degisimi EVET · sikisma 3/4. LONG giris 90.01. STOP 88.186 · TP1 92.2901 · TP2 93.6581 · TP3 95.4821. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
       "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-11-06T10:25:09.297Z",
       "lastCheckedAt": "2026-11-06T10:12:34.036Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "initialStop": 88.18595378537366,
+      "entryCandleOpenTime": 1793960700000,
+      "lastDeliveryError": null
     },
     "SOLUSDC|futures|15m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1793958300000": {
       "fingerprint": "SOLUSDC|futures|15m|LONG|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
@@ -98920,18 +98923,21 @@
       "riskAtr": 4.85,
       "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↑ · 1D ↓ · 4H ↓ · 1H ↓. Bolge 89.452–89.588 · temas 40 · rol degisimi EVET · sikisma 3/4. LONG giris 89.91. STOP 88.0771 · TP1 92.2011 · TP2 93.5758 · TP3 95.4087. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
       "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
-      "status": "WAIT_ENTRY",
+      "status": "ACTIVE",
       "stage": 0,
-      "enteredAt": null,
+      "enteredAt": "2026-11-06T10:25:08.681Z",
       "lastCheckedAt": "2026-11-06T10:12:49.572Z",
       "notified": {
-        "entry": false,
+        "entry": true,
         "tp1": false,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "initialStop": 88.07711464504047,
+      "entryCandleOpenTime": 1793960700000,
+      "lastDeliveryError": null
     }
   },
   "history": [
@@ -223626,7 +223632,7 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-11-04T07:28:24.869Z",
+    "updatedAt": "2026-11-06T16:53:35.251Z",
     "scoredTrades": 173,
     "wins": 8,
     "losses": 165,
@@ -223640,9 +223646,9 @@
     "expired": 27,
     "expiredBeforeEntry": 6,
     "expiredAfterEntry": 21,
-    "active": 0,
+    "active": 2,
     "waitingEntry": 0,
-    "inTrade": 0,
+    "inTrade": 2,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 65,
@@ -223694,9 +223700,9 @@
         "expired": 5,
         "expiredBeforeEntry": 2,
         "expiredAfterEntry": 3,
-        "active": 0,
+        "active": 2,
         "waitingEntry": 0,
-        "inTrade": 0
+        "inTrade": 2
       },
       "30m": {
         "scoredTrades": 15,
@@ -223756,7 +223762,7 @@
     "rc562": {
       "setupVersion": "RC5.62_ORHAN_VOLUME_IMPULSE",
       "targetSignals": 20,
-      "signalsSeen": 85,
+      "signalsSeen": 87,
       "targetProgressPct": 100,
       "completedTrades": 68,
       "readyForReview": true,
@@ -223774,9 +223780,9 @@
       "expired": 17,
       "expiredBeforeEntry": 1,
       "expiredAfterEntry": 16,
-      "active": 0,
+      "active": 2,
       "waitingEntry": 0,
-      "inTrade": 0,
+      "inTrade": 2,
       "byTimeframe": {
         "1m": {
           "scoredTrades": 20,
@@ -223828,9 +223834,9 @@
           "expired": 4,
           "expiredBeforeEntry": 1,
           "expiredAfterEntry": 3,
-          "active": 0,
+          "active": 2,
           "waitingEntry": 0,
-          "inTrade": 0
+          "inTrade": 2
         },
         "30m": {
           "scoredTrades": 3,
