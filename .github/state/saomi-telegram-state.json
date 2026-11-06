@@ -98355,7 +98355,60 @@
       },
       "initialStop": 88.18595378537366,
       "entryCandleOpenTime": 1793960700000,
-      "lastDeliveryError": null
+      "lastDeliveryError": null,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-11-06T17:29:25.709Z",
+            "candleCloseTime": 1793985299999,
+            "price": 90.54,
+            "originalDirection": "LONG",
+            "majorDirection": "SHORT",
+            "majorConviction": 78,
+            "currentDirection": "LONG",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 91.69487911714371,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1793975400000,
+                "price": 90.86,
+                "index": 488,
+                "breakClose": 90.94,
+                "ageBars": 10
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1793975400000,
+                "price": 90.86,
+                "index": 488,
+                "breakClose": 90.94,
+                "ageBars": 10
+              }
+            },
+            "verdict": "TERS_MAJOR",
+            "commentary": "SOLUSDT 15m recheck: major SHORT · trend/EMA200/PA LONG · 1W ↔ · 1D ↓ · 4H ↓ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1793985299999,
+        "summary": {
+          "same": 0,
+          "wait": 0,
+          "opposite": 1,
+          "total": 1
+        }
+      }
     },
     "SOLUSDC|futures|15m|LONG|ORHAN_SR_BREAKOUT_CONFIRM:1793958300000": {
       "fingerprint": "SOLUSDC|futures|15m|LONG|SHORT|ORHAN_SR_BREAKOUT_CONFIRM|0||0||0||",
@@ -98937,7 +98990,60 @@
       },
       "initialStop": 88.07711464504047,
       "entryCandleOpenTime": 1793960700000,
-      "lastDeliveryError": null
+      "lastDeliveryError": null,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-11-06T17:29:27.787Z",
+            "candleCloseTime": 1793985299999,
+            "price": 90.44,
+            "originalDirection": "LONG",
+            "majorDirection": "NEUTRAL",
+            "majorConviction": 55,
+            "currentDirection": "LONG",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 91.59205751396183,
+              "alignment": "LONG",
+              "structure": "UP",
+              "ema200Side": "SHORT",
+              "ema200Cross": null,
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1793975400000,
+                "price": 90.75,
+                "index": 488,
+                "breakClose": 90.82,
+                "ageBars": 10
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "UP",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "UP",
+                "time": 1793975400000,
+                "price": 90.75,
+                "index": 488,
+                "breakClose": 90.82,
+                "ageBars": 10
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "SOLUSDC 15m recheck: major NEUTRAL · trend/EMA200/PA LONG · 1W ↑ · 1D ↓ · 4H ↓ · 1H ↑"
+          }
+        ],
+        "lastCandleCloseTime": 1793985299999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
+      }
     }
   },
   "history": [
@@ -223896,51 +224002,51 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 45,
+    "cursor": 85,
     "total": 565,
-    "lastRefreshAt": "2026-11-06T10:10:39.659Z",
-    "lastBatchAt": "2026-11-06T10:10:39.659Z",
+    "lastRefreshAt": "2026-11-06T17:29:23.851Z",
+    "lastBatchAt": "2026-11-06T17:29:23.851Z",
     "lastBatch": [
-      "1000CHEEMSUSDT",
-      "1000FLOKIUSDT",
-      "1000LUNCUSDT",
-      "1000PEPEUSDC",
-      "1000PEPEUSDT",
-      "1000RATSUSDT",
-      "1000SATSUSDT",
-      "1000SHIBUSDC",
-      "1000SHIBUSDT",
-      "1000XECUSDT",
-      "1INCHUSDT",
-      "1MBABYDOGEUSDT",
-      "2ZUSDT",
-      "4USDT",
-      "AAVEUSDC",
-      "AAVEUSDT",
-      "ACEUSDT",
-      "ACHUSDT",
-      "ACTUSDT",
-      "ACUUSDT",
-      "ADAUSDC",
-      "ADAUSDT",
-      "AEROUSDT",
-      "AEVOUSDT",
-      "AGLDUSDT",
-      "AGTUSDT",
-      "AIAUSDT",
-      "AIGENSYNUSDT",
-      "AINUSDT",
-      "AIOTUSDT",
-      "AIOUSDT",
-      "AIXBTUSDT",
-      "AKEUSDT",
-      "AKTUSDT",
-      "ALCHUSDT",
-      "ALGOUSDT",
-      "ALICEUSDT",
-      "ALLOUSDT",
-      "ALLUSDT",
-      "ALPINEUSDT"
+      "ALTUSDT",
+      "ANIMEUSDT",
+      "ANKRUSDT",
+      "APEUSDT",
+      "API3USDT",
+      "APRUSDT",
+      "APTUSDT",
+      "ARBUSDC",
+      "ARBUSDT",
+      "ARCUSDT",
+      "ARIAUSDT",
+      "ARKMUSDT",
+      "ARKUSDT",
+      "ARPAUSDT",
+      "ARUSDT",
+      "ARXUSDT",
+      "ASRUSDT",
+      "ASTERUSDT",
+      "ASTRUSDT",
+      "ATHUSDT",
+      "ATOMUSDT",
+      "ATUSDT",
+      "AUCTIONUSDT",
+      "AUSDT",
+      "AVAAIUSDT",
+      "AVAUSDT",
+      "AVAXUSDC",
+      "AVAXUSDT",
+      "AVNTUSDT",
+      "AWEUSDT",
+      "AXLUSDT",
+      "AXSUSDT",
+      "AZTECUSDT",
+      "B2USDT",
+      "BABYUSDT",
+      "BANANAS31USDT",
+      "BANANAUSDT",
+      "BANDUSDT",
+      "BANKUSDT",
+      "BANUSDT"
     ],
     "batchSize": 40,
     "cyclesCompleted": 19
@@ -223960,7 +224066,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-11-06T10:10:38.382Z",
+    "validatedAt": "2026-11-06T17:29:22.533Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
