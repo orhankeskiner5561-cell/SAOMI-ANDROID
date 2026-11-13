@@ -103044,7 +103044,65 @@
       },
       "initialStop": 0.05836369875817163,
       "entryCandleOpenTime": 1794538500000,
-      "lastDeliveryError": null
+      "lastDeliveryError": null,
+      "reanalysis": {
+        "max": 3,
+        "snapshots": [
+          {
+            "no": 1,
+            "checkedAt": "2026-11-13T10:12:22.360Z",
+            "candleCloseTime": 1794563999999,
+            "price": 0.05693,
+            "originalDirection": "SHORT",
+            "majorDirection": "SHORT",
+            "majorConviction": 90,
+            "currentDirection": "SHORT",
+            "currentConfidence": 67,
+            "lowerTrend": {
+              "ema200": 0.05710883727629675,
+              "alignment": "SHORT",
+              "structure": "RANGE",
+              "ema200Side": "SHORT",
+              "ema200Cross": {
+                "side": "DOWN",
+                "time": 1794537000000,
+                "index": 469,
+                "ageBars": 29
+              },
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1794536100000,
+                "price": 0.0577,
+                "index": 468,
+                "breakClose": 0.05758,
+                "ageBars": 30
+              }
+            },
+            "lowerPriceAction": {
+              "structureTrend": "RANGE",
+              "lastBreak": {
+                "type": "TREND_BREAK",
+                "side": "DOWN",
+                "time": 1794536100000,
+                "price": 0.0577,
+                "index": 468,
+                "breakClose": 0.05758,
+                "ageBars": 30
+              }
+            },
+            "verdict": "AYNI_YON",
+            "commentary": "ZBTUSDT 15m recheck: major SHORT · trend/EMA200/PA SHORT · 1W ↓ · 1D ↓ · 4H ↓ · 1H ↔"
+          }
+        ],
+        "lastCandleCloseTime": 1794563999999,
+        "summary": {
+          "same": 1,
+          "wait": 0,
+          "opposite": 0,
+          "total": 1
+        }
+      }
     }
   },
   "history": [
@@ -235776,54 +235834,54 @@
     }
   },
   "scannerUniverse": {
-    "cursor": 560,
+    "cursor": 35,
     "total": 565,
-    "lastRefreshAt": "2026-11-13T02:51:13.592Z",
-    "lastBatchAt": "2026-11-13T02:51:13.592Z",
+    "lastRefreshAt": "2026-11-13T10:12:20.691Z",
+    "lastBatchAt": "2026-11-13T10:12:20.691Z",
     "lastBatch": [
-      "WETUSDT",
-      "WIFUSDC",
-      "WIFUSDT",
-      "WLDUSDC",
-      "WLDUSDT",
-      "WLFIUSDC",
-      "WLFIUSDT",
-      "WOOUSDT",
-      "WUSDT",
-      "XAIUSDT",
-      "XANUSDT",
-      "XAUTUSDT",
-      "XLMUSDT",
-      "XMRUSDT",
-      "XNYUSDT",
-      "XPINUSDT",
-      "XPLUSDT",
-      "XRPUSDC",
-      "XRPUSDT",
-      "XTZUSDT",
-      "XVGUSDT",
-      "XVSUSDT",
-      "YBUSDT",
-      "YFIUSDT",
-      "YGGUSDT",
-      "ZAMAUSDT",
-      "ZBTUSDT",
-      "ZECUSDC",
-      "ZECUSDT",
-      "ZENUSDT",
-      "ZEREBROUSDT",
-      "ZESTUSDT",
-      "ZETAUSDT",
-      "ZILUSDT",
-      "ZKCUSDT",
-      "ZKPUSDT",
-      "ZKUSDT",
-      "ZORAUSDT",
-      "ZROUSDT",
-      "ZRXUSDT"
+      "哈基米USDT",
+      "币安人生USDT",
+      "我踏马来了USDT",
+      "牛来USDT",
+      "龙虾USDT",
+      "0GUSDT",
+      "1000000MOGUSDT",
+      "1000BONKUSDC",
+      "1000BONKUSDT",
+      "1000CATUSDT",
+      "1000CHEEMSUSDT",
+      "1000FLOKIUSDT",
+      "1000LUNCUSDT",
+      "1000PEPEUSDC",
+      "1000PEPEUSDT",
+      "1000RATSUSDT",
+      "1000SATSUSDT",
+      "1000SHIBUSDC",
+      "1000SHIBUSDT",
+      "1000XECUSDT",
+      "1INCHUSDT",
+      "1MBABYDOGEUSDT",
+      "2ZUSDT",
+      "4USDT",
+      "AAVEUSDC",
+      "AAVEUSDT",
+      "ACEUSDT",
+      "ACHUSDT",
+      "ACTUSDT",
+      "ACUUSDT",
+      "ADAUSDC",
+      "ADAUSDT",
+      "AEROUSDT",
+      "AEVOUSDT",
+      "AGLDUSDT",
+      "AGTUSDT",
+      "AIAUSDT",
+      "AIGENSYNUSDT",
+      "AINUSDT",
+      "AIOTUSDT"
     ],
     "batchSize": 40,
-    "cyclesCompleted": 20
+    "cyclesCompleted": 21
   },
   "telegramReset": {
     "resetAt": "2026-09-21T03:35:47.929Z",
@@ -235840,7 +235898,7 @@
     "endpoint": "https://saomi-trade-ai.vercel.app",
     "allFutures": true,
     "validated": true,
-    "validatedAt": "2026-11-13T02:51:13.071Z",
+    "validatedAt": "2026-11-13T10:12:19.521Z",
     "symbolPolicy": "binance-usdm-trading-perpetual",
     "probeSymbol": "0GUSDT"
   }
