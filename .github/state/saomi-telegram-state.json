@@ -103030,18 +103030,21 @@
       "riskAtr": 3.63,
       "commentary": "ORHAN SETUP — Destek/direnç kırılımı → rol değişimi → likidite süpürmesi → yeniden içeri giriş → trend çizgisi kırılımı + onay. HTF bilgi: 1W ↓ · 1D ↓ · 4H ↓ · 1H ↔. Bolge 0.0576588–0.0577712 · temas 33 · rol degisimi EVET · sikisma 4/4. SHORT giris 0.05723. STOP 0.0583637 · TP1 0.0558129 · TP2 0.0549626 · TP3 0.0538289. STOP rastgele ATR değildir; likiditeyi alan son yapısal dip/tepenin hemen dışındadır. TP1 sonrası stop girişe, TP2 sonrası TP1 seviyesine taşınır.",
       "commentaryProvider": "SAOMI ORHAN MANUAL S/R + TRENDLINE CONFLUENCE",
-      "status": "WAIT_ENTRY",
-      "stage": 0,
-      "enteredAt": null,
+      "status": "TP1",
+      "stage": 1,
+      "enteredAt": "2026-11-13T02:55:13.999Z",
       "lastCheckedAt": "2026-11-13T02:52:31.390Z",
       "notified": {
-        "entry": false,
-        "tp1": false,
+        "entry": true,
+        "tp1": true,
         "tp2": false,
         "tp3": false,
         "stop": false,
         "ambiguous": false
-      }
+      },
+      "initialStop": 0.05836369875817163,
+      "entryCandleOpenTime": 1794538500000,
+      "lastDeliveryError": null
     }
   },
   "history": [
@@ -235509,12 +235512,12 @@
     }
   ],
   "performance": {
-    "updatedAt": "2026-11-12T03:37:18.464Z",
+    "updatedAt": "2026-11-13T06:40:54.094Z",
     "scoredTrades": 178,
     "wins": 10,
     "losses": 168,
     "winRate": 5.62,
-    "tp1Reached": 64,
+    "tp1Reached": 65,
     "tp2Reached": 24,
     "tp3Reached": 10,
     "stopAfterTp1": 38,
@@ -235523,9 +235526,9 @@
     "expired": 33,
     "expiredBeforeEntry": 6,
     "expiredAfterEntry": 27,
-    "active": 0,
+    "active": 1,
     "waitingEntry": 0,
-    "inTrade": 0,
+    "inTrade": 1,
     "byTimeframe": {
       "1m": {
         "scoredTrades": 67,
@@ -235568,7 +235571,7 @@
         "wins": 4,
         "losses": 36,
         "winRate": 10,
-        "tp1Reached": 9,
+        "tp1Reached": 10,
         "tp2Reached": 5,
         "tp3Reached": 4,
         "stopAfterTp1": 4,
@@ -235577,9 +235580,9 @@
         "expired": 7,
         "expiredBeforeEntry": 2,
         "expiredAfterEntry": 5,
-        "active": 0,
+        "active": 1,
         "waitingEntry": 0,
-        "inTrade": 0
+        "inTrade": 1
       },
       "30m": {
         "scoredTrades": 17,
@@ -235639,7 +235642,7 @@
     "rc562": {
       "setupVersion": "RC5.62_ORHAN_VOLUME_IMPULSE",
       "targetSignals": 20,
-      "signalsSeen": 96,
+      "signalsSeen": 97,
       "targetProgressPct": 100,
       "completedTrades": 73,
       "readyForReview": true,
@@ -235648,7 +235651,7 @@
       "wins": 5,
       "losses": 68,
       "winRate": 6.85,
-      "tp1Reached": 28,
+      "tp1Reached": 29,
       "tp2Reached": 10,
       "tp3Reached": 5,
       "stopAfterTp1": 17,
@@ -235657,9 +235660,9 @@
       "expired": 23,
       "expiredBeforeEntry": 1,
       "expiredAfterEntry": 22,
-      "active": 0,
+      "active": 1,
       "waitingEntry": 0,
-      "inTrade": 0,
+      "inTrade": 1,
       "byTimeframe": {
         "1m": {
           "scoredTrades": 22,
@@ -235702,7 +235705,7 @@
           "wins": 2,
           "losses": 16,
           "winRate": 11.11,
-          "tp1Reached": 4,
+          "tp1Reached": 5,
           "tp2Reached": 2,
           "tp3Reached": 2,
           "stopAfterTp1": 2,
@@ -235711,9 +235714,9 @@
           "expired": 6,
           "expiredBeforeEntry": 1,
           "expiredAfterEntry": 5,
-          "active": 0,
+          "active": 1,
           "waitingEntry": 0,
-          "inTrade": 0
+          "inTrade": 1
         },
         "30m": {
           "scoredTrades": 5,
